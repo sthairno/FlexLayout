@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "siv3d-yoga",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "yoga",
+    "tinyxml2"
+  ],
+  "builtin-baseline": "576379156e82da642f8d1834220876759f13534d"
+}
