@@ -21,7 +21,7 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 > ```xml
 > <Layout useWebDefaults="true">
 > 	<Box id="root">
->             <Label class="label">Hello, World!</Label>
+> 		<Label class="label">Hello, World!</Label>
 > 	</Box>
 > </Layout>
 > ```
@@ -41,7 +41,7 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 - `load()`
 
-  レイアウトを読み込む
+  レイアウトを読み込む   
   読み込みに失敗した場合はfalseを返しますが、現在のレイアウトには影響しません
 
 - `reload()`
@@ -54,12 +54,12 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 - `getElementById(id)`
 
-  IDから要素を１つだけ取得
+  IDから要素を１つだけ取得   
   ここで取得した要素は、reloadなどで再読み込みしても参照が保持されます
 
 - `update()`
 
-  ホットリロード、レイアウトの更新を実行
+  ホットリロード、レイアウトの更新を実行   
   引数にはレイアウトで使用する横幅、縦幅を設定できます
 
 > **実装例：**
