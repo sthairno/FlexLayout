@@ -102,31 +102,38 @@ namespace FlexLayout::detail
 
 			assert(renderer);
 
-			renderer->build(widthMode == YGMeasureModeExactly ? width : Inf<double>);
-			auto size = renderer->size();
+			renderer->build(widthMode != YGMeasureModeUndefined ? width : Inf<double>);
+			auto measuredSize = renderer->size();
 
 			YGSize result{
-				static_cast<float>(size.x),
-				static_cast<float>(size.y)
+				static_cast<float>(measuredSize.x),
+				static_cast<float>(measuredSize.y)
 			};
+
 			switch (widthMode)
 			{
 			case YGMeasureModeUndefined:
+				break;
 			case YGMeasureModeAtMost:
+				result.width = Min(result.width, width);
 				break;
 			case YGMeasureModeExactly:
 				result.width = width;
 				break;
 			}
+
 			switch (heightMode)
 			{
 			case YGMeasureModeUndefined:
+				break;
 			case YGMeasureModeAtMost:
+				result.height = Min(result.height, height);
 				break;
 			case YGMeasureModeExactly:
 				result.height = height;
 				break;
 			}
+
 			return result;
 		};
 		const static YGBaselineFunc baselineFunc = [](YGNodeConstRef node, float, float) -> float
