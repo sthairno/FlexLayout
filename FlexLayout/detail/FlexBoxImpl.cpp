@@ -62,12 +62,6 @@ namespace FlexLayout::detail
 		return m_classes.size() != prevSize;
 	}
 
-	void FlexBoxImpl::clearClasses()
-	{
-		m_classes.clear();
-		m_properties.erase(U"class");
-	}
-
 	Optional<String> FlexBoxImpl::getProperty(const StringView key) const
 	{
 		if (const auto it = m_properties.find(key);

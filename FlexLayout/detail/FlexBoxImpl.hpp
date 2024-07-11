@@ -14,14 +14,6 @@ namespace FlexLayout::detail
 
 	public:
 
-		void load(FlexBoxImpl* parent, const tinyxml2::XMLElement* element);
-
-		void loadChildren(const tinyxml2::XMLElement* element);
-
-		void loadLabel(const tinyxml2::XMLElement* element);
-
-		void reset();
-
 		TreeContext& context() const { return *m_context; }
 
 		YGNodeRef yogaNode() { return m_node; }
@@ -30,15 +22,18 @@ namespace FlexLayout::detail
 
 		const StringView tagName() const { return m_tagName; }
 
-		Optional<String> id() const { return m_id; }
+		void reset();
 
-		const Array<String>& classes() const { return m_classes; }
+		// -- XML読み込み--
+		// TODO: XML読み込み機能を切り出し
 
-		bool addClass(const StringView className);
+		void load(FlexBoxImpl* parent, const tinyxml2::XMLElement* element);
 
-		bool removeClass(const StringView className);
+		void loadChildren(const tinyxml2::XMLElement* element);
 
-		void clearClasses();
+		void loadLabel(const tinyxml2::XMLElement* element);
+
+		// --プロパティ--
 
 		const HashTable<String, String>& properties() const { return m_properties; }
 
@@ -50,21 +45,39 @@ namespace FlexLayout::detail
 
 		void clearProperties();
 
+		Optional<String> id() const { return m_id; }
+
+		const Array<String>& classes() const { return m_classes; }
+
+		bool addClass(const StringView className);
+
+		bool removeClass(const StringView className);
+
+		// --ツリー関連--
+
 		const Array<std::shared_ptr<FlexBoxImpl>> children() const { return m_children; }
 
 		void setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children);
 
 		void removeChildren();
 
+		// --検索--
+		// TODO: 検索機能を切り出し
+
 		void lookupNodesByClassName(Array<std::shared_ptr<FlexBoxImpl>>& list, const String& className, size_t limit = Largest<size_t>);
 
 		std::shared_ptr<FlexBoxImpl> lookupNodeById(const StringView id);
+
+		// --オフセット--
 
 		Optional<Vec2> layoutOffset() const { return m_layoutOffset; }
 
 		void setLayoutOffsetRecursive(Optional<Vec2> offset, bool force = false);
 
 		void resetLayoutOffset();
+
+		// --ラベル--
+		// TODO: ラベル機能を切り出し
 
 		const LabelStatus& labelStatus() const { return m_labelStatus; }
 
