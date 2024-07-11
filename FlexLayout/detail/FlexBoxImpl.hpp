@@ -24,7 +24,9 @@ namespace FlexLayout::detail
 
 		TreeContext& context() const { return *m_context; }
 
-		YGNodeRef yogaNode() const { return m_node; }
+		YGNodeRef yogaNode() { return m_node; }
+
+		YGNodeConstRef yogaNode() const { return m_node; }
 
 		const StringView tagName() const { return m_tagName; }
 

@@ -1,498 +1,686 @@
 ﻿#include "LoadStyleToYogaNode.hpp"
+#include "../detail/FlexBoxImpl.hpp"
 
 using namespace std::placeholders;
 
-template<typename ValueT, typename SetterFuncT>
-static bool SetEnum(
-	YGNodeRef node,
-	const HashTable<String, ValueT>& valueMapper,
-	const StringView value,
-	SetterFuncT&& setter)
+namespace FlexLayout::Util
 {
-	if (const auto it = valueMapper.find(value); it != valueMapper.end())
+	template<
+		typename ValueT,
+		typename SetterFuncT,
+		std::enable_if_t<
+			std::is_invocable_v<SetterFuncT, YGNodeRef, ValueT>
+		>* = nullptr>
+	static bool SetYogaEnumProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		const HashTable<String, ValueT>&valueMapper,
+		SetterFuncT&& setter)
 	{
-		setter(node, it->second);
-		return true;
-	}
-
-	return false;
-}
-
-template<typename SetterT>
-static bool SetFloat(
-	YGNodeRef node,
-	const StringView value,
-	SetterT&& setter)
-{
-	if (auto v = ParseFloatOpt<float>(value))
-	{
-		setter(node, *v);
-		return true;
-	}
-
-	return false;
-}
-
-template<typename SetterPixelT>
-static bool SetScale(
-	YGNodeRef node,
-	const StringView value,
-	SetterPixelT&& setterPixels)
-{
-	if (value.ends_with(U"px"_sv))
-	{
-		if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 2)))
+		if (const auto it = valueMapper.find(value); it != valueMapper.end())
 		{
-			setterPixels(node, *v);
+			setter(b.yogaNode(), it->second);
 			return true;
 		}
+
+		return false;
 	}
-	else
+
+	using SetterFunc = void (*)(YGNodeRef);
+
+	using FloatSetterFunc = void (*)(YGNodeRef, float);
+
+	template<typename ArgT>
+	using SetterFuncWithArg = void (*)(YGNodeRef, ArgT);
+
+	template<typename ArgT>
+	using FloatSetterFuncWithArg = void (*)(YGNodeRef, ArgT, float);
+
+	static bool SetYogaFloatProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		FloatSetterFunc setter)
 	{
 		if (auto v = ParseFloatOpt<float>(value))
 		{
-			setterPixels(node, *v);
+			setter(b.yogaNode(), *v);
 			return true;
 		}
+
+		return false;
 	}
 
-	return false;
-}
-
-template<typename SetterPixelT, typename SetterPercentT>
-static bool SetScale(
-	YGNodeRef node,
-	const StringView value,
-	SetterPixelT&& setterPixels,
-	SetterPercentT&& setterPercentage)
-{
-	if (value.ends_with(U"%"_sv))
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		FloatSetterFunc setterPixels)
 	{
-		if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 1)))
+		if (value.ends_with(U"px"_sv))
 		{
-			setterPercentage(node, *v);
+			if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 2)))
+			{
+				setterPixels(b.yogaNode(), *v);
+				return true;
+			}
+		}
+		else
+		{
+			if (auto v = ParseFloatOpt<float>(value))
+			{
+				setterPixels(b.yogaNode(), *v);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		FloatSetterFunc setterPixels,
+		FloatSetterFunc setterPercentage)
+	{
+		if (value.ends_with(U"%"_sv))
+		{
+			if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 1)))
+			{
+				setterPercentage(b.yogaNode(), *v);
+				return true;
+			}
+		}
+
+		return SetYogaScaleProperty(b, value, setterPixels);
+	}
+
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		FloatSetterFunc setterPixels,
+		FloatSetterFunc setterPercentage,
+		SetterFunc setterAuto)
+	{
+		if (value == U"auto")
+		{
+			setterAuto(b.yogaNode());
 			return true;
 		}
+
+		return SetYogaScaleProperty(b, value, setterPixels, setterPercentage);
 	}
 
-	return SetScale(node, value, setterPixels);
-}
-
-template<typename SetterPixelT, typename SetterPercentT, typename SetterAutoT>
-static bool SetScale(
-	YGNodeRef node,
-	const StringView value,
-	SetterPixelT&& setterPixels,
-	SetterPercentT&& setterPercentage,
-	SetterAutoT&& setterAuto)
-{
-	if (value == U"auto")
+	template<typename ArgT>
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		ArgT param,
+		FloatSetterFuncWithArg<ArgT> setterPixels)
 	{
-		setterAuto(node);
-		return true;
-	}
-
-	return SetScale(node, value, setterPixels, setterPercentage);
-}
-
-template<typename ParamT, typename SetterPixelT>
-static bool SetScaleWithParam(
-	YGNodeRef node,
-	ParamT param,
-	const StringView value,
-	SetterPixelT&& setterPixels)
-{
-	if (value.ends_with(U"px"_sv))
-	{
-		if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 2)))
+		if (value.ends_with(U"px"_sv))
 		{
-			setterPixels(node, param, *v);
+			if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 2)))
+			{
+				setterPixels(b.yogaNode(), param, *v);
+				return true;
+			}
+		}
+		else
+		{
+			if (auto v = ParseFloatOpt<float>(value))
+			{
+				setterPixels(b.yogaNode(), param, *v);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	template<typename ArgT>
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		ArgT arg,
+		FloatSetterFuncWithArg<ArgT> setterPixels,
+		FloatSetterFuncWithArg<ArgT> setterPercentage)
+	{
+		if (value.ends_with(U"%"_sv))
+		{
+			if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 1)))
+			{
+				setterPercentage(b.yogaNode(), arg, *v);
+				return true;
+			}
+		}
+
+		return SetYogaScaleProperty<ArgT>(b, value, arg, setterPixels);
+	}
+
+	template<typename ArgT>
+	static bool SetYogaScaleProperty(
+		detail::FlexBoxImpl& b,
+		const StringView value,
+		ArgT arg,
+		FloatSetterFuncWithArg<ArgT> setterPixels,
+		FloatSetterFuncWithArg<ArgT> setterPercentage,
+		SetterFuncWithArg<ArgT> setterAuto)
+	{
+		if (value == U"auto")
+		{
+			setterAuto(b.yogaNode(), arg);
 			return true;
 		}
+
+		return SetYogaScaleProperty<ArgT>(b, value, arg, setterPixels, setterPercentage);
 	}
-	else
+
+	static bool SetFlex(detail::FlexBoxImpl& b, const StringView value)
 	{
-		if (auto v = ParseFloatOpt<float>(value))
+		auto params = String{ value }.split(U' ');
+		auto node = b.yogaNode();
+
+		switch (params.size())
 		{
-			setterPixels(node, param, *v);
+		case 1:
+			if (params[0] == U"initial")
+			{
+				YGNodeStyleSetFlexGrow(node, 0);
+				YGNodeStyleSetFlexShrink(node, 1);
+				YGNodeStyleSetFlexBasisAuto(node);
+				return true;
+			}
+			else if (params[0] == U"auto")
+			{
+				YGNodeStyleSetFlexGrow(node, 1);
+				YGNodeStyleSetFlexShrink(node, 1);
+				YGNodeStyleSetFlexBasisAuto(node);
+				return true;
+			}
+			else if (params[0] == U"none")
+			{
+				YGNodeStyleSetFlexGrow(node, 0);
+				YGNodeStyleSetFlexShrink(node, 0);
+				YGNodeStyleSetFlexBasisAuto(node);
+				return true;
+			}
+			else if (SetYogaFloatProperty(b, params[0], YGNodeStyleSetFlexGrow))
+			{
+				YGNodeStyleSetFlexShrink(node, 1);
+				YGNodeStyleSetFlexBasis(node, 0);
+				return true;
+			}
+			else if (SetYogaScaleProperty(b, params[0], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto))
+			{
+				YGNodeStyleSetFlexGrow(node, 1);
+				YGNodeStyleSetFlexShrink(node, 1);
+				return true;
+			}
+		case 2:
+			SetYogaFloatProperty(b, params[0], YGNodeStyleSetFlexGrow);
+			if (SetYogaFloatProperty(b, params[0], YGNodeStyleSetFlexShrink))
+			{
+				YGNodeStyleSetFlexBasis(node, 0);
+				return true;
+			}
+			else if (SetYogaScaleProperty(b, params[1], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto))
+			{
+				YGNodeStyleSetFlexShrink(node, 1);
+				return true;
+			}
+		case 3:
+			SetYogaFloatProperty(b, params[0], YGNodeStyleSetFlexGrow);
+			SetYogaFloatProperty(b, params[1], YGNodeStyleSetFlexShrink);
+			SetYogaScaleProperty(b, params[2], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto);
 			return true;
 		}
+
+		return false;
 	}
 
-	return false;
-}
-
-template<typename ParamT, typename SetterPixelT, typename SetterPercentT>
-static bool SetScaleWithParam(
-	YGNodeRef node,
-	ParamT param,
-	const StringView value,
-	SetterPixelT&& setterPixels,
-	SetterPercentT&& setterPercentage)
-{
-	if (value.ends_with(U"%"_sv))
+	static bool SetGap(detail::FlexBoxImpl& b, const StringView value)
 	{
-		if (auto v = ParseFloatOpt<float>(value.substr(0, value.size() - 1)))
+		bool success = false;
+		auto params = String{ value }.split(U' ');
+
+		switch (params.size())
 		{
-			setterPercentage(node, param, *v);
-			return true;
+		case 1:
+			return SetYogaScaleProperty(
+				b, params[0],
+				YGGutterAll,
+				YGNodeStyleSetGap,
+				YGNodeStyleSetGapPercent
+			);
+		case 2:
+			success = SetYogaScaleProperty(
+				b, params[0],
+				YGGutterRow,
+				YGNodeStyleSetGap,
+				YGNodeStyleSetGapPercent
+			);
+			success &= SetYogaScaleProperty(
+				b, params[1],
+				YGGutterColumn,
+				YGNodeStyleSetGap,
+				YGNodeStyleSetGapPercent
+			);
+			return success;
 		}
+
+		return false;
 	}
 
-	return SetScaleWithParam(node, param, value, setterPixels);
-}
-
-template<typename ParamT, typename SetterPixelT, typename SetterPercentT, typename SetterAutoT>
-static bool SetScaleWithParam(
-	YGNodeRef node,
-	ParamT param,
-	const StringView value,
-	SetterPixelT&& setterPixels,
-	SetterPercentT&& setterPercentage,
-	SetterAutoT&& setterAuto)
-{
-	if (value == U"auto")
+	static bool SetMargin(detail::FlexBoxImpl& b, const StringView value)
 	{
-		setterAuto(node, param);
-		return true;
-	}
+		bool success = false;
+		auto params = String{ value }.split(U' ');
 
-	return SetScaleWithParam(node, param, value, setterPixels, setterPercentage);
-}
-
-static void SetFlex(YGNodeRef node, const StringView value)
-{
-	auto params = String{ value }.split(U' ');
-
-	switch (params.size())
-	{
-	case 1:
-		if (params[0] == U"initial")
+		switch (params.size())
 		{
-			YGNodeStyleSetFlexGrow(node, 0);
-			YGNodeStyleSetFlexShrink(node, 1);
-			YGNodeStyleSetFlexBasisAuto(node);
-		}
-		else if (params[0] == U"auto")
-		{
-			YGNodeStyleSetFlexGrow(node, 1);
-			YGNodeStyleSetFlexShrink(node, 1);
-			YGNodeStyleSetFlexBasisAuto(node);
-		}
-		else if (params[0] == U"none")
-		{
-			YGNodeStyleSetFlexGrow(node, 0);
-			YGNodeStyleSetFlexShrink(node, 0);
-			YGNodeStyleSetFlexBasisAuto(node);
-		}
-		else if (SetFloat(node, params[0], YGNodeStyleSetFlexGrow))
-		{
-			YGNodeStyleSetFlexShrink(node, 1);
-			YGNodeStyleSetFlexBasis(node, 0);
-		}
-		else if (SetScale(node, params[0], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto))
-		{
-			YGNodeStyleSetFlexGrow(node, 1);
-			YGNodeStyleSetFlexShrink(node, 1);
-		}
-		break;
-	case 2:
-		SetFloat(node, params[0], YGNodeStyleSetFlexGrow);
-		if (SetFloat(node, params[0], YGNodeStyleSetFlexShrink))
-		{
-			YGNodeStyleSetFlexBasis(node, 0);
-		}
-		else if (SetScale(node, params[1], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto))
-		{
-			YGNodeStyleSetFlexShrink(node, 1);
-		}
-		break;
-	case 3:
-		SetFloat(node, params[0], YGNodeStyleSetFlexGrow);
-		SetFloat(node, params[1], YGNodeStyleSetFlexShrink);
-		SetScale(node, params[2], YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto);
-		break;
-	}
-}
-
-static void SetGap(YGNodeRef node, const StringView value)
-{
-	auto params = String{ value }.split(U' ');
-
-	switch (params.size())
-	{
-	case 1:
-		SetScaleWithParam(
-			node, YGGutterAll, params[0],
-			YGNodeStyleSetGap,
-			YGNodeStyleSetGapPercent
-		);
-		break;
-	case 2:
-		SetScaleWithParam(
-			node, YGGutterRow, params[0],
-			YGNodeStyleSetGap,
-			YGNodeStyleSetGapPercent
-		);
-		SetScaleWithParam(
-			node, YGGutterColumn, params[1],
-			YGNodeStyleSetGap,
-			YGNodeStyleSetGapPercent
-		);
-		break;
-	}
-}
-
-static void SetMargin(YGNodeRef node, const StringView value)
-{
-	auto params = String{ value }.split(U' ');
-
-	switch (params.size())
-	{
-	case 1:
-		SetScaleWithParam(
-			node, YGEdgeAll, params[0],
-			YGNodeStyleSetMargin,
-			YGNodeStyleSetMarginPercent,
-			YGNodeStyleSetMarginAuto
-		);
-		break;
-	case 2:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
+		case 1:
+			return SetYogaScaleProperty(
+				b, params[0],
+				YGEdgeAll,
 				YGNodeStyleSetMargin,
 				YGNodeStyleSetMarginPercent,
 				YGNodeStyleSetMarginAuto
 			);
+			break;
+		case 2:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetMargin,
+					YGNodeStyleSetMarginPercent,
+					YGNodeStyleSetMarginAuto
+				);
+			}
+			return success;
+		case 3:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetMargin,
+					YGNodeStyleSetMarginPercent,
+					YGNodeStyleSetMarginAuto
+				);
+			}
+			return success;
+		case 4:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetMargin,
+					YGNodeStyleSetMarginPercent,
+					YGNodeStyleSetMarginAuto
+				);
+			}
+			return success;
 		}
-		break;
-	case 3:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetMargin,
-				YGNodeStyleSetMarginPercent,
-				YGNodeStyleSetMarginAuto
-			);
-		}
-		break;
-	case 4:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetMargin,
-				YGNodeStyleSetMarginPercent,
-				YGNodeStyleSetMarginAuto
-			);
-		}
-		break;
+
+		return false;
 	}
-}
 
-static void SetPadding(YGNodeRef node, const StringView value)
-{
-	auto params = String{ value }.split(U' ');
-
-	switch (params.size())
+	static bool SetPadding(detail::FlexBoxImpl& b, const StringView value)
 	{
-	case 1:
-		SetScaleWithParam(
-			node, YGEdgeAll, params[0],
-			YGNodeStyleSetPadding,
-			YGNodeStyleSetPaddingPercent
-		);
-		break;
-	case 2:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
+		bool success = false;
+		auto params = String{ value }.split(U' ');
+
+		switch (params.size())
 		{
-			SetScaleWithParam(
-				node, e, params[i],
+		case 1:
+			return SetYogaScaleProperty(
+				b, params[0],
+				YGEdgeAll,
 				YGNodeStyleSetPadding,
 				YGNodeStyleSetPaddingPercent
 			);
+		case 2:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
+			{
+				SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetPadding,
+					YGNodeStyleSetPaddingPercent
+				);
+			}
+			return success;
+		case 3:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
+			{
+				SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetPadding,
+					YGNodeStyleSetPaddingPercent
+				);
+			}
+			return success;
+		case 4:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
+			{
+				SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetPadding,
+					YGNodeStyleSetPaddingPercent
+				);
+			}
+			return success;
 		}
-		break;
-	case 3:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetPadding,
-				YGNodeStyleSetPaddingPercent
-			);
-		}
-		break;
-	case 4:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetPadding,
-				YGNodeStyleSetPaddingPercent
-			);
-		}
-		break;
+
+		return false;
 	}
 
-}
-
-static void SetBorderWidth(YGNodeRef node, const StringView value)
-{
-	auto params = String{ value }.split(U' ');
-
-	switch (params.size())
+	static bool SetBorderWidth(detail::FlexBoxImpl& b, const StringView value)
 	{
-	case 1:
-		SetScaleWithParam(
-			node, YGEdgeAll, params[0],
-			YGNodeStyleSetBorder
-		);
-		break;
-	case 2:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
+		bool success = false;
+		auto params = String{ value }.split(U' ');
+
+		switch (params.size())
 		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetBorder,
+		case 1:
+			return SetYogaScaleProperty(
+				b, params[0],
+				YGEdgeAll,
 				YGNodeStyleSetBorder
 			);
+		case 2:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeVertical, YGEdgeHorizontal }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetBorder,
+					YGNodeStyleSetBorder
+				);
+			}
+			return success;
+		case 3:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetBorder,
+					YGNodeStyleSetBorder
+				);
+			}
+			return success;
+		case 4:
+			success = true;
+			for (auto [i, edge] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
+			{
+				success &= SetYogaScaleProperty(
+					b, params[i],
+					edge,
+					YGNodeStyleSetBorder,
+					YGNodeStyleSetBorder
+				);
+			}
+			return success;
 		}
-		break;
-	case 3:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeHorizontal, YGEdgeBottom }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetBorder,
-				YGNodeStyleSetBorder
-			);
-		}
-		break;
-	case 4:
-		for (auto [i, e] : Indexed(std::initializer_list{ YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeLeft }))
-		{
-			SetScaleWithParam(
-				node, e, params[i],
-				YGNodeStyleSetBorder,
-				YGNodeStyleSetBorder
-			);
-		}
-		break;
+
+		return false;
 	}
-}
 
-const static HashTable<String, YGAlign> AlignContentMap = {
-	{ U"start", YGAlignFlexStart },
-	{ U"end", YGAlignFlexEnd },
-	{ U"stretch", YGAlignStretch },
-	{ U"center", YGAlignCenter },
-	{ U"space-between", YGAlignSpaceBetween },
-	{ U"space-around", YGAlignSpaceAround },
-	{ U"space-evenly", YGAlignSpaceEvenly },
-};
+	const static HashTable<String, YGAlign> AlignContentMap = {
+		{ U"start", YGAlignFlexStart },
+		{ U"end", YGAlignFlexEnd },
+		{ U"stretch", YGAlignStretch },
+		{ U"center", YGAlignCenter },
+		{ U"space-between", YGAlignSpaceBetween },
+		{ U"space-around", YGAlignSpaceAround },
+		{ U"space-evenly", YGAlignSpaceEvenly },
+	};
 
-const static HashTable<String, YGAlign> AlignItemsMap = {
-	{ U"stretch", YGAlignStretch },
-	{ U"start", YGAlignFlexStart },
-	{ U"end", YGAlignFlexEnd },
-	{ U"center", YGAlignCenter },
-	{ U"baseline", YGAlignBaseline },
-};
+	const static HashTable<String, YGAlign> AlignItemsMap = {
+		{ U"stretch", YGAlignStretch },
+		{ U"start", YGAlignFlexStart },
+		{ U"end", YGAlignFlexEnd },
+		{ U"center", YGAlignCenter },
+		{ U"baseline", YGAlignBaseline },
+	};
 
-const static HashTable<String, YGDisplay> DisplayMap = {
-	{ U"flex", YGDisplayFlex },
-	{ U"none", YGDisplayNone },
-};
+	const static HashTable<String, YGDisplay> DisplayMap = {
+		{ U"flex", YGDisplayFlex },
+		{ U"none", YGDisplayNone },
+	};
 
-const static HashTable<String, YGFlexDirection> FlexDirectionMap = {
-	{ U"column", YGFlexDirectionColumn },
-	{ U"row", YGFlexDirectionRow },
-	{ U"row-reverse", YGFlexDirectionRowReverse },
-	{ U"column-reverse", YGFlexDirectionColumnReverse },
-};
+	const static HashTable<String, YGFlexDirection> FlexDirectionMap = {
+		{ U"column", YGFlexDirectionColumn },
+		{ U"row", YGFlexDirectionRow },
+		{ U"row-reverse", YGFlexDirectionRowReverse },
+		{ U"column-reverse", YGFlexDirectionColumnReverse },
+	};
 
-const static HashTable<String, YGWrap> FlexWrapMap = {
-	{ U"no-wrap", YGWrapNoWrap },
-	{ U"wrap", YGWrapWrap },
-	{ U"wrap-reverse", YGWrapWrapReverse },
-};
+	const static HashTable<String, YGWrap> FlexWrapMap = {
+		{ U"no-wrap", YGWrapNoWrap },
+		{ U"wrap", YGWrapWrap },
+		{ U"wrap-reverse", YGWrapWrapReverse },
+	};
 
-const static HashTable<String, YGPositionType> PositionTypeMap = {
-	{ U"static", YGPositionTypeStatic },
-	{ U"relative", YGPositionTypeRelative },
-	{ U"absolute", YGPositionTypeAbsolute }
-};
+	const static HashTable<String, YGPositionType> PositionTypeMap = {
+		{ U"static", YGPositionTypeStatic },
+		{ U"relative", YGPositionTypeRelative },
+		{ U"absolute", YGPositionTypeAbsolute }
+	};
 
-const static HashTable<String, YGJustify> JustifyContentMap = {
-	{ U"start", YGJustifyFlexStart },
-	{ U"end", YGJustifyFlexEnd },
-	{ U"center", YGJustifyCenter },
-	{ U"space-between", YGJustifySpaceBetween },
-	{ U"space-around", YGJustifySpaceAround },
-	{ U"space-evenly", YGJustifySpaceEvenly },
-};
+	const static HashTable<String, YGJustify> JustifyContentMap = {
+		{ U"start", YGJustifyFlexStart },
+		{ U"end", YGJustifyFlexEnd },
+		{ U"center", YGJustifyCenter },
+		{ U"space-between", YGJustifySpaceBetween },
+		{ U"space-around", YGJustifySpaceAround },
+		{ U"space-evenly", YGJustifySpaceEvenly },
+	};
 
-const static HashTable<String, YGDirection> DirectionMap = {
-	{ U"inherit", YGDirectionInherit },
-	{ U"ltr", YGDirectionLTR },
-	{ U"rtl", YGDirectionRTL },
-};
+	const static HashTable<String, YGDirection> DirectionMap = {
+		{ U"inherit", YGDirectionInherit },
+		{ U"ltr", YGDirectionLTR },
+		{ U"rtl", YGDirectionRTL },
+	};
 
-const static HashTable<StringView, std::function<void(YGNodeRef, const StringView)>> FuncMap = {
-	{ U"align-content"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, AlignContentMap, v, YGNodeStyleSetAlignContent); }},
-	{ U"align-items"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, AlignItemsMap, v, YGNodeStyleSetAlignItems); }},
-	{ U"aspect-ratio"_sv, [](YGNodeRef n, const StringView v) { SetFloat(n, v, YGNodeStyleSetAspectRatio); }},
-	{ U"display"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, DisplayMap, v, YGNodeStyleSetDisplay); }},
-	{ U"flex"_sv, SetFlex },
-	{ U"flex-basis"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto); }},
-	{ U"flex-grow"_sv, [](YGNodeRef n, const StringView v) { SetFloat(n, v, YGNodeStyleSetFlexGrow); }},
-	{ U"flex-shrink"_sv, [](YGNodeRef n, const StringView v) { SetFloat(n, v, YGNodeStyleSetFlexShrink); }},
-	{ U"flex-direction"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, FlexDirectionMap, v, YGNodeStyleSetFlexDirection); }},
-	{ U"flex-wrap"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, FlexWrapMap, v, YGNodeStyleSetFlexWrap); }},
-	{ U"gap"_sv, SetGap },
-	{ U"row-gap"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGGutterRow, v, YGNodeStyleSetGap, YGNodeStyleSetGapPercent); }},
-	{ U"column-gap"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGGutterColumn, v, YGNodeStyleSetGap, YGNodeStyleSetGapPercent); }},
-	{ U"position"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, PositionTypeMap, v, YGNodeStyleSetPositionType); }},
-	{ U"top"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeTop, v, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); }},
-	{ U"right"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeRight, v, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); }},
-	{ U"bottom"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeBottom, v, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); }},
-	{ U"left"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeLeft, v, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); }},
-	{ U"justify-content"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, JustifyContentMap, v, YGNodeStyleSetJustifyContent); }},
-	{ U"direction"_sv, [](YGNodeRef n, const StringView v) { SetEnum(n, DirectionMap, v, YGNodeStyleSetDirection); }},
-	{ U"margin"_sv, SetMargin },
-	{ U"margin-top"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeTop, v, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); }},
-	{ U"margin-right"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeRight, v, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); }},
-	{ U"margin-bottom"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeBottom, v, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); }},
-	{ U"margin-left"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeLeft, v, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); }},
-	{ U"padding"_sv, SetPadding },
-	{ U"padding-top"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeTop, v, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); }},
-	{ U"padding-right"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeRight, v, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); }},
-	{ U"padding-bottom"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeBottom, v, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); }},
-	{ U"padding-left"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeLeft, v, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); }},
-	{ U"border-width"_sv, SetBorderWidth },
-	{ U"border-top-width"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeTop, v, YGNodeStyleSetBorder); }},
-	{ U"border-right-width"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeRight, v, YGNodeStyleSetBorder); }},
-	{ U"border-bottom-width"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeBottom, v, YGNodeStyleSetBorder); }},
-	{ U"border-left-width"_sv, [](YGNodeRef n, const StringView v) { SetScaleWithParam(n, YGEdgeLeft, v, YGNodeStyleSetBorder); }},
-	{ U"width"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetWidth, YGNodeStyleSetWidthPercent, YGNodeStyleSetWidthAuto); }},
-	{ U"height"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetHeight, YGNodeStyleSetHeightPercent, YGNodeStyleSetHeightAuto); }},
-	{ U"min-width"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetMinWidth, YGNodeStyleSetMinWidthPercent); }},
-	{ U"min-height"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetMinHeight, YGNodeStyleSetMinHeightPercent); }},
-	{ U"max-width"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetMaxWidth, YGNodeStyleSetMaxWidthPercent); }},
-	{ U"max-height"_sv, [](YGNodeRef n, const StringView v) { SetScale(n, v, YGNodeStyleSetMaxHeight, YGNodeStyleSetMaxHeightPercent); }},
-};
+	using PropertySetter = bool (*)(detail::FlexBoxImpl& b, const StringView v);
 
-bool FlexLayout::Util::LoadStyleToYogaNode(YGNodeRef node, const StringView key, const StringView value)
-{
-	if (const auto it = FuncMap.find(key); it != FuncMap.end())
+	struct PropertyInfo
 	{
-		it->second(node, value);
-		return true;
-	}
+		PropertySetter setter;
 
-	return false;
+		bool inherit = false;
+	};
+
+	const static HashTable<StringView, PropertyInfo> PropertyMap = {
+		{
+			U"align-content"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, AlignContentMap, YGNodeStyleSetAlignContent); } }
+		},
+		{
+			U"align-items"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, AlignItemsMap, YGNodeStyleSetAlignItems); } }
+		},
+		{
+			U"aspect-ratio"_sv,
+			{ [](auto n, auto v) { return SetYogaFloatProperty(n, v, YGNodeStyleSetAspectRatio); } }
+		},
+		{
+			U"display"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, DisplayMap, YGNodeStyleSetDisplay); } }
+		},
+		{
+			U"flex"_sv,
+			{ &SetFlex }
+		},
+		{
+			U"flex-basis"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent, YGNodeStyleSetFlexBasisAuto); } }
+		},
+		{
+			U"flex-grow"_sv,
+			{ [](auto n, auto v) { return SetYogaFloatProperty(n, v, YGNodeStyleSetFlexGrow); } }
+		},
+		{
+			U"flex-shrink"_sv,
+			{ [](auto n, auto v) { return SetYogaFloatProperty(n, v, YGNodeStyleSetFlexShrink); } }
+		},
+		{
+			U"flex-direction"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, FlexDirectionMap, YGNodeStyleSetFlexDirection); } }
+		},
+		{
+			U"flex-wrap"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, FlexWrapMap, YGNodeStyleSetFlexWrap); } }
+		},
+		{
+			U"gap"_sv,
+			{ &SetGap }
+		},
+		{
+			U"row-gap"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGGutterRow, YGNodeStyleSetGap, YGNodeStyleSetGapPercent); } }
+		},
+		{
+			U"column-gap"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGGutterColumn, YGNodeStyleSetGap, YGNodeStyleSetGapPercent); } }
+		},
+		{
+			U"position"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, PositionTypeMap, YGNodeStyleSetPositionType); } }
+		},
+		{
+			U"top"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeTop, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); } }
+		},
+		{
+			U"right"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeRight, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); } }
+		},
+		{
+			U"bottom"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeBottom, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); } }
+		},
+		{
+			U"left"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeLeft, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent); } }
+		},
+		{
+			U"justify-content"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, JustifyContentMap, YGNodeStyleSetJustifyContent); } }
+		},
+		{
+			U"direction"_sv,
+			{ [](auto n, auto v) { return SetYogaEnumProperty(n, v, DirectionMap, YGNodeStyleSetDirection); } }
+		},
+		{
+			U"margin"_sv,
+			{ &SetMargin }
+		},
+		{
+			U"margin-top"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeTop, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); } }
+		},
+		{
+			U"margin-right"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeRight, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); } }
+		},
+		{
+			U"margin-bottom"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeBottom, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); } }
+		},
+		{
+			U"margin-left"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeLeft, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto); } }
+		},
+		{
+			U"padding"_sv,
+			{ &SetPadding }
+		},
+		{
+			U"padding-top"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeTop, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); } }
+		},
+		{
+			U"padding-right"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeRight, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); } }
+		},
+		{
+			U"padding-bottom"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeBottom, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); } }
+		},
+		{
+			U"padding-left"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeLeft, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent); } }
+		},
+		{
+			U"border-width"_sv,
+			{ &SetBorderWidth }
+		},
+		{
+			U"border-top-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeTop, YGNodeStyleSetBorder); } }
+		},
+		{
+			U"border-right-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeRight, YGNodeStyleSetBorder); } }
+		},
+		{
+			U"border-bottom-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeBottom, YGNodeStyleSetBorder); } }
+		},
+		{
+			U"border-left-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGEdgeLeft, YGNodeStyleSetBorder); } }
+		},
+		{
+			U"width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetWidth, YGNodeStyleSetWidthPercent, YGNodeStyleSetWidthAuto); } }
+		},
+		{
+			U"height"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetHeight, YGNodeStyleSetHeightPercent, YGNodeStyleSetHeightAuto); } }
+		},
+		{
+			U"min-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetMinWidth, YGNodeStyleSetMinWidthPercent); } }
+		},
+		{
+			U"min-height"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetMinHeight, YGNodeStyleSetMinHeightPercent); } }
+		},
+		{
+			U"max-width"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetMaxWidth, YGNodeStyleSetMaxWidthPercent); } }
+		},
+		{
+			U"max-height"_sv,
+			{ [](auto n, auto v) { return SetYogaScaleProperty(n, v, YGNodeStyleSetMaxHeight, YGNodeStyleSetMaxHeightPercent); } }
+		}
+	};
+
+	bool LoadStyleToYogaNode(YGNodeRef node, const StringView key, const StringView value)
+	{
+		if (const auto it = PropertyMap.find(key); it != PropertyMap.end())
+		{
+			const PropertyInfo& info = it->second;
+			info.setter(*reinterpret_cast<detail::FlexBoxImpl*>(YGNodeGetContext(node)), value);
+			return true;
+		}
+
+		return false;
+	}
 }
