@@ -136,7 +136,7 @@ namespace FlexLayout
 			YGDirectionLTR);
 
 		// グローバル座標の更新
-		m_impl->calculateLayoutOffsetRecursive(offset);
+		m_impl->setLayoutOffsetRecursive(offset);
 	}
 
 	FlexLayout::~FlexLayout()

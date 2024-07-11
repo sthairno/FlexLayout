@@ -62,7 +62,7 @@ namespace FlexLayout::detail
 
 		Optional<Vec2> layoutOffset() const { return m_layoutOffset; }
 
-		void calculateLayoutOffsetRecursive(Optional<Vec2> base);
+		void setLayoutOffsetRecursive(Optional<Vec2> offset, bool force = false);
 
 		void resetLayoutOffset();
 
