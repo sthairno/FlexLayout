@@ -2,17 +2,17 @@
 
 namespace FlexLayout::detail
 {
-	void LabelRenderer::build(double width)
+	void LabelRenderer::setConstraints(double width)
 	{
 		m_glyphs.clear();
 		m_lineBreaks.clear();
 		m_lineWidths.clear();
 
-		if (m_text.isEmpty())
+		if (text.isEmpty())
 		{
 			return;
 		}
-		m_glyphs = m_status.font.getGlyphs(m_text);
+		m_glyphs = status.font.getGlyphs(text);
 
 		auto scale = fontScale();
 
@@ -43,7 +43,7 @@ namespace FlexLayout::detail
 
 	void LabelRenderer::draw(RectF rect, const ColorF color) const
 	{
-		const auto& pixelShader = Font::GetPixelShader(m_status.font.method());
+		const auto& pixelShader = Font::GetPixelShader(status.font.method());
 		const ScopedCustomShader2D shader{ pixelShader };
 
 		double fontScale = this->fontScale();
@@ -56,7 +56,7 @@ namespace FlexLayout::detail
 			const size_t endIdx = nextLineBreakItr != m_lineBreaks.cend() ? *nextLineBreakItr++ : m_glyphs.size();
 
 			Vec2 penPos = rect.pos;
-			switch(m_status.textAlign)
+			switch(status.textAlign)
 			{
 			case TextAlign::Inherit:
 			case TextAlign::Left:

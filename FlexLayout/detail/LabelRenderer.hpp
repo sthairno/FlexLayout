@@ -7,21 +7,25 @@ namespace FlexLayout::detail
 	{
 	public:
 
-		LabelRenderer(const LabelStatus& m_status, const StringView text)
-			: m_status(m_status)
-			, m_text(text)
+		LabelRenderer(const LabelStatus& status, const StringView text)
+			: status(status)
+			, text(text)
 		{ }
 
 	public:
 
+		const LabelStatus status;
+
+		const String text;
+
 		double fontScale() const
 		{
-			return m_status.font ? m_status.fontSizePixel / m_status.font.fontSize() : 1.0;
+			return status.font ? status.fontSizePixel / status.font.fontSize() : 1.0;
 		}
 
-		double lineScale() const
+		double lineHeight() const
 		{
-			return fontScale() * m_status.lineHeight;
+			return status.fontSizePixel * status.lineHeight;
 		}
 
 		size_t lineCount() const
@@ -32,26 +36,28 @@ namespace FlexLayout::detail
 		double baseline(size_t lineIdx = Largest<size_t>) const
 		{
 			lineIdx = std::min(lineIdx, lineCount() - 1);
-			return (m_status.font.height() * lineIdx + m_status.font.ascender()) * lineScale();
+			auto scale = fontScale();
+			auto line = lineHeight();
+			auto content = status.font.height() * scale;
+			auto ascender = status.font.ascender() * scale;
+			return line * lineIdx
+				+ (line - content) / 2
+				+ ascender;
 		}
 
 		Vec2 size() const
 		{
 			return {
 				*std::max_element(m_lineWidths.begin(), m_lineWidths.end()),
-				lineCount() * m_status.font.height() * lineScale()
+				lineHeight() * lineCount()
 			};
 		}
 
-		void build(double width = Inf<double>);
+		void setConstraints(double width = Inf<double>);
 
 		void draw(RectF rect, const ColorF color) const;
 
 	private:
-
-		const LabelStatus m_status;
-
-		String m_text;
 
 		Array<Glyph> m_glyphs;
 

@@ -102,7 +102,7 @@ namespace FlexLayout::detail
 
 			assert(renderer);
 
-			renderer->build(widthMode != YGMeasureModeUndefined ? width : Inf<double>);
+			renderer->setConstraints(widthMode != YGMeasureModeUndefined ? width : Inf<double>);
 			auto measuredSize = renderer->size();
 
 			YGSize result{

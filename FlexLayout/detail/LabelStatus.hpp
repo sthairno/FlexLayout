@@ -6,7 +6,7 @@ namespace FlexLayout::detail
 	struct LabelStatus
 	{
 		static constexpr double DefaultFontSize = 16.0;
-		static constexpr double DefaultLineHeight = 1.0;
+		static constexpr double DefaultLineHeight = 1.5;
 
 		static LabelStatus Create(LabelProperty prop, LabelStatus parent)
 		{
