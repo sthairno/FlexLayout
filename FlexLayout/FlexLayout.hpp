@@ -10,9 +10,14 @@ namespace tinyxml2
 
 namespace FlexLayout
 {
+	namespace detail
+	{
+		class XMLLoader;
+	}
+
 	using EnableHotReload = s3d::YesNo<struct PreserveWhitespace_tag>;
 
-	class FlexLayout : public FlexBox
+	class FlexLayout
 	{
 	public:
 
@@ -55,12 +60,6 @@ namespace FlexLayout
 			load(document);
 		}
 
-		inline explicit FlexLayout(const tinyxml2::XMLElement* element)
-			: FlexLayout()
-		{
-			load(element);
-		}
-
 		bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No);
 
 		inline bool load(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No)
@@ -88,8 +87,6 @@ namespace FlexLayout
 
 		bool load(const tinyxml2::XMLDocument& element);
 
-		bool load(const tinyxml2::XMLElement* element);
-
 		bool reload();
 
 		inline const s3d::FilePathView fileFullPath() const { return m_fileFullPath; }
@@ -113,6 +110,8 @@ namespace FlexLayout
 			update(rect.w, rect.h, rect.pos);
 		}
 
+		Optional<FlexBox> document();
+
 	private:
 
 		s3d::FilePath m_fileFullPath{ };
@@ -122,6 +121,10 @@ namespace FlexLayout
 		bool m_pendingReload = false;
 
 		s3d::Stopwatch m_reloadTimer;
+
+		std::shared_ptr<detail::FlexBoxImpl> m_root;
+
+		std::unique_ptr<detail::XMLLoader> m_loader;
 
 	public:
 

@@ -87,9 +87,6 @@
     <ClCompile Include="FlexLayout\detail\FlexBoxImpl.cpp">
       <Filter>Source Files\FlexLayout\detail</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\FlexBoxLoader.cpp">
-      <Filter>Source Files\FlexLayout\detail</Filter>
-    </ClCompile>
     <ClCompile Include="FlexLayout\detail\LabelProperty.cpp">
       <Filter>Source Files\FlexLayout\detail</Filter>
     </ClCompile>
@@ -110,6 +107,12 @@
     </ClCompile>
     <ClCompile Include="FlexLayout\FlexBox.cpp">
       <Filter>Source Files\FlexLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\detail\XMLLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\detail\LabelImpl.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +429,12 @@
     </ClInclude>
     <ClInclude Include="FlexLayout\FlexLayout.hpp">
       <Filter>Header Files\FlexLayout</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\detail\XMLLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\detail\LabelImpl.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

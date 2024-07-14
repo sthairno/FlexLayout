@@ -27,7 +27,7 @@ void Main()
 	FlexLayout::FlexLayout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
 
 	// idが指定されている要素はホットリロードしても参照が保持されます
-	auto buttonBox = layout.getElementById(U"button");
+	auto buttonBox = layout.document()->getElementById(U"button");
 
 	while (System::Update())
 	{
@@ -35,7 +35,7 @@ void Main()
 		layout.update(Scene::Rect());
 
 		// ツリーの四角形を描画
-		DrawFlexBox(layout);
+		DrawFlexBox(*layout.document());
 
 		// Box[id="button"]に合わせてボタンを描画
 		if (buttonBox)

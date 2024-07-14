@@ -4,18 +4,12 @@
 
 namespace FlexLayout::detail
 {
-	FlexBoxImpl::FlexBoxImpl(std::shared_ptr<TreeContext> context)
-		: m_context{ context }
-		, m_node{ context->createNode() }
+	FlexBoxImpl::FlexBoxImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
+		: m_node{ context->createNode() }
+		, m_tagName{ tagName }
+		, m_context{ context }
 	{
 		YGNodeSetContext(m_node, this);
-	}
-
-	void FlexBoxImpl::reset()
-	{
-		removeChildren();
-		clearProperties();
-		YGNodeReset(m_node);
 	}
 
 	bool FlexBoxImpl::addClass(const StringView className)
@@ -115,20 +109,20 @@ namespace FlexLayout::detail
 				if (std::holds_alternative<float>(value))
 				{
 					tmp.emplace_back(key, U"{}"_fmt(std::get<float>(value)));
-		}
-		else
-		{
+				}
+				else
+				{
 					tmp.emplace_back(key, std::get<String>(value));
-		}
-	}
+				}
+			}
 
 			return Util::DumpInlineCSS(tmp);
 		}
 		else if (const auto it = m_additonalProperties.find(key);
 			it != m_additonalProperties.end())
-	{
+		{
 			return it->second;
-	}
+		}
 
 		return none;
 	}
@@ -189,7 +183,12 @@ namespace FlexLayout::detail
 		}
 	}
 
-		m_properties.erase(key);
+	void FlexBoxImpl::clearProperties()
+	{
+		m_id.reset();
+		m_classes.clear();
+		m_style.clear();
+		m_additonalProperties.clear();
 	}
 
 	void FlexBoxImpl::removeChildren()
@@ -277,7 +276,7 @@ namespace FlexLayout::detail
 		}
 	}
 
-	void FlexBoxImpl::setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children)
+	void FlexBoxImpl::setChildren(Array<std::shared_ptr<FlexBoxImpl>>& children)
 	{
 		for (auto& child : m_children)
 		{
@@ -292,27 +291,6 @@ namespace FlexLayout::detail
 		YGNodeSetChildren(m_node, nodes.data(), nodes.size());
 
 		m_children = std::move(children);
-	}
-
-	void FlexBoxImpl::resetStyle()
-	{
-		m_context->resetNodeStyle(m_node);
-		m_labelProperty = {};
-	}
-
-	void FlexBoxImpl::loadStyle(const String& css)
-	{
-		for (const auto& [key, value] : Util::ParseInlineCSS(css))
-		{
-			if (Util::LoadStyleToYogaNode(m_node, key, value))
-			{
-				// YGNodeMarkDirty(m_node);
-			}
-			else if (LoadStyleToLabelProperty(m_labelProperty, key, value))
-			{
-				// YGNodeMarkDirty(m_node);
-			}
-		}
 	}
 
 	FlexBoxImpl::~FlexBoxImpl()

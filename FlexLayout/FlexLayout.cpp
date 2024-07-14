@@ -1,10 +1,11 @@
 ﻿#include "FlexLayout.hpp"
 #include "detail/FlexBoxImpl.hpp"
+#include "detail/XMLLoader.hpp"
 
 namespace FlexLayout
 {
 	FlexLayout::FlexLayout()
-		: FlexLayout::FlexBox(std::make_shared<detail::FlexBoxImpl>(std::make_shared<detail::TreeContext>()))
+		: m_loader(std::make_unique<detail::XMLLoader>(std::make_shared<detail::TreeContext>()))
 	{ }
 
 	bool FlexLayout::load(const char32_t* path, EnableHotReload enableHotReload)
@@ -55,34 +56,7 @@ namespace FlexLayout
 
 	bool FlexLayout::load(const tinyxml2::XMLDocument& document)
 	{
-		return load(document.RootElement());
-	}
-
-	bool FlexLayout::load(const tinyxml2::XMLElement* element)
-	{
-		if (!element || element->Name() != "Layout"sv)
-		{
-			return false;
-		}
-
-		auto child = element->FirstChildElement();
-		if (not child)
-		{
-			return false;
-		}
-
-		bool useWebDefaults = false;
-		if (element->QueryBoolAttribute("useWebDefaults", &useWebDefaults) == tinyxml2::XML_SUCCESS)
-		{
-			m_impl->context().setUseWebDefaults(useWebDefaults);
-		}
-
-		// 読み込み処理
-		m_impl->context().loadBegin();
-		m_impl->load(nullptr, child);
-		m_impl->context().loadEnd();
-
-		return true;
+		return m_loader->load(m_root, document);
 	}
 
 	bool FlexLayout::reload()
@@ -128,15 +102,28 @@ namespace FlexLayout
 			reload();
 		}
 
-		// レイアウト計算
-		YGNodeCalculateLayout(
-			m_impl->yogaNode(),
-			width.value_or(YGUndefined),
-			height.value_or(YGUndefined),
-			YGDirectionLTR);
+		if (m_root)
+		{
+			// レイアウト計算
+			YGNodeCalculateLayout(
+				m_root->yogaNode(),
+				width.value_or(YGUndefined),
+				height.value_or(YGUndefined),
+				YGDirectionLTR);
 
-		// グローバル座標の更新
-		m_impl->setLayoutOffsetRecursive(offset);
+			// グローバル座標の更新
+			m_root->setLayoutOffsetRecursive(offset);
+		}
+	}
+
+	Optional<FlexBox> FlexLayout::document()
+	{
+		if (m_root)
+		{
+			return FlexBox{ m_root };
+		}
+
+		return none;
 	}
 
 	FlexLayout::~FlexLayout()

@@ -122,9 +122,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FlexLayout\detail\FlexBoxLoader.cpp" />
+    <ClCompile Include="FlexLayout\detail\LabelImpl.cpp" />
     <ClCompile Include="FlexLayout\detail\LabelProperty.cpp" />
     <ClCompile Include="FlexLayout\detail\LabelRenderer.cpp" />
+    <ClCompile Include="FlexLayout\detail\XMLLoader.cpp" />
     <ClCompile Include="FlexLayout\FlexBox.cpp" />
     <ClCompile Include="FlexLayout\detail\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
@@ -238,9 +239,11 @@
     <Xml Include="App\Layout.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FlexLayout\detail\LabelImpl.hpp" />
     <ClInclude Include="FlexLayout\detail\LabelProperty.hpp" />
     <ClInclude Include="FlexLayout\detail\LabelRenderer.hpp" />
     <ClInclude Include="FlexLayout\detail\LabelStatus.hpp" />
+    <ClInclude Include="FlexLayout\detail\XMLLoader.hpp" />
     <ClInclude Include="FlexLayout\FlexBox.hpp" />
     <ClInclude Include="FlexLayout\detail\Common.hpp" />
     <ClInclude Include="FlexLayout\detail\FlexBoxImpl.hpp" />

@@ -10,7 +10,7 @@ namespace FlexLayout::detail
 	{
 	public:
 
-		FlexBoxImpl(std::shared_ptr<TreeContext> context);
+		FlexBoxImpl(std::shared_ptr<TreeContext> context, const StringView tagName);
 
 	public:
 
@@ -22,20 +22,7 @@ namespace FlexLayout::detail
 
 		const StringView tagName() const { return m_tagName; }
 
-		void reset();
-
-		// -- XML読み込み--
-		// TODO: XML読み込み機能を切り出し
-
-		void load(FlexBoxImpl* parent, const tinyxml2::XMLElement* element);
-
-		void loadChildren(const tinyxml2::XMLElement* element);
-
-		void loadLabel(const tinyxml2::XMLElement* element);
-
 		// --プロパティ--
-
-		const HashTable<String, String>& properties() const { return m_properties; }
 
 		Optional<String> getProperty(const StringView key) const;
 
@@ -65,7 +52,7 @@ namespace FlexLayout::detail
 
 		const Array<std::shared_ptr<FlexBoxImpl>> children() const { return m_children; }
 
-		void setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children);
+		void setChildren(Array<std::shared_ptr<FlexBoxImpl>>& children);
 
 		void removeChildren();
 
@@ -84,14 +71,13 @@ namespace FlexLayout::detail
 
 		void resetLayoutOffset();
 
-		// --ラベル--
-		// TODO: ラベル機能を切り出し
-
-		const LabelStatus& labelStatus() const { return m_labelStatus; }
-
-		LabelRenderer* labelRenderer() const { return m_labelRenderer.get(); }
-
 	private:
+
+		// ノード情報
+
+		YGNodeRef m_node;
+
+		const String m_tagName;
 
 		// ツリー情報
 
@@ -99,11 +85,7 @@ namespace FlexLayout::detail
 
 		Array<std::shared_ptr<FlexBoxImpl>> m_children;
 
-		// ノード情報
-
-		YGNodeRef m_node;
-
-		String m_tagName;
+		// プロパティ
 
 		Optional<String> m_id;
 
@@ -113,12 +95,12 @@ namespace FlexLayout::detail
 
 		HashTable<String, String> m_additonalProperties;
 
-		void resetStyle();
+		// オフセット
 
-		void loadStyle(const String& css);
+		Optional<Vec2> m_layoutOffset;
 
 	public:
 
-		~FlexBoxImpl();
+		virtual ~FlexBoxImpl();
 	};
 }
