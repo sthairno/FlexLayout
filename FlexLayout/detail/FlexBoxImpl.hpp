@@ -53,6 +53,14 @@ namespace FlexLayout::detail
 
 		bool removeClass(const StringView className);
 
+		const HashTable<String, std::variant<String, float>>& style() const { return m_style; }
+
+		bool setStyle(const StringView styleName, const StringView value);
+
+		bool setStyle(const StringView styleName, const float value);
+
+		bool removeStyle(const StringView styleName);
+
 		// --ツリー関連--
 
 		const Array<std::shared_ptr<FlexBoxImpl>> children() const { return m_children; }
@@ -101,17 +109,9 @@ namespace FlexLayout::detail
 
 		Array<String> m_classes;
 
-		HashTable<String, String> m_properties;
+		HashTable<String, std::variant<String, float>> m_style;
 
-		Optional<Vec2> m_layoutOffset;
-
-		// ラベル
-
-		LabelProperty m_labelProperty;
-
-		LabelStatus m_labelStatus;
-
-		std::unique_ptr<LabelRenderer> m_labelRenderer;
+		HashTable<String, String> m_additonalProperties;
 
 		void resetStyle();
 

@@ -62,26 +62,75 @@ namespace FlexLayout::detail
 		return m_classes.size() != prevSize;
 	}
 
+	bool FlexBoxImpl::setStyle(const StringView styleName, const StringView value)
+	{
+		String key{ styleName };
+		if (key.trim().isEmpty())
+		{
+			return false;
+		}
+
+		m_style.emplace(key, value);
+	}
+
+	bool FlexBoxImpl::setStyle(const StringView styleName, const float value)
+	{
+		String key{ styleName };
+		if (key.trim().isEmpty())
+		{
+			return false;
+		}
+
+		m_style.emplace(key, value);
+	}
+
+	bool FlexBoxImpl::removeStyle(const StringView styleName)
+	{
+		if (const auto it = m_style.find(styleName);
+			it != m_style.end())
+		{
+			m_style.erase(it);
+			return true;
+		}
+
+		return false;
+	}
+
 	Optional<String> FlexBoxImpl::getProperty(const StringView key) const
 	{
-		if (const auto it = m_properties.find(key);
-			it != m_properties.end())
+		if (key == U"id")
 		{
-			return it->second;
+			return m_id;
+		}
+		else if (key == U"class")
+		{
+			return m_classes.join(U" ", U"", U"");
+		}
+		else if (key == U"style")
+		{
+			Array<std::pair<String, String>> tmp(Arg::reserve = m_style.size());
+
+			for (const auto& [key, value] : m_style)
+			{
+				if (std::holds_alternative<float>(value))
+				{
+					tmp.emplace_back(key, U"{}"_fmt(std::get<float>(value)));
 		}
 		else
 		{
-			return none;
+					tmp.emplace_back(key, std::get<String>(value));
 		}
 	}
 
-	void FlexBoxImpl::clearProperties()
+			return Util::DumpInlineCSS(tmp);
+		}
+		else if (const auto it = m_additonalProperties.find(key);
+			it != m_additonalProperties.end())
 	{
-		m_id.reset();
-		m_classes.clear();
-		m_properties.clear();
-		m_labelRenderer.reset();
-		resetStyle();
+			return it->second;
+	}
+
+		return none;
 	}
 
 	void FlexBoxImpl::setProperty(const StringView key, const StringView value)
@@ -108,10 +157,16 @@ namespace FlexLayout::detail
 		}
 		else if (key == U"style")
 		{
-			loadStyle(String{ value });
+			m_style.clear();
+			for (const auto& [key, value] : Util::ParseInlineCSS(String{ value }))
+			{
+				m_style.emplace(key, value);
+			}
 		}
-
-		m_properties[key] = value;
+		else
+		{
+			m_additonalProperties[key] = value;
+		}
 	}
 
 	void FlexBoxImpl::removeProperty(const StringView key)
@@ -126,8 +181,13 @@ namespace FlexLayout::detail
 		}
 		else if (key == U"style")
 		{
-			resetStyle();
+			m_style.clear();
 		}
+		else
+		{
+			m_additonalProperties.erase(key);
+		}
+	}
 
 		m_properties.erase(key);
 	}

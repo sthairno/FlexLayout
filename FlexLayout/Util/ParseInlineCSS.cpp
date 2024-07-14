@@ -14,3 +14,15 @@ Array<std::pair<String, String>> FlexLayout::Util::ParseInlineCSS(const String& 
 	}
 	return result;
 }
+
+String FlexLayout::Util::DumpInlineCSS(const Array<std::pair<String, String>>& list)
+{
+	String result;
+
+	for (const auto& [key, value] : list)
+	{
+		result.append(key).append(U":").append(value).append(U";");
+	}
+
+	return result;
+}
