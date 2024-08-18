@@ -114,6 +114,9 @@
     <ClCompile Include="FlexLayout\detail\LabelImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FlexLayout\Style\StyleValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\8.png">
@@ -434,6 +437,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\detail\LabelImpl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\LengthUnit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleValue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\Enum\Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
