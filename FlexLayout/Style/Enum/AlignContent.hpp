@@ -20,6 +20,16 @@ namespace FlexLayout::Style
 		struct style_enum_traits<AlignContent>
 		{
 			static constexpr StyleEnumTypeID id = StyleEnumTypeID::AlignContent;
+
+			static constexpr std::array<StringView, 7> names{
+				U"center",
+				U"start",
+				U"end",
+				U"space-between",
+				U"space-around",
+				U"space-evenly",
+				U"stretch",
+			};
 		};
 	}
 }

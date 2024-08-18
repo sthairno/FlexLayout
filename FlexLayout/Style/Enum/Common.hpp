@@ -15,6 +15,8 @@ namespace FlexLayout::Style
 		struct style_enum_traits
 		{
 			static constexpr StyleEnumTypeID id = StyleEnumTypeID::Unknown;
+
+			static constexpr std::array<StringView, 0> names;
 		};
 	}
 }
