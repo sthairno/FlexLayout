@@ -4,9 +4,9 @@
 
 void Main()
 {
-	Console << U"Test 1:";
-
 	// テスト：シリアライズ単体
+
+	Console << U"Test 1:";
 
 	Array<FlexLayout::Style::StyleValue> values{
 		FlexLayout::Style::StyleValue(),
@@ -27,9 +27,9 @@ void Main()
 		Console << value;
 	}
 
-	Console << U"\nTest 2:";
-
 	// テスト：シリアライズ->デシリアライズ
+
+	Console << U"\nTest 2:";
 
 	Array<FlexLayout::Style::StyleValue> restoredValues;
 
@@ -52,6 +52,27 @@ void Main()
 		Console.write(U"|");
 		Console << value;
 	}
+
+	// テスト：パーサーのフォールバック
+
+	Console << U"\nTest 3:";
+
+	String input = U"123.0";
+	Console.write(U"|");
+	Console << FlexLayout::Style::ParseValue(
+		input,
+		FlexLayout::Style::StyleValue::Type::Length
+	);
+	Console.write(U"|");
+	Console << FlexLayout::Style::ParseValue(
+		input,
+		{ FlexLayout::Style::StyleValue::Type::Ratio, FlexLayout::Style::StyleValue::Type::Length }
+	);
+	Console.write(U"|");
+	Console << FlexLayout::Style::ParseValue(
+		input,
+		{ FlexLayout::Style::StyleValue::Type::Auto, FlexLayout::Style::StyleValue::Type::Ratio, FlexLayout::Style::StyleValue::Type::Length }
+	);
 
 	Console.readLine<String>();
 }
