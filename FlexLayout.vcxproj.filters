@@ -64,14 +64,8 @@
     <Filter Include="Source Files\FlexLayout">
       <UniqueIdentifier>{f97cd975-f406-41a2-aaa3-ac7784fc71b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\FlexLayout\detail">
-      <UniqueIdentifier>{6e8c1e54-c176-427b-a365-efe2398bf51f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\FlexLayout">
       <UniqueIdentifier>{a3b33c75-aa23-403f-a86e-fa4d1910ff39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\FlexLayout\detail">
-      <UniqueIdentifier>{42a083c6-6f40-4caf-ac9a-fbfff363feca}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\FlexLayout\Util">
       <UniqueIdentifier>{d45e3f36-342b-4f72-9df9-95268a8b6234}</UniqueIdentifier>
@@ -79,22 +73,37 @@
     <Filter Include="Source Files\FlexLayout\Util">
       <UniqueIdentifier>{03412b8a-5953-4f3c-95d6-8599fff4e795}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\FlexLayout\Internal">
+      <UniqueIdentifier>{42a083c6-6f40-4caf-ac9a-fbfff363feca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FlexLayout\Style">
+      <UniqueIdentifier>{b48f9a59-ad06-45ca-a0e2-5d17abef024d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FlexLayout\Style\Enum">
+      <UniqueIdentifier>{40b96a73-863b-4399-862e-1694d1628685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FlexLayout\Internal">
+      <UniqueIdentifier>{6e8c1e54-c176-427b-a365-efe2398bf51f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FlexLayout\Style">
+      <UniqueIdentifier>{cf33f6e4-39cd-4eb0-9db8-270aa0b324cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\FlexBoxImpl.cpp">
-      <Filter>Source Files\FlexLayout\detail</Filter>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\LabelProperty.cpp">
-      <Filter>Source Files\FlexLayout\detail</Filter>
+    <ClCompile Include="FlexLayout\Internal\LabelProperty.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\LabelRenderer.cpp">
-      <Filter>Source Files\FlexLayout\detail</Filter>
+    <ClCompile Include="FlexLayout\Internal\LabelRenderer.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\TreeContext.cpp">
-      <Filter>Source Files\FlexLayout\detail</Filter>
+    <ClCompile Include="FlexLayout\Internal\TreeContext.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Util\LoadStyleToYogaNode.cpp">
       <Filter>Source Files\FlexLayout\Util</Filter>
@@ -108,23 +117,23 @@
     <ClCompile Include="FlexLayout\FlexBox.cpp">
       <Filter>Source Files\FlexLayout</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\XMLLoader.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\detail\LabelImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Style\StyleValue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Style\StyleEnums.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Style\LengthUnit.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\FlexLayout\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Style\StyleEnums.cpp">
+      <Filter>Source Files\FlexLayout\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Style\StyleValue.cpp">
+      <Filter>Source Files\FlexLayout\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp">
+      <Filter>Source Files\FlexLayout\Style</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -412,23 +421,23 @@
     <Xml Include="App\Layout.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FlexLayout\detail\Common.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\Common.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\FlexBoxImpl.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\FlexBoxImpl.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\LabelProperty.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\LabelProperty.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\LabelRenderer.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\LabelRenderer.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\LabelStatus.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\LabelStatus.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\TreeContext.hpp">
-      <Filter>Header Files\FlexLayout\detail</Filter>
+    <ClInclude Include="FlexLayout\Internal\TreeContext.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Util\ParseInlineCSS.hpp">
       <Filter>Header Files\FlexLayout\Util</Filter>
@@ -442,32 +451,32 @@
     <ClInclude Include="FlexLayout\FlexLayout.hpp">
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\XMLLoader.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\detail\LabelImpl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\LengthUnit.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\StyleValue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\Enum\Common.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FlexLayout\Internal\XMLLoader.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Common.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp">
+      <Filter>Header Files\FlexLayout\Style\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\Enum\Common.hpp">
+      <Filter>Header Files\FlexLayout\Style\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
+      <Filter>Header Files\FlexLayout\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\LengthUnit.hpp">
+      <Filter>Header Files\FlexLayout\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleValue.hpp">
+      <Filter>Header Files\FlexLayout\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp">
+      <Filter>Header Files\FlexLayout\Style</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

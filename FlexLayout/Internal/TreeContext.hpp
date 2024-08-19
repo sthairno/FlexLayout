@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include <yoga/Yoga.h>
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	class FlexBoxImpl;
 

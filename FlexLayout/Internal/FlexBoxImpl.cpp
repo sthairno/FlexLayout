@@ -2,7 +2,7 @@
 #include "../Util/ParseInlineCSS.hpp"
 #include "../Util/LoadStyleToYogaNode.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	FlexBoxImpl::FlexBoxImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
 		: m_node{ context->createNode() }

@@ -1,6 +1,6 @@
 ﻿#include "LabelRenderer.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	void LabelRenderer::setConstraints(double width)
 	{

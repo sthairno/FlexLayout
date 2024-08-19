@@ -4,7 +4,7 @@
 #include "LabelStatus.hpp"
 #include "LabelRenderer.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	class FlexBoxImpl : public std::enable_shared_from_this<FlexBoxImpl>
 	{

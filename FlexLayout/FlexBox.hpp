@@ -3,7 +3,7 @@
 
 namespace FlexLayout
 {
-	namespace detail
+	namespace Internal
 	{
 		class FlexBoxImpl;
 	}
@@ -12,7 +12,7 @@ namespace FlexLayout
 	{
 	public:
 
-		FlexBox(std::shared_ptr<detail::FlexBoxImpl> impl)
+		FlexBox(std::shared_ptr<Internal::FlexBoxImpl> impl)
 			: m_impl(std::move(impl)) { }
 
 	public:
@@ -39,6 +39,6 @@ namespace FlexLayout
 
 	protected:
 
-		std::shared_ptr<detail::FlexBoxImpl> m_impl;
+		std::shared_ptr<Internal::FlexBoxImpl> m_impl;
 	};
 }

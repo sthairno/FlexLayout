@@ -1,6 +1,6 @@
 ﻿#include "LabelProperty.hpp"
 
-bool FlexLayout::detail::LoadStyleToLabelProperty(LabelProperty& prop, const StringView key, const StringView value)
+bool FlexLayout::Internal::LoadStyleToLabelProperty(LabelProperty& prop, const StringView key, const StringView value)
 {
 	if (key == U"-siv3d-font")
 	{

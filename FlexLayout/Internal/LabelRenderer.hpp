@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "LabelStatus.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	class LabelRenderer
 	{

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "LabelProperty.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	struct LabelStatus
 	{

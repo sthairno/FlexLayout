@@ -1,7 +1,7 @@
 ﻿#include "TreeContext.hpp"
 #include "FlexBoxImpl.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	TreeContext::TreeContext()
 		: m_yogaConfig{ YGConfigNew() }

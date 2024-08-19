@@ -122,14 +122,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FlexLayout\detail\LabelImpl.cpp" />
-    <ClCompile Include="FlexLayout\detail\LabelProperty.cpp" />
-    <ClCompile Include="FlexLayout\detail\LabelRenderer.cpp" />
-    <ClCompile Include="FlexLayout\detail\XMLLoader.cpp" />
+    <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\LabelProperty.cpp" />
+    <ClCompile Include="FlexLayout\Internal\LabelRenderer.cpp" />
+    <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="FlexLayout\FlexBox.cpp" />
-    <ClCompile Include="FlexLayout\detail\FlexBoxImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
-    <ClCompile Include="FlexLayout\detail\TreeContext.cpp" />
+    <ClCompile Include="FlexLayout\Internal\TreeContext.cpp" />
     <ClCompile Include="FlexLayout\Style\LengthUnit.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValue.cpp" />
@@ -244,16 +244,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlexLayout\Common.hpp" />
-    <ClInclude Include="FlexLayout\detail\LabelImpl.hpp" />
-    <ClInclude Include="FlexLayout\detail\LabelProperty.hpp" />
-    <ClInclude Include="FlexLayout\detail\LabelRenderer.hpp" />
-    <ClInclude Include="FlexLayout\detail\LabelStatus.hpp" />
-    <ClInclude Include="FlexLayout\detail\XMLLoader.hpp" />
+    <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp" />
+    <ClInclude Include="FlexLayout\Internal\LabelProperty.hpp" />
+    <ClInclude Include="FlexLayout\Internal\LabelRenderer.hpp" />
+    <ClInclude Include="FlexLayout\Internal\LabelStatus.hpp" />
+    <ClInclude Include="FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="FlexLayout\FlexBox.hpp" />
-    <ClInclude Include="FlexLayout\detail\Common.hpp" />
-    <ClInclude Include="FlexLayout\detail\FlexBoxImpl.hpp" />
+    <ClInclude Include="FlexLayout\Internal\Common.hpp" />
+    <ClInclude Include="FlexLayout\Internal\FlexBoxImpl.hpp" />
     <ClInclude Include="FlexLayout\FlexLayout.hpp" />
-    <ClInclude Include="FlexLayout\detail\TreeContext.hpp" />
+    <ClInclude Include="FlexLayout\Internal\TreeContext.hpp" />
     <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp" />
     <ClInclude Include="FlexLayout\Style\Enum\Common.hpp" />
     <ClInclude Include="FlexLayout\Style\LengthUnit.hpp" />

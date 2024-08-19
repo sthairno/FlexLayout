@@ -1,5 +1,5 @@
 ﻿#include "FlexBox.hpp"
-#include "detail/FlexBoxImpl.hpp"
+#include "Internal/FlexBoxImpl.hpp"
 
 namespace FlexLayout
 {
@@ -95,7 +95,7 @@ namespace FlexLayout
 
 	Array<FlexBox> FlexBox::getElementsByClassName(StringView className) const
 	{
-		Array<std::shared_ptr<detail::FlexBoxImpl>> list;
+		Array<std::shared_ptr<Internal::FlexBoxImpl>> list;
 		m_impl->lookupNodesByClassName(list, String{ className }, Largest<size_t>);
 		return list.map([](const auto& node) { return FlexBox{ node }; });
 	}

@@ -1,7 +1,7 @@
 ﻿#include "XMLLoader.hpp"
 #include "LabelImpl.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	bool XMLLoader::load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document)
 	{

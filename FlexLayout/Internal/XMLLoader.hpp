@@ -2,7 +2,7 @@
 #include "Common.hpp"
 #include "FlexBoxImpl.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	class XMLLoader
 	{

@@ -10,7 +10,7 @@ namespace tinyxml2
 
 namespace FlexLayout
 {
-	namespace detail
+	namespace Internal
 	{
 		class XMLLoader;
 	}
@@ -122,9 +122,9 @@ namespace FlexLayout
 
 		s3d::Stopwatch m_reloadTimer;
 
-		std::shared_ptr<detail::FlexBoxImpl> m_root;
+		std::shared_ptr<Internal::FlexBoxImpl> m_root;
 
-		std::unique_ptr<detail::XMLLoader> m_loader;
+		std::unique_ptr<Internal::XMLLoader> m_loader;
 
 	public:
 

@@ -1,6 +1,6 @@
 ﻿#include "LabelImpl.hpp"
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	static YGSize MeasureLabelCallback(
 		YGNodeConstRef node,

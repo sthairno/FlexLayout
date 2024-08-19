@@ -1,11 +1,11 @@
 ﻿#include "FlexLayout.hpp"
-#include "detail/FlexBoxImpl.hpp"
-#include "detail/XMLLoader.hpp"
+#include "Internal/FlexBoxImpl.hpp"
+#include "Internal/XMLLoader.hpp"
 
 namespace FlexLayout
 {
 	FlexLayout::FlexLayout()
-		: m_loader(std::make_unique<detail::XMLLoader>(std::make_shared<detail::TreeContext>()))
+		: m_loader(std::make_unique<Internal::XMLLoader>(std::make_shared<Internal::TreeContext>()))
 	{ }
 
 	bool FlexLayout::load(const char32_t* path, EnableHotReload enableHotReload)

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <Siv3D.hpp>
 
-namespace FlexLayout::detail
+namespace FlexLayout::Internal
 {
 	enum class FontScaleType
 	{
