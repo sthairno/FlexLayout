@@ -9,17 +9,16 @@ namespace FlexLayout::detail
 		float height,
 		YGMeasureMode heightMode)
 	{
-		auto& impl = *reinterpret_cast<FlexBoxImpl*>(YGNodeGetContext(node));
-		auto renderer = impl.labelRenderer();
+		//auto& impl = *reinterpret_cast<FlexBoxImpl*>(YGNodeGetContext(node));
+		//auto renderer = impl.labelRenderer();
 
-		assert(renderer);
+		//assert(renderer);
 
-		renderer->setConstraints(widthMode != YGMeasureModeUndefined ? width : Inf<double>);
-		auto measuredSize = renderer->size();
+		//renderer->setConstraints(widthMode != YGMeasureModeUndefined ? width : Inf<double>);
+		//auto measuredSize = renderer->size();
 
 		YGSize result{
-			static_cast<float>(measuredSize.x),
-			static_cast<float>(measuredSize.y)
+			0, 0
 		};
 
 		switch (widthMode)
@@ -51,24 +50,26 @@ namespace FlexLayout::detail
 
 	static float BaselineLabelCallback(YGNodeConstRef node, float, float)
 	{
-		auto& impl = *reinterpret_cast<FlexBoxImpl*>(YGNodeGetContext(node));
-		auto renderer = impl.labelRenderer();
+		//auto& impl = *reinterpret_cast<FlexBoxImpl*>(YGNodeGetContext(node));
+		//auto renderer = impl.labelRenderer();
 
-		assert(renderer);
+		//assert(renderer);
 
-		return static_cast<float>(renderer->baseline());
+		//return static_cast<float>(renderer->baseline());
+		
+		return 0;
 	}
 
 	LabelImpl::LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
 		: FlexBoxImpl{ context, tagName }
 	{
-		YGNodeSetMeasureFunc(yogaNode(), MeasureLabelCallback);
-		YGNodeSetBaselineFunc(yogaNode(), BaselineLabelCallback);
+		// YGNodeSetMeasureFunc(yogaNode(), MeasureLabelCallback);
+		// YGNodeSetBaselineFunc(yogaNode(), BaselineLabelCallback);
 	}
 
 	void LabelImpl::setText(const StringView text)
 	{
-		m_text = text;
-		YGNodeMarkDirty(yogaNode());
+		// m_text = text;
+		// YGNodeMarkDirty(yogaNode());
 	}
 }

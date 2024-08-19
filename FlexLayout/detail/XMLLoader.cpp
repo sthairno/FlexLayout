@@ -61,7 +61,7 @@ namespace FlexLayout::detail
 			return nullptr;
 		}
 
-		if (id)
+		if (node->id())
 		{
 			pushNode(node);
 		}

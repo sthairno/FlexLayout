@@ -85,12 +85,7 @@ namespace FlexLayout
 
 	void FlexBox::draw(const ColorF& color) const
 	{
-		auto renderer = m_impl->labelRenderer();
-		auto rect = contentAreaRect();
-		if (renderer && rect)
-		{
-			renderer->draw(*rect, color);
-		}
+
 	}
 
 	Array<FlexBox> FlexBox::children() const
