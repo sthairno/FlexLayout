@@ -466,5 +466,8 @@
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FlexLayout\Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

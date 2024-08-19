@@ -1,4 +1,4 @@
-﻿#include "../detail/Common.hpp"
+﻿#include "../Common.hpp"
 #include "StyleValue.hpp"
 
 namespace FlexLayout::Style

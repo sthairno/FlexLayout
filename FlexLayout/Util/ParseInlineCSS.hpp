@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Siv3D.hpp>
+#include "../Common.hpp"
 
 namespace FlexLayout::Util
 {

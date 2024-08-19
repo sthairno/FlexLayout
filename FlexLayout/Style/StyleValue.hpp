@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../detail/Common.hpp"
+#include "../Common.hpp"
 #include "LengthUnit.hpp"
 #include "StyleEnums.hpp"
 
