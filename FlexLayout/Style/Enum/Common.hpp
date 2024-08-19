@@ -1,22 +1,11 @@
 ﻿#pragma once
 #include "../../detail/Common.hpp"
 
-namespace FlexLayout::Style
+namespace FlexLayout::Style::detail
 {
-	enum class StyleEnumTypeID : int8_t
+	template<typename EnumType>
+	struct style_enum_traits
 	{
-		Unknown = 0,
-		AlignContent,
+		static constexpr std::array<StringView, 0> names{ };
 	};
-
-	namespace detail
-	{
-		template<typename EnumType>
-		struct style_enum_traits
-		{
-			static constexpr StyleEnumTypeID id = StyleEnumTypeID::Unknown;
-
-			static constexpr std::array<StringView, 0> names;
-		};
-	}
 }

@@ -1,5 +1,6 @@
 ﻿#include <Siv3D.hpp>
 #include "FlexLayout/FlexLayout.hpp"
+#include "FlexLayout/Style/StyleValue.hpp"
 
 void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
 {
@@ -28,6 +29,17 @@ void Main()
 
 	// idが指定されている要素はホットリロードしても参照が保持されます
 	auto buttonBox = layout.document()->getElementById(U"button");
+
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue());
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::None());
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Auto());
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Integer(100));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Enum(FlexLayout::Style::AlignContent::SpaceBetween));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Ratio(0.5));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Ratio(1, 3));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Percentage(80));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Number(123));
+	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Length(456, FlexLayout::Style::LengthUnit::Pixel));
 
 	while (System::Update())
 	{

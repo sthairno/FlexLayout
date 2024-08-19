@@ -11,7 +11,8 @@ namespace FlexLayout::Style
 
 		enum class Type : int8_t
 		{
-			None = 0,
+			Unspecified = 0,
+			None,
 			Auto,
 			Integer,
 			Enum,
@@ -25,14 +26,6 @@ namespace FlexLayout::Style
 
 		StyleValue() = default;
 
-		StyleValue(const StyleValue&) = default;
-
-		StyleValue& operator=(const StyleValue&) = default;
-
-		StyleValue(StyleValue&&) = default;
-
-		StyleValue& operator=(StyleValue&&) = default;
-
 		bool operator==(const StyleValue& other) const noexcept;
 
 		bool operator!=(const StyleValue& other) const noexcept
@@ -42,8 +35,10 @@ namespace FlexLayout::Style
 
 		constexpr explicit operator bool() const noexcept
 		{
-			return m_valueType != Type::None;
+			return m_valueType != Type::Unspecified;
 		}
+
+		friend void Formatter(FormatData& formatData, const StyleValue& value);
 
 	public:
 
@@ -52,15 +47,9 @@ namespace FlexLayout::Style
 		template<typename EnumType>
 		Optional<EnumType> getEnumValue() const noexcept
 		{
-			static_assert(std::is_nothrow_convertible_v<std::underlying_type_t<EnumType>, int32_t>);
-			using traits = detail::style_enum_traits<EnumType>;
+			auto id = detail::style_enum_id_from_type<EnumType>::value;
 
-			if (m_valueType != Type::Enum)
-			{
-				return none;
-			}
-
-			if (m_enumTypeId != StyleEnumTypeID::Unknown && m_enumTypeId != traits::id)
+			if (m_valueType != Type::Enum || m_enumTypeId != id)
 			{
 				return none;
 			}
@@ -102,7 +91,11 @@ namespace FlexLayout::Style
 
 		float getFloatValueUnchecked() const noexcept { return m_floatValue; }
 
+		EnumTypeId enumTypeId() const noexcept { return m_enumTypeId; }
+
 		LengthUnit lengthUnit() const noexcept { return m_lengthUnit; }
+
+		String toString() const;
 
 	public:
 
@@ -124,12 +117,10 @@ namespace FlexLayout::Style
 		template<class EnumType>
 		inline static StyleValue Enum(EnumType value)
 		{
-			static_assert(std::is_nothrow_convertible_v<std::underlying_type_t<EnumType>, int32_t>);
-
 			return StyleValue{
 				Type::Enum,
-				static_cast<int32_t>(static_cast<std::underlying_type_t<EnumType>>(value)),
-				detail::style_enum_traits<EnumType>::id
+				static_cast<int32_t>(value),
+				detail::style_enum_id_from_type<EnumType>::value
 			};
 		}
 
@@ -164,18 +155,25 @@ namespace FlexLayout::Style
 			return StyleValue{ Type::Length, length, unit };
 		}
 
+		static StyleValue Parse(StringView str, Array<Type> acceptedType = { Type::Unspecified });
+
+		inline static StyleValue Parse(StringView str, Type acceptedType = Type::Unspecified)
+		{
+			return Parse(str, Array<Type>{ acceptedType });
+		}
+
 	private:
 
 		union
 		{
 			float m_floatValue;
 
-			int32_t m_intValue;
+			std::int32_t m_intValue;
 		};
 
-		Type m_valueType = Type::None;
+		Type m_valueType = Type::Unspecified;
 
-		StyleEnumTypeID m_enumTypeId = StyleEnumTypeID::Unknown;
+		EnumTypeId m_enumTypeId = -1;
 
 		LengthUnit m_lengthUnit = LengthUnit::Unspecified;
 
@@ -196,9 +194,48 @@ namespace FlexLayout::Style
 			: m_valueType(type)
 			, m_intValue(value) { }
 
-		explicit StyleValue(Type type, int32_t value, StyleEnumTypeID enumid) noexcept
+		explicit StyleValue(Type type, int32_t value, std::int8_t enumid) noexcept
 			: m_valueType(type)
 			, m_intValue(value)
 			, m_enumTypeId(enumid) { }
 	};
 }
+
+template <>
+struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
+{
+	std::u32string tag;
+
+	auto parse(fmt::basic_format_parse_context<s3d::char32>& ctx)
+	{
+		return s3d::detail::GetFormatTag(tag, ctx);
+	}
+
+	template <typename FormatContext>
+	auto format(const FlexLayout::Style::StyleValue& value, FormatContext& ctx)
+	{
+		using namespace FlexLayout::Style;
+		
+		switch (value.type())
+		{
+		case StyleValue::Type::Unspecified:
+			return format_to(ctx.out(), U"");
+		case StyleValue::Type::None:
+			return format_to(ctx.out(), U"none");
+		case StyleValue::Type::Auto:
+			return format_to(ctx.out(), U"auto");
+		case StyleValue::Type::Integer:
+			return format_to(ctx.out(), U"{}", value.getIntValueUnchecked());
+		case StyleValue::Type::Enum:
+			return format_to(ctx.out(), U"{}", FlexLayout::Style::detail::GetValueName(value.enumTypeId(), value.getIntValueUnchecked()));
+		case StyleValue::Type::Ratio:
+			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked());
+		case StyleValue::Type::Percentage:
+			return format_to(ctx.out(), U"{}%", value.getFloatValueUnchecked());
+		case StyleValue::Type::Number:
+			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked());
+		case StyleValue::Type::Length:
+			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked()); // TODO: unit
+		}
+	}
+};

@@ -130,6 +130,7 @@
     <ClCompile Include="FlexLayout\detail\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
     <ClCompile Include="FlexLayout\detail\TreeContext.cpp" />
+    <ClCompile Include="FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="FlexLayout\Util\LoadStyleToYogaNode.cpp" />
     <ClCompile Include="FlexLayout\Util\ParseInlineCSS.cpp" />

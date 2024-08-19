@@ -22,4 +22,14 @@ namespace FlexLayout::Style
 
 		return false;
 	}
+
+	void Formatter(FormatData& formatData, const StyleValue& value)
+	{
+		formatData.string.append(value.toString());
+	}
+
+	String StyleValue::toString() const
+	{
+		return fmt::format(U"{}", *this);
+	}
 }

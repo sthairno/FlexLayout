@@ -64,7 +64,7 @@ namespace FlexLayout::detail
 			return false;
 		}
 
-		m_style.emplace(key, value);
+		//m_style.emplace(key, value);
 	}
 
 	bool FlexBoxImpl::setStyle(const StringView styleName, const float value)
@@ -75,7 +75,7 @@ namespace FlexLayout::detail
 			return false;
 		}
 
-		m_style.emplace(key, value);
+		//m_style.emplace(key, value);
 	}
 
 	bool FlexBoxImpl::removeStyle(const StringView styleName)

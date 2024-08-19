@@ -19,8 +19,6 @@ namespace FlexLayout::Style
 		template<>
 		struct style_enum_traits<AlignContent>
 		{
-			static constexpr StyleEnumTypeID id = StyleEnumTypeID::AlignContent;
-
 			static constexpr std::array<StringView, 7> names{
 				U"center",
 				U"start",
