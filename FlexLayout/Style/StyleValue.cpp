@@ -25,11 +25,11 @@ namespace FlexLayout::Style
 
 	void Formatter(FormatData& formatData, const StyleValue& value)
 	{
-		formatData.string.append(value.toString());
+		formatData.string.append(U"{}"_fmt(value));
 	}
 
 	String StyleValue::toString() const
 	{
-		return fmt::format(U"{}", *this);
+		return U"{}"_fmt(*this);
 	}
 }

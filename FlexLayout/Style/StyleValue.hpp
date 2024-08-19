@@ -5,6 +5,11 @@
 
 namespace FlexLayout::Style
 {
+	namespace detail
+	{
+		struct Parser;
+	}
+
 	class StyleValue
 	{
 	public:
@@ -155,18 +160,11 @@ namespace FlexLayout::Style
 			return StyleValue{ Type::Length, length, unit };
 		}
 
-		static StyleValue Parse(StringView str, Array<Type> acceptedType = { Type::Unspecified });
-
-		inline static StyleValue Parse(StringView str, Type acceptedType = Type::Unspecified)
-		{
-			return Parse(str, Array<Type>{ acceptedType });
-		}
-
 	private:
 
 		union
 		{
-			float m_floatValue;
+			float m_floatValue = 0;
 
 			std::int32_t m_intValue;
 		};
@@ -194,10 +192,12 @@ namespace FlexLayout::Style
 			: m_valueType(type)
 			, m_intValue(value) { }
 
-		explicit StyleValue(Type type, int32_t value, std::int8_t enumid) noexcept
+		explicit StyleValue(Type type, int32_t value, EnumTypeId enumid) noexcept
 			: m_valueType(type)
 			, m_intValue(value)
 			, m_enumTypeId(enumid) { }
+
+		friend struct detail::Parser;
 	};
 }
 
@@ -218,8 +218,6 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
 		
 		switch (value.type())
 		{
-		case StyleValue::Type::Unspecified:
-			return format_to(ctx.out(), U"");
 		case StyleValue::Type::None:
 			return format_to(ctx.out(), U"none");
 		case StyleValue::Type::Auto:
@@ -235,7 +233,9 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
 		case StyleValue::Type::Number:
 			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked());
 		case StyleValue::Type::Length:
-			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked()); // TODO: unit
+			return format_to(ctx.out(), U"{}{}", value.getFloatValueUnchecked(), value.lengthUnit());
 		}
+
+		return format_to(ctx.out(), U"");
 	}
 };

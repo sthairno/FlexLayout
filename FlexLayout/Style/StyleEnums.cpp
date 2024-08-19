@@ -29,7 +29,7 @@ namespace FlexLayout::Style::detail
 				enumId, std::variant_size_v<style_enum_variant> -1
 			));
 		}
-
+		
 		return SearchRecursive<0>(enumId);
 	}
 

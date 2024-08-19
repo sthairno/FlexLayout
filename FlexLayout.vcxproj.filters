@@ -120,6 +120,12 @@
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Style\LengthUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\8.png">
@@ -455,6 +461,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

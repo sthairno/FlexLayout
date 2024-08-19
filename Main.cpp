@@ -1,61 +1,57 @@
 ﻿#include <Siv3D.hpp>
-#include "FlexLayout/FlexLayout.hpp"
 #include "FlexLayout/Style/StyleValue.hpp"
-
-void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
-{
-	const auto rect = box.marginAreaRect();
-	const Color color = HSV{ depth * 40, 0.8, 0.9 }.toColorF();
-
-	// 四角形を描画
-	if (rect)
-	{
-		rect->draw(color).drawFrame(1, Palette::Gray);
-	}
-
-	// テキストを描画
-	box.draw(Palette::Black);
-
-	for (const auto& child : box.children())
-	{
-		DrawFlexBox(child, depth + 1);
-	}
-}
+#include "FlexLayout/Style/StyleValueParser.hpp"
 
 void Main()
 {
-	// レイアウト本体
-	FlexLayout::FlexLayout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
+	Console << U"Test 1:";
 
-	// idが指定されている要素はホットリロードしても参照が保持されます
-	auto buttonBox = layout.document()->getElementById(U"button");
+	// テスト：シリアライズ単体
 
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue());
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::None());
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Auto());
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Integer(100));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Enum(FlexLayout::Style::AlignContent::SpaceBetween));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Ratio(0.5));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Ratio(1, 3));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Percentage(80));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Number(123));
-	Console << U"{}"_fmt(FlexLayout::Style::StyleValue::Length(456, FlexLayout::Style::LengthUnit::Pixel));
+	Array<FlexLayout::Style::StyleValue> values{
+		FlexLayout::Style::StyleValue(),
+		FlexLayout::Style::StyleValue::None(),
+		FlexLayout::Style::StyleValue::Auto(),
+		FlexLayout::Style::StyleValue::Integer(100),
+		FlexLayout::Style::StyleValue::Enum(FlexLayout::Style::AlignContent::SpaceBetween),
+		FlexLayout::Style::StyleValue::Ratio(0.5),
+		FlexLayout::Style::StyleValue::Ratio(1, 3),
+		FlexLayout::Style::StyleValue::Percentage(80),
+		FlexLayout::Style::StyleValue::Number(123),
+		FlexLayout::Style::StyleValue::Length(456, FlexLayout::Style::LengthUnit::Pixel)
+	};
 
-	while (System::Update())
+	for (const auto value : values)
 	{
-		// レイアウトの更新
-		layout.update(Scene::Rect());
+		Console.write(U"|");
+		Console << value;
+	}
 
-		// ツリーの四角形を描画
-		DrawFlexBox(*layout.document());
+	Console << U"\nTest 2:";
 
-		// Box[id="button"]に合わせてボタンを描画
-		if (buttonBox)
+	// テスト：シリアライズ->デシリアライズ
+
+	Array<FlexLayout::Style::StyleValue> restoredValues;
+
+	for (const auto value : values | std::views::drop(1))
+	{
+		if (value.type() == FlexLayout::Style::StyleValue::Type::Enum)
 		{
-			if (auto rect = buttonBox->contentAreaRect())
-			{
-				SimpleGUI::Button(U"Hello, Yoga!", rect->pos, rect->w);
-			}
+			restoredValues.push_back(FlexLayout::Style::ParseValue(value.toString(), value.enumTypeId()));
+			continue;
+		}
+		else
+		{
+			restoredValues.push_back(FlexLayout::Style::ParseValue(value.toString(), value.type()));
+			continue;
 		}
 	}
+
+	for (const auto value : restoredValues)
+	{
+		Console.write(U"|");
+		Console << value;
+	}
+
+	Console.readLine<String>();
 }

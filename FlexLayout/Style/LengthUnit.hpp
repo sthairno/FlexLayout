@@ -27,4 +27,26 @@ namespace FlexLayout::Style
 		/// @brief line-heightの計算値 | The computed value of the line-height
 		Lh
 	};
+
+	void Formatter(FormatData& formatData, const LengthUnit& value);
 }
+
+template <>
+struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::LengthUnit, s3d::char32>
+{
+	std::u32string tag;
+
+	auto parse(fmt::basic_format_parse_context<s3d::char32>& ctx)
+	{
+		return s3d::detail::GetFormatTag(tag, ctx);
+	}
+
+	template <typename FormatContext>
+	auto format(const FlexLayout::Style::LengthUnit& value, FormatContext& ctx)
+	{
+		constexpr static std::u32string_view names[] = {
+			U"px", U"ch", U"em", U"ex", U"ic", U"lh"
+		};
+		return format_to(ctx.out(), names[static_cast<int8_t>(value)]);
+	}
+};
