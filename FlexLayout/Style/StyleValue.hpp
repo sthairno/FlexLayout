@@ -7,7 +7,7 @@ namespace FlexLayout::Style
 {
 	namespace detail
 	{
-		struct Parser;
+		struct StyleValueParser;
 	}
 
 	class StyleValue
@@ -197,7 +197,7 @@ namespace FlexLayout::Style
 			, m_intValue(value)
 			, m_enumTypeId(enumid) { }
 
-		friend struct detail::Parser;
+		friend struct detail::StyleValueParser;
 	};
 }
 

@@ -4,7 +4,7 @@ namespace FlexLayout::Style
 {
 	using Type = StyleValue::Type;
 
-	struct detail::Parser
+	struct detail::StyleValueParser
 	{
 		static StyleValue ParseEnum(const String& str, EnumTypeId enumId)
 		{
@@ -40,7 +40,7 @@ namespace FlexLayout::Style
 					? StyleValue{ Type::Ratio, width }
 					: StyleValue{ };
 			}
-
+			
 			char32 maybeSlash;
 			if (not(stream >> std::ws >> maybeSlash) || maybeSlash != U'/')
 			{
@@ -204,8 +204,94 @@ namespace FlexLayout::Style
 
 			return { };
 		}
+
+		static StyleValue Parse(std::int32_t value, detail::StyleValueMatchRule rule)
+		{
+			switch (rule.type)
+			{
+			case Type::Integer:
+				return StyleValue{ Type::Integer, value };
+			case Type::Ratio:
+				if (value < 0)
+				{
+					break;
+				}
+				return StyleValue{ Type::Ratio, static_cast<float>(value) };
+			case Type::Percentage:
+				return StyleValue{ Type::Percentage, static_cast<float>(value) };
+			case Type::Number:
+				return StyleValue{ Type::Number, static_cast<float>(value) };
+			case Type::Length:
+				if (value < 0)
+				{
+					break;
+				}
+				return StyleValue{ Type::Length, static_cast<float>(value) };
+			}
+
+			return { };
+		}
+		
+		static StyleValue Parse(float value, detail::StyleValueMatchRule rule)
+		{
+			switch (rule.type)
+			{
+			case Type::Ratio:
+				if (not std::isfinite(value) || value < 0.0F)
+				{
+					break;
+				}
+				return StyleValue{ Type::Ratio, value };
+			case Type::Percentage:
+				if (not std::isfinite(value))
+				{
+					break;
+				}
+				return StyleValue{ Type::Percentage, value };
+			case Type::Number:
+				if (not std::isfinite(value))
+				{
+					break;
+				}
+				return StyleValue{ Type::Number, value };
+			case Type::Length:
+				if (not std::isfinite(value) || value < 0.0F)
+				{
+					break;
+				}
+				return StyleValue{ Type::Length, value };
+			}
+
+			return { };
+		}
 	};
 	
+
+	StyleValue ParseValue(std::int32_t src, Array<detail::StyleValueMatchRule> rules)
+	{
+		for (auto& rule : rules)
+		{
+			if (auto value = detail::StyleValueParser::Parse(src, rule))
+			{
+				return value;
+			}
+		}
+
+		return { };
+	}
+
+	StyleValue ParseValue(float src, Array<detail::StyleValueMatchRule> rules)
+	{
+		for (auto& rule : rules)
+		{
+			if (auto value = detail::StyleValueParser::Parse(src, rule))
+			{
+				return value;
+			}
+		}
+
+		return { };
+	}
 
 	StyleValue ParseValue(const StringView str, Array<detail::StyleValueMatchRule> rules)
 	{
@@ -214,7 +300,7 @@ namespace FlexLayout::Style
 
 		for (auto& rule : rules)
 		{
-			if (auto value = detail::Parser::Parse(trimmedStr, rule))
+			if (auto value = detail::StyleValueParser::Parse(trimmedStr, rule))
 			{
 				return value;
 			}

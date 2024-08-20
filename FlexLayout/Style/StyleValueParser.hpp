@@ -33,6 +33,20 @@ namespace FlexLayout::Style
 		};
 	}
 
+	StyleValue ParseValue(std::int32_t value, Array<detail::StyleValueMatchRule> rules);
+
+	inline StyleValue ParseValue(std::int32_t value, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
+	{
+		return ParseValue(value, Array{ rule });
+	}
+
+	StyleValue ParseValue(float value, Array<detail::StyleValueMatchRule> rules);
+
+	inline StyleValue ParseValue(float value, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
+	{
+		return ParseValue(value, Array{ rule });
+	}
+
 	StyleValue ParseValue(const StringView str, Array<detail::StyleValueMatchRule> rules);
 
 	inline StyleValue ParseValue(const StringView str, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
