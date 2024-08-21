@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../Common.hpp"
 
-namespace FlexLayout::Style
+namespace FlexLayout
 {
 	/// @brief lengthプロパティの単位 | The unit of the length property
 	enum class LengthUnit : int8_t
@@ -32,7 +32,7 @@ namespace FlexLayout::Style
 }
 
 template <>
-struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::LengthUnit, s3d::char32>
+struct SIV3D_HIDDEN fmt::formatter<FlexLayout::LengthUnit, s3d::char32>
 {
 	std::u32string tag;
 
@@ -42,7 +42,7 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::LengthUnit, s3d::char32>
 	}
 
 	template <typename FormatContext>
-	auto format(const FlexLayout::Style::LengthUnit& value, FormatContext& ctx)
+	auto format(const FlexLayout::LengthUnit& value, FormatContext& ctx)
 	{
 		constexpr static std::u32string_view names[] = {
 			U"px", U"ch", U"em", U"ex", U"ic", U"lh"

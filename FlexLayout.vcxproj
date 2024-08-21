@@ -130,11 +130,10 @@
     <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
     <ClCompile Include="FlexLayout\Internal\TreeContext.cpp" />
-    <ClCompile Include="FlexLayout\Style\LengthUnit.cpp" />
+    <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp" />
-    <ClCompile Include="FlexLayout\Util\LoadStyleToYogaNode.cpp" />
     <ClCompile Include="FlexLayout\Util\ParseInlineCSS.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -256,7 +255,7 @@
     <ClInclude Include="FlexLayout\Internal\TreeContext.hpp" />
     <ClInclude Include="FlexLayout\Enum\AlignContent.hpp" />
     <ClInclude Include="FlexLayout\Enum\Common.hpp" />
-    <ClInclude Include="FlexLayout\Style\LengthUnit.hpp" />
+    <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp" />

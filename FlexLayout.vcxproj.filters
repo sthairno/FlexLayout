@@ -105,9 +105,6 @@
     <ClCompile Include="FlexLayout\Internal\TreeContext.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Util\LoadStyleToYogaNode.cpp">
-      <Filter>Source Files\FlexLayout\Util</Filter>
-    </ClCompile>
     <ClCompile Include="FlexLayout\Util\ParseInlineCSS.cpp">
       <Filter>Source Files\FlexLayout\Util</Filter>
     </ClCompile>
@@ -123,7 +120,7 @@
     <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Style\LengthUnit.cpp">
+    <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp">
       <Filter>Source Files\FlexLayout\Style</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp">
@@ -469,7 +466,7 @@
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
       <Filter>Header Files\FlexLayout\Style</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Style\LengthUnit.hpp">
+    <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp">
       <Filter>Header Files\FlexLayout\Style</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp">

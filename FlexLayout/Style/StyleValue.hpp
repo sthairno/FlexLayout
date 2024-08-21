@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "../Common.hpp"
-#include "LengthUnit.hpp"
+#include "../Enum/LengthUnit.hpp"
 #include "StyleEnums.hpp"
 
 namespace FlexLayout::Style

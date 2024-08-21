@@ -18,7 +18,7 @@ void Main()
 		FlexLayout::Style::StyleValue::Ratio(1, 3),
 		FlexLayout::Style::StyleValue::Percentage(80),
 		FlexLayout::Style::StyleValue::Number(123),
-		FlexLayout::Style::StyleValue::Length(456, FlexLayout::Style::LengthUnit::Pixel)
+		FlexLayout::Style::StyleValue::Length(456, FlexLayout::LengthUnit::Pixel)
 	};
 
 	for (const auto value : values)
