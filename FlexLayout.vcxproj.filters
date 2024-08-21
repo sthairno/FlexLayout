@@ -79,14 +79,17 @@
     <Filter Include="Header Files\FlexLayout\Style">
       <UniqueIdentifier>{b48f9a59-ad06-45ca-a0e2-5d17abef024d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\FlexLayout\Style\Enum">
-      <UniqueIdentifier>{40b96a73-863b-4399-862e-1694d1628685}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\FlexLayout\Internal">
       <UniqueIdentifier>{6e8c1e54-c176-427b-a365-efe2398bf51f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\FlexLayout\Style">
       <UniqueIdentifier>{cf33f6e4-39cd-4eb0-9db8-270aa0b324cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FlexLayout\Enum">
+      <UniqueIdentifier>{0520a172-2455-44a1-bacb-303caeb50d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FlexLayout\Enum">
+      <UniqueIdentifier>{40b96a73-863b-4399-862e-1694d1628685}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -120,9 +123,6 @@
     <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp">
-      <Filter>Source Files\FlexLayout\Style</Filter>
-    </ClCompile>
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp">
       <Filter>Source Files\FlexLayout\Style</Filter>
     </ClCompile>
@@ -131,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp">
       <Filter>Source Files\FlexLayout\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp">
+      <Filter>Source Files\FlexLayout\Enum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -458,15 +461,12 @@
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\AlignContent.hpp">
-      <Filter>Header Files\FlexLayout\Style\Enum</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\Common.hpp">
-      <Filter>Header Files\FlexLayout\Style\Enum</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
-      <Filter>Header Files\FlexLayout\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp">
       <Filter>Header Files\FlexLayout\Style</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp">
@@ -474,6 +474,9 @@
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp">
       <Filter>Header Files\FlexLayout\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp">
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
