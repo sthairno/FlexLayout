@@ -478,5 +478,11 @@
     <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp">
       <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
+    <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\TextAlign.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

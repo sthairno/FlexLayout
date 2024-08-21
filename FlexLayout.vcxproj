@@ -243,6 +243,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlexLayout\Common.hpp" />
+    <ClInclude Include="FlexLayout\Enum\TextAlign.hpp" />
+    <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelProperty.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelRenderer.hpp" />

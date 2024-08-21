@@ -12,14 +12,6 @@ namespace FlexLayout::Internal
 		Rem
 	};
 
-	enum class TextAlign
-	{
-		Inherit,
-		Left,
-		Right,
-		Center
-	};
-
 	struct LabelProperty
 	{
 		Optional<Font> font;

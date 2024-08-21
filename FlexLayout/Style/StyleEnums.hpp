@@ -9,6 +9,7 @@
 
 #include "../Enum/Common.hpp"
 #include "../Enum/AlignContent.hpp"
+#include "../Enum/TextAlign.hpp"
 // #include "../Enum/[.....].hpp"
 
 // ^^^^^----------^^^^^
@@ -18,7 +19,8 @@ namespace FlexLayout::Style::detail
 	using style_enum_variant = std::variant<
 		// vvvvv---enum---vvvvv
 
-		AlignContent
+		AlignContent,
+		TextAlign
 		// [.....],
 
 		// ^^^^^----------^^^^^
