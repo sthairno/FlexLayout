@@ -1,13 +1,15 @@
-﻿// 列挙型の追加方法
-// 1. ディレクトリ Enum/ に新しいヘッダファイルを追加
-// 3. 新しいファイル内にenumとstyle_enum_traitsを実装
-// 4. このファイルにincludeとenumを追加
+﻿// StyleValueで使う列挙型の登録方法
+// 1. ディレクトリ FlexLayout/Enum/ に新しいヘッダファイルを追加
+// 2. 新しいファイル内にenum classと<重要>Style::detail::style_enum_traitsを実装
+// 3. このファイルにincludeとenumを追加
+
+////////////////////////////////////////////////////
 
 // vvvvv--include--vvvvv
 
-#include "Enum/Common.hpp"
-#include "Enum/AlignContent.hpp"
-// #include "Enum/[.....].hpp"
+#include "../Enum/Common.hpp"
+#include "../Enum/AlignContent.hpp"
+// #include "../Enum/[.....].hpp"
 
 // ^^^^^----------^^^^^
 

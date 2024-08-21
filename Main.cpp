@@ -13,7 +13,7 @@ void Main()
 		FlexLayout::Style::StyleValue::None(),
 		FlexLayout::Style::StyleValue::Auto(),
 		FlexLayout::Style::StyleValue::Integer(100),
-		FlexLayout::Style::StyleValue::Enum(FlexLayout::Style::AlignContent::SpaceBetween),
+		FlexLayout::Style::StyleValue::Enum(FlexLayout::AlignContent::SpaceBetween),
 		FlexLayout::Style::StyleValue::Ratio(0.5),
 		FlexLayout::Style::StyleValue::Ratio(1, 3),
 		FlexLayout::Style::StyleValue::Percentage(80),

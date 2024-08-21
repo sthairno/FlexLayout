@@ -254,8 +254,8 @@
     <ClInclude Include="FlexLayout\Internal\FlexBoxImpl.hpp" />
     <ClInclude Include="FlexLayout\FlexLayout.hpp" />
     <ClInclude Include="FlexLayout\Internal\TreeContext.hpp" />
-    <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp" />
-    <ClInclude Include="FlexLayout\Style\Enum\Common.hpp" />
+    <ClInclude Include="FlexLayout\Enum\AlignContent.hpp" />
+    <ClInclude Include="FlexLayout\Enum\Common.hpp" />
     <ClInclude Include="FlexLayout\Style\LengthUnit.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />

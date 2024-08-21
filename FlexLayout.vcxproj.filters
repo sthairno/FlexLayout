@@ -460,10 +460,10 @@
     <ClInclude Include="FlexLayout\Common.hpp">
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Style\Enum\AlignContent.hpp">
+    <ClInclude Include="FlexLayout\Enum\AlignContent.hpp">
       <Filter>Header Files\FlexLayout\Style\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Style\Enum\Common.hpp">
+    <ClInclude Include="FlexLayout\Enum\Common.hpp">
       <Filter>Header Files\FlexLayout\Style\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp">
