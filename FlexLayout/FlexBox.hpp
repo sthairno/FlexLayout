@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "Style/StyleValue.hpp"
 
 namespace FlexLayout
 {
@@ -7,6 +8,8 @@ namespace FlexLayout
 	{
 		class FlexBoxImpl;
 	}
+
+	using StyleValue = Style::StyleValue;
 
 	class FlexBox
 	{
