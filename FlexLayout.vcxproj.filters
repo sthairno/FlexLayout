@@ -96,20 +96,8 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp">
-      <Filter>Source Files\FlexLayout\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\LabelProperty.cpp">
-      <Filter>Source Files\FlexLayout\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\LabelRenderer.cpp">
-      <Filter>Source Files\FlexLayout\Internal</Filter>
-    </ClCompile>
     <ClCompile Include="FlexLayout\Internal\TreeContext.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Util\ParseInlineCSS.cpp">
-      <Filter>Source Files\FlexLayout\Util</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\FlexLayout.cpp">
       <Filter>Source Files\FlexLayout</Filter>
@@ -134,6 +122,21 @@
     </ClCompile>
     <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp">
       <Filter>Source Files\FlexLayout\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxLookupImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxPropertyImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -427,20 +430,8 @@
     <ClInclude Include="FlexLayout\Internal\FlexBoxImpl.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\LabelProperty.hpp">
-      <Filter>Header Files\FlexLayout\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\LabelRenderer.hpp">
-      <Filter>Header Files\FlexLayout\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\LabelStatus.hpp">
-      <Filter>Header Files\FlexLayout\Internal</Filter>
-    </ClInclude>
     <ClInclude Include="FlexLayout\Internal\TreeContext.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Util\ParseInlineCSS.hpp">
-      <Filter>Header Files\FlexLayout\Util</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Util\LoadStyleToYogaNode.hpp">
       <Filter>Header Files\FlexLayout\Util</Filter>

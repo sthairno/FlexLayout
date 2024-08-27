@@ -63,13 +63,19 @@ namespace FlexLayout::Internal
 	LabelImpl::LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
 		: FlexBoxImpl{ context, tagName }
 	{
-		// YGNodeSetMeasureFunc(yogaNode(), MeasureLabelCallback);
-		// YGNodeSetBaselineFunc(yogaNode(), BaselineLabelCallback);
+		YGNodeSetMeasureFunc(yogaNode(), MeasureLabelCallback);
+		YGNodeSetBaselineFunc(yogaNode(), BaselineLabelCallback);
+		YGNodeSetNodeType(yogaNode(), YGNodeTypeText);
 	}
 
 	void LabelImpl::setText(const StringView text)
 	{
-		// m_text = text;
-		// YGNodeMarkDirty(yogaNode());
+		m_text = text;
+		YGNodeMarkDirty(yogaNode());
+	}
+
+	void LabelImpl::draw(const TextStyle& textStyle, const ColorF& color)
+	{
+
 	}
 }

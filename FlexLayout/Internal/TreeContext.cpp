@@ -26,6 +26,9 @@ namespace FlexLayout::Internal
 	void TreeContext::setUseWebDefaults(bool value)
 	{
 		YGConfigSetUseWebDefaults(m_yogaConfig, value);
+
+		YGNodeFree(m_dummyNode);
+		m_dummyNode = YGNodeNewWithConfig(m_yogaConfig);
 	}
 
 	TreeContext::~TreeContext()

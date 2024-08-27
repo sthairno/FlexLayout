@@ -1,5 +1,6 @@
 ﻿#include "XMLLoader.hpp"
 #include "LabelImpl.hpp"
+#include "TreeContext.hpp"
 
 namespace FlexLayout::Internal
 {

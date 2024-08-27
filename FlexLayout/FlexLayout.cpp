@@ -1,6 +1,7 @@
 ﻿#include "FlexLayout.hpp"
 #include "Internal/FlexBoxImpl.hpp"
 #include "Internal/XMLLoader.hpp"
+#include "Internal/TreeContext.hpp"
 
 namespace FlexLayout
 {

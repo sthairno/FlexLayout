@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 
 		void setText(const StringView text);
 
-		void draw(TextStyle textStyle, ColorF color);
+		void draw(const TextStyle& textStyle, const ColorF& color);
 
 	private:
 

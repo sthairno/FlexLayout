@@ -122,19 +122,20 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\FlexBoxLookupImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\FlexBoxPropertyImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp" />
-    <ClCompile Include="FlexLayout\Internal\LabelProperty.cpp" />
-    <ClCompile Include="FlexLayout\Internal\LabelRenderer.cpp" />
     <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="FlexLayout\FlexBox.cpp" />
-    <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
     <ClCompile Include="FlexLayout\Internal\TreeContext.cpp" />
     <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp" />
-    <ClCompile Include="FlexLayout\Util\ParseInlineCSS.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -246,9 +247,6 @@
     <ClInclude Include="FlexLayout\Enum\TextAlign.hpp" />
     <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp" />
-    <ClInclude Include="FlexLayout\Internal\LabelProperty.hpp" />
-    <ClInclude Include="FlexLayout\Internal\LabelRenderer.hpp" />
-    <ClInclude Include="FlexLayout\Internal\LabelStatus.hpp" />
     <ClInclude Include="FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="FlexLayout\FlexBox.hpp" />
     <ClInclude Include="FlexLayout\Internal\Common.hpp" />
@@ -262,7 +260,6 @@
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp" />
     <ClInclude Include="FlexLayout\Util\LoadStyleToYogaNode.hpp" />
-    <ClInclude Include="FlexLayout\Util\ParseInlineCSS.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
