@@ -18,6 +18,8 @@ namespace FlexLayout::Internal
 
 		void setUseWebDefaults(bool value);
 
+		YGNodeConstRef dummyNode() const { return m_dummyNode; }
+
 		const ComputedTextStyle& defaultTextStyle() const { return m_defaultTextStyle; }
 
 	private:

@@ -6,6 +6,8 @@ namespace FlexLayout
 	enum class AlignContent
 	{
 		Center,
+		FlexStart,
+		FlexEnd,
 		Start,
 		End,
 		SpaceBetween,
@@ -17,14 +19,28 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<AlignContent>
 	{
-		static constexpr std::array<StringView, 7> names{
+		static constexpr std::array<StringView, 9> names{
 			U"center",
+			U"flex-start",
+			U"flex-end",
 			U"start",
 			U"end",
 			U"space-between",
 			U"space-around",
 			U"space-evenly",
 			U"stretch",
+		};
+
+		static constexpr std::array<YGAlign, 9> to_yoga{
+			YGAlignCenter,
+			YGAlignFlexStart,
+			YGAlignFlexEnd,
+			YGAlignFlexStart,
+			YGAlignFlexEnd,
+			YGAlignSpaceBetween,
+			YGAlignSpaceAround,
+			YGAlignSpaceEvenly,
+			YGAlignStretch
 		};
 	};
 }

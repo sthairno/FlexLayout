@@ -1,5 +1,7 @@
 ﻿#include "FlexBoxImpl.hpp"
 #include "TreeContext.hpp"
+#include "StyleDefinition.hpp"
+#include "../Style/StyleValueParser.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -35,7 +37,7 @@ namespace FlexLayout::Internal
 				continue;
 			}
 
-			setStyle(propertyName, propertyValue);
+			setStyle(propertyName, std::array<Style::ValueInputVariant, 1>{ propertyValue });
 		}
 	}
 
@@ -51,68 +53,202 @@ namespace FlexLayout::Internal
 		return tmp;
 	}
 
-	const Array<Style::StyleValue>& FlexBoxImpl::getStyle(const StringView styleName) const
+	const Array<Style::StyleValue>& FlexBoxImpl::getStyle(const StringView styleName)
 	{
-		if (auto itr = m_styles.find(styleName); itr == m_styles.cend())
+		return m_styles[styleName].value;
+	}
+
+	Array<Style::StyleValue> FlexBoxImpl::getStyle(const StringView styleName) const
+	{
+		if (auto itr = m_styles.find(styleName); itr != m_styles.end())
 		{
-			auto& entry = itr->second;
-			return entry.removed ? Array<Style::StyleValue>{ } : entry.value;
+			return itr->second.value;
 		}
 
 		return { };
 	}
 
-	bool FlexBoxImpl::setStyle(const StringView styleName, const Array<Style::StyleValue>& values)
+	bool FlexBoxImpl::setStyle(const StringView styleName, const std::span<const Style::StyleValue> values)
 	{
-		if (styleName.isEmpty())
-		{
-			return false;
-		}
-
-		if (values.isEmpty())
+		if (values.empty() ||
+			std::all_of(values.begin(), values.end(), [](auto& v){ return v.type() == Style::StyleValue::Type::Unspecified; }))
 		{
 			return removeStyle(styleName);
 		}
 
-		auto& entry = m_styles[styleName];
+		auto definitionItr = StyleDefinitionList.find(styleName);
+		if (definitionItr == StyleDefinitionList.end())
+		{
+			return false;
+		}
 
-		entry.value = values;
-		entry.removed = false;
-		entry.modified = true;
+		const auto& definition = definitionItr->second;
+
+		// いずれかのパターンに合致するか検証
+		auto patternItr = definition.patterns.begin();
+		for (; patternItr != definition.patterns.end(); patternItr++)
+		{
+			auto& pattern = *patternItr;
+
+			if (pattern.size() != values.size())
+			{
+				continue;
+			}
+
+			bool success = true;
+			for (auto [idx, value] : Indexed(values))
+			{
+				if (not pattern[idx].match(value))
+				{
+					success = false;
+					break;
+				}
+			}
+
+			if (success)
+			{
+				break;
+			}
+		}
+
+		// 検証に失敗した場合
+		if (patternItr == definition.patterns.end())
+		{
+			return false;
+		}
+
+		// スタイルを作成 or 更新
+		auto& entry = m_styles[styleName];
+		entry.value = Array<Style::StyleValue>(values.begin(), values.end());
+		if (entry.removed)
+		{
+			entry.event = _StyleValueEntry::Event::Added;
+			entry.removed = false;
+		}
+		else if(entry.event != _StyleValueEntry::Event::Added)
+		{
+			entry.event = _StyleValueEntry::Event::Modified;
+		}
 
 		scheduleStyleApplication();
 
 		return true;
 	}
 
-	bool FlexBoxImpl::setStyle(const StringView styleName, const StringView value)
+	bool FlexBoxImpl::setStyle(const StringView styleName, std::span<const Style::ValueInputVariant> inputs)
 	{
-		if (styleName.isEmpty())
-		{
-			return false;
-		}
-
-		if (value.isEmpty())
+		if (inputs.empty())
 		{
 			return removeStyle(styleName);
 		}
 
-		// TODO: パース処理
-		return false;
+		auto definitionItr = StyleDefinitionList.find(styleName);
+		if (definitionItr == StyleDefinitionList.end())
+		{
+			return false;
+		}
+
+		const auto& definition = definitionItr->second;
+
+		// 引数が文字列1つの場合、配列として処理して参照を切り替える
+		Array<Style::ValueInputVariant> tmpInputs;
+		if (inputs.size() == 1 && std::holds_alternative<const StringView>(inputs[0]))
+		{
+			const auto text = std::get<const StringView>(inputs[0]);
+
+			size_t beginIdx = 0;
+			size_t endIdx = 0;
+			while (endIdx < text.length())
+			{
+				beginIdx = endIdx;
+				endIdx = text.indexOfAny(U" \t", beginIdx);
+				if (endIdx == String::npos)
+				{
+					endIdx = text.length();
+				}
+
+				tmpInputs.push_back(text.substr(beginIdx, endIdx - beginIdx));
+			}
+			
+			inputs = std::span{ tmpInputs.begin(), tmpInputs.end() };
+		}
+
+		// 入力の各要素をStyleValueへ読み込み
+		Array<Style::StyleValue> parsedValues(Arg::reserve = inputs.size());
+		auto patternItr = definition.patterns.begin();
+		for (; patternItr != definition.patterns.end(); patternItr++)
+		{
+			auto& pattern = *patternItr;
+			parsedValues.clear();
+
+			if (pattern.size() != inputs.size())
+			{
+				continue;
+			}
+
+			bool success = true;
+			for (auto [idx, input] : Indexed(inputs))
+			{
+				auto value = Style::ParseValue(input, pattern[idx]);
+
+				if (not value)
+				{
+					success = false;
+					break;
+				}
+
+				parsedValues.push_back(value);
+			}
+
+			if (success)
+			{
+				break;
+			}
+		}
+
+		// 読み込みに失敗した場合
+		if (patternItr == definition.patterns.end())
+		{
+			return false;
+		}
+
+		// スタイルを作成 or 更新
+		auto& entry = m_styles[styleName];
+		entry.value = std::move(parsedValues);
+		if (entry.removed)
+		{
+			entry.event = _StyleValueEntry::Event::Added;
+			entry.removed = false;
+		}
+		else if (entry.event != _StyleValueEntry::Event::Added)
+		{
+			entry.event = _StyleValueEntry::Event::Modified;
+		}
+
+		scheduleStyleApplication();
+
+		return true;
 	}
 
 	bool FlexBoxImpl::removeStyle(const StringView styleName)
 	{
-		if (const auto it = m_styles.find(styleName);
-			it != m_styles.end())
+		auto& entry = m_styles[styleName];
+
+		if (entry.removed)
 		{
-			auto& entry = it->second;
+			return false;
+		}
 
-			entry.value.clear();
-			entry.removed = true;
-			entry.modified = false;
-
-			return true;
+		entry.value.clear();
+		switch (entry.event)
+		{
+		case _StyleValueEntry::Event::Added: // 相殺
+			entry.event = _StyleValueEntry::Event::None;
+			break;
+		default:
+			entry.event = _StyleValueEntry::Event::Removed;
+			scheduleStyleApplication();
+			break;
 		}
 
 		return false;
@@ -123,9 +259,17 @@ namespace FlexLayout::Internal
 		for (auto& [_, entry] : m_styles)
 		{
 			entry.value.clear();
-			entry.removed = true;
-			entry.modified = false;
+			switch (entry.event)
+			{
+			case _StyleValueEntry::Event::Added: // 相殺
+				entry.event = _StyleValueEntry::Event::None;
+				break;
+			default:
+				entry.event = _StyleValueEntry::Event::Removed;
+				break;
+			}
 		}
+		scheduleStyleApplication();
 	}
 
 	void FlexBoxImpl::scheduleStyleApplication()
@@ -157,17 +301,8 @@ namespace FlexLayout::Internal
 		// スタイルを適用
 		for (auto& [name, entry] : m_styles)
 		{
-			if (entry.removed)
-			{
-				
-			}
-			else if (entry.modified)
-			{
-
-			}
-
-			entry.removed = false;
-			entry.modified = false;
+			// TODO
+			
 		}
 
 		// 子要素に再帰

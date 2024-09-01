@@ -267,9 +267,9 @@ namespace FlexLayout::Style
 	};
 	
 
-	StyleValue ParseValue(std::int32_t src, Array<detail::StyleValueMatchRule> rules)
+	StyleValue ParseValue(std::int32_t src, detail::StyleValueMultiMatchRule rule)
 	{
-		for (auto& rule : rules)
+		for (auto& rule : rule.rules)
 		{
 			if (auto value = detail::StyleValueParser::Parse(src, rule))
 			{
@@ -280,9 +280,9 @@ namespace FlexLayout::Style
 		return { };
 	}
 
-	StyleValue ParseValue(float src, Array<detail::StyleValueMatchRule> rules)
+	StyleValue ParseValue(float src, detail::StyleValueMultiMatchRule rule)
 	{
-		for (auto& rule : rules)
+		for (auto& rule : rule.rules)
 		{
 			if (auto value = detail::StyleValueParser::Parse(src, rule))
 			{
@@ -293,12 +293,12 @@ namespace FlexLayout::Style
 		return { };
 	}
 
-	StyleValue ParseValue(const StringView str, Array<detail::StyleValueMatchRule> rules)
+	StyleValue ParseValue(const StringView str, detail::StyleValueMultiMatchRule rule)
 	{
 		String trimmedStr{ str };
 		trimmedStr.trim();
 
-		for (auto& rule : rules)
+		for (auto& rule : rule.rules)
 		{
 			if (auto value = detail::StyleValueParser::Parse(trimmedStr, rule))
 			{

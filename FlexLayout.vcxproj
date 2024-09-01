@@ -122,12 +122,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FlexLayout\Enum\Position.hpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxLookupImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxPropertyImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp" />
+    <ClCompile Include="FlexLayout\Internal\StyleDefinition.cpp" />
     <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="FlexLayout\FlexBox.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
@@ -237,6 +239,7 @@
     <None Include="App\engine\shader\glsl\square_dot.frag" />
     <None Include="App\engine\shader\glsl\texture.frag" />
     <None Include="App\engine\soundfont\GMGSx.sf2.zstdcmp" />
+    <None Include="FlexLayout\Style\StyleValueMatchRule.hpp" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
@@ -244,9 +247,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlexLayout\Common.hpp" />
+    <ClInclude Include="FlexLayout\Enum\AlignItems.hpp" />
+    <ClInclude Include="FlexLayout\Enum\AlignSelf.hpp" />
+    <ClInclude Include="FlexLayout\Enum\Direction.hpp" />
+    <ClInclude Include="FlexLayout\Enum\Display.hpp" />
+    <ClInclude Include="FlexLayout\Enum\FlexDirection.hpp" />
+    <ClInclude Include="FlexLayout\Enum\FlexWrap.hpp" />
+    <ClInclude Include="FlexLayout\Enum\JustifyContent.hpp" />
     <ClInclude Include="FlexLayout\Enum\TextAlign.hpp" />
     <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp" />
+    <ClInclude Include="FlexLayout\Internal\StyleDefinition.hpp" />
     <ClInclude Include="FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="FlexLayout\FlexBox.hpp" />
     <ClInclude Include="FlexLayout\Internal\Common.hpp" />

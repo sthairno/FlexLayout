@@ -83,6 +83,69 @@ namespace FlexLayout
 		return none;
 	}
 
+	bool FlexBox::setStyle(const StringView key, const Array<StyleValue>& list)
+	{
+		return m_impl->setStyle(key, std::span{ list.begin(), list.end() });
+	}
+
+	bool FlexBox::setStyle(const StringView key, StyleValue value)
+	{
+		return m_impl->setStyle(key, std::array{ value });
+	}
+
+	bool FlexBox::setStyle(const StringView key, StyleValue v1, StyleValue v2)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2 });
+	}
+
+	bool FlexBox::setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2, v3 });
+	}
+
+	bool FlexBox::setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2, v3, v4 });
+	}
+
+	bool FlexBox::setStyle(
+		const StringView key,
+		Style::ValueInputVariant value
+	)
+	{
+		return m_impl->setStyle(key, std::array{ value });
+	}
+
+	bool FlexBox::setStyle(
+		const StringView key,
+		Style::ValueInputVariant v1,
+		Style::ValueInputVariant v2
+	)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2 });
+	}
+
+	bool FlexBox::setStyle(
+		const StringView key,
+		Style::ValueInputVariant v1,
+		Style::ValueInputVariant v2,
+		Style::ValueInputVariant v3
+	)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2, v3 });
+	}
+
+	bool FlexBox::setStyle(
+		const StringView key,
+		Style::ValueInputVariant v1,
+		Style::ValueInputVariant v2,
+		Style::ValueInputVariant v3,
+		Style::ValueInputVariant v4
+	)
+	{
+		return m_impl->setStyle(key, std::array{ v1, v2, v3, v4 });
+	}
+
 	void FlexBox::draw(const ColorF& color) const
 	{
 

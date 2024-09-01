@@ -32,6 +32,42 @@ namespace FlexLayout
 
 		Optional<RectF> contentAreaRect() const;
 
+		bool setStyle(const StringView key, const Array<StyleValue>& list);
+
+		bool setStyle(const StringView key, StyleValue value);
+
+		bool setStyle(const StringView key, StyleValue v1, StyleValue v2);
+
+		bool setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3);
+
+		bool setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4);
+
+		bool setStyle(
+			const StringView key,
+			Style::ValueInputVariant value
+		);
+
+		bool setStyle(
+			const StringView key,
+			Style::ValueInputVariant v1,
+			Style::ValueInputVariant v2
+		);
+
+		bool setStyle(
+			const StringView key,
+			Style::ValueInputVariant v1,
+			Style::ValueInputVariant v2,
+			Style::ValueInputVariant v3
+		);
+
+		bool setStyle(
+			const StringView key,
+			Style::ValueInputVariant v1,
+			Style::ValueInputVariant v2,
+			Style::ValueInputVariant v3,
+			Style::ValueInputVariant v4
+		);
+
 		void draw(const s3d::ColorF& color = s3d::Palette::White) const;
 
 		s3d::Array<FlexBox> children() const;

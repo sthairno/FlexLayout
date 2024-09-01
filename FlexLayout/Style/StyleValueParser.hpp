@@ -1,57 +1,26 @@
 ﻿#include "../Common.hpp"
 #include "StyleValue.hpp"
+#include "StyleValueMatchRule.hpp"
 
 namespace FlexLayout::Style
 {
-	namespace detail
+	StyleValue ParseValue(std::int32_t value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
+
+	StyleValue ParseValue(float value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
+
+	StyleValue ParseValue(const StringView str, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
+
+	inline StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number)
 	{
-		struct StyleValueMatchRule
+		assert(value.valueless_by_exception());
+		switch (value.index())
 		{
-			template <class Enum, std::enable_if_t<std::is_scoped_enum_v<Enum>>* = nullptr>
-			StyleValueMatchRule(const Enum& e)
-				: type(StyleValue::Type::Enum)
-				, enumTypeId(style_enum_id_from_type<Enum>::value)
-			{ }
+		case 0:	return ParseValue(std::get<0>(value), rule);
+		case 1: return ParseValue(std::get<1>(value), rule);
+		case 2: return ParseValue(std::get<2>(value), rule);
+		}
 
-			StyleValueMatchRule(const EnumTypeId id)
-				: type(StyleValue::Type::Enum)
-				, enumTypeId(id)
-			{
-				assert(id >= 0 && id < std::variant_size_v<style_enum_variant>);
-			}
-
-			StyleValueMatchRule(StyleValue::Type t)
-				: type(t)
-				, enumTypeId(-1)
-			{
-				assert(t != StyleValue::Type::Enum && t != StyleValue::Type::Unspecified);
-			}
-
-			const StyleValue::Type type;
-
-			const EnumTypeId enumTypeId;
-		};
-	}
-
-	StyleValue ParseValue(std::int32_t value, Array<detail::StyleValueMatchRule> rules);
-
-	inline StyleValue ParseValue(std::int32_t value, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
-	{
-		return ParseValue(value, Array{ rule });
-	}
-
-	StyleValue ParseValue(float value, Array<detail::StyleValueMatchRule> rules);
-
-	inline StyleValue ParseValue(float value, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
-	{
-		return ParseValue(value, Array{ rule });
-	}
-
-	StyleValue ParseValue(const StringView str, Array<detail::StyleValueMatchRule> rules);
-
-	inline StyleValue ParseValue(const StringView str, detail::StyleValueMatchRule rule = StyleValue::Type::Number)
-	{
-		return ParseValue(str, Array{ rule });
+		return { };
 	}
 }
 

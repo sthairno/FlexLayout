@@ -138,6 +138,12 @@
     <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\StyleDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Enum\Position.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\8.png">
@@ -419,6 +425,7 @@
     </None>
     <None Include="vcpkg.json" />
     <None Include=".gitignore" />
+    <None Include="FlexLayout\Style\StyleValueMatchRule.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="App\Layout.xml" />
@@ -473,6 +480,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\TextAlign.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Internal\StyleDefinition.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\AlignItems.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\AlignSelf.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\Display.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\JustifyContent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\Direction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\FlexDirection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\FlexWrap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -199,6 +199,8 @@ namespace FlexLayout::Style
 
 		friend struct detail::StyleValueParser;
 	};
+
+	using ValueInputVariant = std::variant<std::int32_t, float, const StringView>;
 }
 
 template <>

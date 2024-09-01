@@ -57,15 +57,21 @@ namespace FlexLayout::Internal
 
 		// --スタイル(FlexBoxStyleImpl.cpp)--
 
+		ComputedTextStyle& computedTextStyle() { return m_computedTextStyle; }
+
+		const ComputedTextStyle& computedTextStyle() const { return m_computedTextStyle; }
+
 		void setCssText(const StringView cssText);
 
 		String getCssText() const;
 
-		const Array<Style::StyleValue>& getStyle(const StringView styleName) const;
+		const Array<Style::StyleValue>& getStyle(const StringView styleName);
 
-		bool setStyle(const StringView styleName, const Array<Style::StyleValue>& values);
+		Array<Style::StyleValue> getStyle(const StringView styleName) const;
 
-		bool setStyle(const StringView styleName, const StringView value);
+		bool setStyle(const StringView styleName, std::span<const Style::StyleValue> values);
+
+		bool setStyle(const StringView styleName, std::span<const std::variant<std::int32_t, float, const StringView>> values);
 
 		bool removeStyle(const StringView styleName);
 
@@ -118,21 +124,31 @@ namespace FlexLayout::Internal
 
 		// スタイル
 
-		struct StyleValueEntry
+		struct _StyleValueEntry
 		{
+			enum class Event
+			{
+				None,
+				Added,
+				Modified,
+				Removed,
+			};
+
 			Array<Style::StyleValue> value;
 
-			bool modified;
+			Event event = Event::None;
 
-			bool removed;
+			bool removed = true;
 		};
 
-		HashTable<String, StyleValueEntry> m_styles;
+		using _StyleValueTable = HashTable<String, _StyleValueEntry>;
+
+		_StyleValueTable m_styles;
 
 		ComputedTextStyle m_computedTextStyle;
 
 		bool m_isStyleApplicationScheduled = false;
-		
+
 		// レイアウト
 
 		Optional<Vec2> m_layoutOffset;
