@@ -138,7 +138,7 @@
     <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\StyleDefinition.cpp">
+    <ClCompile Include="FlexLayout\Internal\StylePropertyDefinition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Enum\Position.hpp">
@@ -482,7 +482,7 @@
     <ClInclude Include="FlexLayout\Enum\TextAlign.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\StyleDefinition.hpp">
+    <ClInclude Include="FlexLayout\Internal\StylePropertyDefinition.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\AlignItems.hpp">

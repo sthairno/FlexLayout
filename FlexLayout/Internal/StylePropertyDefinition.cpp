@@ -1,4 +1,4 @@
-﻿#include "StyleDefinition.hpp"
+﻿#include "StylePropertyDefinition.hpp"
 #include "TreeContext.hpp"
 #include <yoga/YGNodeStyle.h>
 
@@ -27,9 +27,14 @@ namespace FlexLayout::Internal
 	template<class Enum, class YogaSetter>
 	static auto YogaEnumApplyCallback(YogaSetter&& setter)
 	{
-		return [setter](FlexBoxImpl& impl, Style::StyleValue value) -> bool
+		return [setter](FlexBoxImpl& impl, std::span<const Style::StyleValue> values) -> bool
 			{
-				if (auto src = value.getEnumValue<Enum>())
+				if (values.size() != 1)
+				{
+					return false;
+				}
+
+				if (auto src = values[0].getEnumValue<Enum>())
 				{
 					auto dst = Style::detail::style_enum_traits<Enum>::to_yoga[static_cast<std::underlying_type_t<Enum>>(*src)];
 					setter(impl.yogaNode(), dst);
@@ -55,10 +60,10 @@ namespace FlexLayout::Internal
 	const static Style::detail::StyleValueMultiMatchRule FlexShrinkPattern{ ValueType::Number };
 	const static Style::detail::StyleValueMultiMatchRule FlexBasisPattern{ ValueType::Length, ValueType::Percentage, ValueType::Auto };
 
-	const std::unordered_map<StringView, StyleDefinition> StyleDefinitionList = {
+	const std::unordered_map<StringView, StylePropertyDefinition> StyleProperties = {
 		{
 			U"align-content",
-			StyleDefinition {
+			StylePropertyDefinition {
 				.patterns = Single({ Enum<AlignContent>() }),
 				.applyCallback = YogaEnumApplyCallback<AlignContent>(YGNodeStyleSetAlignContent),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetAlignContent, YGNodeStyleSetAlignContent)
@@ -66,7 +71,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"align-items",
-			StyleDefinition {
+			StylePropertyDefinition {
 				.patterns = Single({ Enum<AlignItems>() }),
 				.applyCallback = YogaEnumApplyCallback<AlignItems>(YGNodeStyleSetAlignItems),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetAlignItems, YGNodeStyleSetAlignItems)
@@ -74,21 +79,22 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"align-self",
-			StyleDefinition {
+			StylePropertyDefinition {
 				.patterns = Single({ Enum<AlignSelf>() }),
 				.applyCallback = YogaEnumApplyCallback<AlignSelf>(YGNodeStyleSetAlignSelf),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetAlignSelf, YGNodeStyleSetAlignSelf)
 			}
 		},
+
 		{
 			U"aspect-ratio",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Style::StyleValue::Type::Ratio }),
 			}
 		},
 		{
 			U"display",
-			StyleDefinition {
+			StylePropertyDefinition {
 				.patterns = Single({ Enum<Display>() }),
 				.applyCallback = YogaEnumApplyCallback<Display>(YGNodeStyleSetDisplay),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetDisplay, YGNodeStyleSetDisplay)
@@ -96,7 +102,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = {
 					{ FlexGrowPattern | FlexBasisPattern },
 					{ FlexGrowPattern, FlexShrinkPattern },
@@ -106,25 +112,25 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-basis",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single(FlexBasisPattern),
 			}
 		},
 		{
 			U"flex-grow",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single(FlexGrowPattern),
 			}
 		},
 		{
 			U"flex-shrink",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single(FlexShrinkPattern),
 			}
 		},
 		{
 			U"flex-direction",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<FlexDirection>() }),
 				.applyCallback = YogaEnumApplyCallback<FlexDirection>(YGNodeStyleSetFlexDirection),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetFlexDirection, YGNodeStyleSetFlexDirection)
@@ -132,7 +138,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-flow",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = {
 					{ { Enum<FlexDirection>(), Enum<FlexWrap>() } },
 					{ { Enum<FlexDirection>() }, { Enum<FlexWrap>() } }
@@ -141,7 +147,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-wrap",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<FlexWrap>() }),
 				.applyCallback = YogaEnumApplyCallback<FlexWrap>(YGNodeStyleSetFlexWrap),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetFlexWrap, YGNodeStyleSetFlexWrap)
@@ -149,7 +155,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"gap",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = {
 					{ { ValueType::Length, ValueType::Percentage } },
 					{ { ValueType::Length, ValueType::Percentage }, { ValueType::Length, ValueType::Percentage } }
@@ -158,19 +164,19 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"row-gap",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"column-gap",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"position",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<Position>() }),
 				.applyCallback = YogaEnumApplyCallback<Position>(YGNodeStyleSetPositionType),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetPositionType, YGNodeStyleSetPositionType)
@@ -178,31 +184,31 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"top",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"right",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"bottom",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"left",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"justify-content",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<JustifyContent>() }),
 				.applyCallback = YogaEnumApplyCallback<JustifyContent>(YGNodeStyleSetJustifyContent),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetJustifyContent, YGNodeStyleSetJustifyContent)
@@ -210,7 +216,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"direction",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<Direction>() }),
 				.applyCallback = YogaEnumApplyCallback<Direction>(YGNodeStyleSetDirection),
 				.resetCallback = YogaEnumResetCallback(YGNodeStyleGetDirection, YGNodeStyleSetDirection)
@@ -218,145 +224,145 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"margin",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Edge({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"margin-top",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"margin-right",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"margin-bottom",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"margin-left",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"padding",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Edge({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"padding-top",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"padding-right",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"padding-bottom",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"padding-left",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"border-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Edge({ ValueType::Length })
 			}
 		},
 		{
 			U"border-top-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length })
 			}
 		},
 		{
 			U"border-right-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length })
 			}
 		},
 		{
 			U"border-bottom-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length })
 			}
 		},
 		{
 			U"border-left-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length })
 			}
 		},
 		{
 			U"width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"height",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage, ValueType::Auto })
 			}
 		},
 		{
 			U"min-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"min-height",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"max-width",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 			},
 		{
 			U"max-height",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 			},
 		{
 			U"font-size",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"line-height",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ ValueType::Number, ValueType::Length, ValueType::Percentage })
 			}
 		},
 		{
 			U"text-align",
-			StyleDefinition{
+			StylePropertyDefinition{
 				.patterns = Single({ Enum<TextAlign>() })
 			}
 		}

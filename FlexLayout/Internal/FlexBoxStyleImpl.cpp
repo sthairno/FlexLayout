@@ -1,10 +1,23 @@
 ﻿#include "FlexBoxImpl.hpp"
 #include "TreeContext.hpp"
-#include "StyleDefinition.hpp"
+#include "StylePropertyDefinition.hpp"
 #include "../Style/StyleValueParser.hpp"
 
 namespace FlexLayout::Internal
 {
+	void FlexBoxImpl::ApplyStyles(TreeContext& context)
+	{
+		for (const auto& [_, ptr] : context->m_styleApplicationWaitlist)
+		{
+			auto item = ptr.lock();
+			if (item && item->m_isStyleApplicationScheduled)
+			{
+				item->applyStylesImpl();
+			}
+		}
+		context->m_styleApplicationWaitlist.clear();
+	}
+
 	void FlexBoxImpl::setCssText(const StringView cssText)
 	{
 		size_t beginIdx = 0;
@@ -76,8 +89,8 @@ namespace FlexLayout::Internal
 			return removeStyle(styleName);
 		}
 
-		auto definitionItr = StyleDefinitionList.find(styleName);
-		if (definitionItr == StyleDefinitionList.end())
+		auto definitionItr = StyleProperties.find(styleName);
+		if (definitionItr == StyleProperties.end())
 		{
 			return false;
 		}
@@ -142,8 +155,8 @@ namespace FlexLayout::Internal
 			return removeStyle(styleName);
 		}
 
-		auto definitionItr = StyleDefinitionList.find(styleName);
-		if (definitionItr == StyleDefinitionList.end())
+		auto definitionItr = StyleProperties.find(styleName);
+		if (definitionItr == StyleProperties.end())
 		{
 			return false;
 		}
@@ -294,21 +307,44 @@ namespace FlexLayout::Internal
 		});
 	}
 
-	void FlexBoxImpl::applyStylesRecursive()
+	void FlexBoxImpl::applyStylesImpl()
 	{
+		// 待機フラグを解除
 		m_isStyleApplicationScheduled = false;
 
 		// スタイルを適用
 		for (auto& [name, entry] : m_styles)
 		{
-			// TODO
-			
+			switch (entry.event)
+			{
+			case _StyleValueEntry::Event::Added:
+				Console << U"Added: {} = {}"_fmt(name, entry.value);
+				break;
+			case _StyleValueEntry::Event::Modified:
+				Console << U"Modified: {} = {}"_fmt(name, entry.value);
+				break;
+			case _StyleValueEntry::Event::Removed:
+				Console << U"Removed: {}"_fmt(name);
+				break;
+			}
+
+			switch (entry.event)
+			{
+			case _StyleValueEntry::Event::Added:
+			case _StyleValueEntry::Event::Modified:
+				assert(StyleProperties.at(name).applyCallback(*this, entry.value));
+				break;
+			case _StyleValueEntry::Event::Removed:
+				assert(StyleProperties.at(name).resetCallback(*this));
+				break;
+			}
+			entry.event = _StyleValueEntry::Event::None;
 		}
 
 		// 子要素に再帰
 		for (const auto& child : m_children)
 		{
-			child->applyStylesRecursive();
+			child->applyStylesImpl();
 		}
 	}
 }

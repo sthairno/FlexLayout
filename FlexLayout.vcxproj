@@ -129,7 +129,7 @@
     <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp" />
-    <ClCompile Include="FlexLayout\Internal\StyleDefinition.cpp" />
+    <ClCompile Include="FlexLayout\Internal\StylePropertyDefinition.cpp" />
     <ClCompile Include="FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="FlexLayout\FlexBox.cpp" />
     <ClCompile Include="FlexLayout\FlexLayout.cpp" />
@@ -257,7 +257,7 @@
     <ClInclude Include="FlexLayout\Enum\TextAlign.hpp" />
     <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp" />
-    <ClInclude Include="FlexLayout\Internal\StyleDefinition.hpp" />
+    <ClInclude Include="FlexLayout\Internal\StylePropertyDefinition.hpp" />
     <ClInclude Include="FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="FlexLayout\FlexBox.hpp" />
     <ClInclude Include="FlexLayout\Internal\Common.hpp" />

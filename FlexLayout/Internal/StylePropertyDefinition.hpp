@@ -5,10 +5,10 @@
 
 namespace FlexLayout::Internal
 {
-	using ApplyStyleCallback = std::function<bool(FlexBoxImpl&, Style::StyleValue)>;
+	using ApplyStyleCallback = std::function<bool(FlexBoxImpl&, std::span<const Style::StyleValue>)>;
 	using ResetStyleCallback = std::function<bool(FlexBoxImpl&)>;
 
-	struct StyleDefinition
+	struct StylePropertyDefinition
 	{
 		std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> patterns;
 
@@ -17,5 +17,5 @@ namespace FlexLayout::Internal
 		ResetStyleCallback resetCallback;
 	};
 
-	extern const std::unordered_map<StringView, StyleDefinition> StyleDefinitionList;
+	extern const std::unordered_map<StringView, StylePropertyDefinition> StyleProperties;
 }

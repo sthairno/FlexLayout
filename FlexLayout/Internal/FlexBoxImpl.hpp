@@ -57,6 +57,8 @@ namespace FlexLayout::Internal
 
 		// --スタイル(FlexBoxStyleImpl.cpp)--
 
+		static void ApplyStyles(TreeContext& context);
+
 		ComputedTextStyle& computedTextStyle() { return m_computedTextStyle; }
 
 		const ComputedTextStyle& computedTextStyle() const { return m_computedTextStyle; }
@@ -80,9 +82,6 @@ namespace FlexLayout::Internal
 		/// @brief `applyStyleRecursive()`の呼び出しを予約する
 		/// @remark 親要素で予約されていた場合、予約をスキップします
 		void scheduleStyleApplication();
-
-		/// @brief スタイルをYGNodeとComputedTextStyleに再帰的に適用する
-		void applyStylesRecursive();
 
 		// --検索(FlexBoxLookupImpl.cpp)--
 
@@ -148,6 +147,8 @@ namespace FlexLayout::Internal
 		ComputedTextStyle m_computedTextStyle;
 
 		bool m_isStyleApplicationScheduled = false;
+
+		void applyStylesImpl();
 
 		// レイアウト
 
