@@ -7,7 +7,13 @@ namespace FlexLayout::Internal
 {
 	void FlexBoxImpl::ApplyStyles(TreeContext& context)
 	{
-		for (const auto& [_, ptr] : context->m_styleApplicationWaitlist)
+		if (context.m_styleApplicationWaitlist.empty())
+		{
+			return;
+		}
+
+		Console << U"---";
+		for (const auto& [_, ptr] : context.m_styleApplicationWaitlist)
 		{
 			auto item = ptr.lock();
 			if (item && item->m_isStyleApplicationScheduled)
@@ -15,7 +21,7 @@ namespace FlexLayout::Internal
 				item->applyStylesImpl();
 			}
 		}
-		context->m_styleApplicationWaitlist.clear();
+		context.m_styleApplicationWaitlist.clear();
 	}
 
 	void FlexBoxImpl::setCssText(const StringView cssText)
@@ -32,6 +38,7 @@ namespace FlexLayout::Internal
 			}
 
 			const StringView propertyText = cssText.substr(beginIdx, endIdx - beginIdx);
+			endIdx++;
 
 			const auto colonPos = propertyText.indexOf(U':');
 			if (colonPos == String::npos)
@@ -127,6 +134,7 @@ namespace FlexLayout::Internal
 		// 検証に失敗した場合
 		if (patternItr == definition.patterns.end())
 		{
+			Console << U"Ignored";
 			return false;
 		}
 
@@ -180,7 +188,12 @@ namespace FlexLayout::Internal
 					endIdx = text.length();
 				}
 
-				tmpInputs.push_back(text.substr(beginIdx, endIdx - beginIdx));
+				if (beginIdx < endIdx)
+				{
+					tmpInputs.push_back(text.substr(beginIdx, endIdx - beginIdx));
+				}
+
+				endIdx++;
 			}
 			
 			inputs = std::span{ tmpInputs.begin(), tmpInputs.end() };
@@ -222,6 +235,7 @@ namespace FlexLayout::Internal
 		// 読み込みに失敗した場合
 		if (patternItr == definition.patterns.end())
 		{
+			Console << U"Ignored";
 			return false;
 		}
 
@@ -253,6 +267,7 @@ namespace FlexLayout::Internal
 		}
 
 		entry.value.clear();
+		entry.removed = true;
 		switch (entry.event)
 		{
 		case _StyleValueEntry::Event::Added: // 相殺
@@ -272,6 +287,7 @@ namespace FlexLayout::Internal
 		for (auto& [_, entry] : m_styles)
 		{
 			entry.value.clear();
+			entry.removed = true;
 			switch (entry.event)
 			{
 			case _StyleValueEntry::Event::Added: // 相殺
@@ -305,6 +321,7 @@ namespace FlexLayout::Internal
 		m_context->m_styleApplicationWaitlist.insert({
 			getDepth(), weak_from_this()
 		});
+		m_isStyleApplicationScheduled = true;
 	}
 
 	void FlexBoxImpl::applyStylesImpl()
@@ -328,16 +345,17 @@ namespace FlexLayout::Internal
 				break;
 			}
 
-			switch (entry.event)
-			{
-			case _StyleValueEntry::Event::Added:
-			case _StyleValueEntry::Event::Modified:
-				assert(StyleProperties.at(name).applyCallback(*this, entry.value));
-				break;
-			case _StyleValueEntry::Event::Removed:
-				assert(StyleProperties.at(name).resetCallback(*this));
-				break;
-			}
+			//switch (entry.event)
+			//{
+			//case _StyleValueEntry::Event::Added:
+			//case _StyleValueEntry::Event::Modified:
+			//	assert(StyleProperties.at(name).applyCallback(*this, entry.value));
+			//	break;
+			//case _StyleValueEntry::Event::Removed:
+			//	assert(StyleProperties.at(name).resetCallback(*this));
+			//	break;
+			//}
+
 			entry.event = _StyleValueEntry::Event::None;
 		}
 

@@ -1,78 +1,50 @@
 ﻿#include <Siv3D.hpp>
-#include "FlexLayout/Style/StyleValue.hpp"
-#include "FlexLayout/Style/StyleValueParser.hpp"
+#include "FlexLayout/FlexLayout.hpp"
+
+void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
+{
+	const auto rect = box.marginAreaRect();
+	const Color color = HSV{ depth * 40, 0.8, 0.9 }.toColorF();
+
+	// 四角形を描画
+	if (rect)
+	{
+		rect->draw(color).drawFrame(1, Palette::Gray);
+	}
+
+	// テキストを描画
+	box.draw(Palette::Black);
+
+	for (const auto& child : box.children())
+	{
+		DrawFlexBox(child, depth + 1);
+	}
+}
 
 void Main()
 {
-	// テスト：シリアライズ単体
+	// レイアウト本体
+	FlexLayout::FlexLayout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
 
-	Console << U"Test 1:";
+	// idが指定されている要素はホットリロードしても参照が保持されます
+	auto document = *layout.document();
+	auto buttonBox = document.getElementById(U"button");
 
-	Array<FlexLayout::Style::StyleValue> values{
-		FlexLayout::Style::StyleValue(),
-		FlexLayout::Style::StyleValue::None(),
-		FlexLayout::Style::StyleValue::Auto(),
-		FlexLayout::Style::StyleValue::Integer(100),
-		FlexLayout::Style::StyleValue::Enum(FlexLayout::AlignContent::SpaceBetween),
-		FlexLayout::Style::StyleValue::Ratio(0.5),
-		FlexLayout::Style::StyleValue::Ratio(1, 3),
-		FlexLayout::Style::StyleValue::Percentage(80),
-		FlexLayout::Style::StyleValue::Number(123),
-		FlexLayout::Style::StyleValue::Length(456, FlexLayout::LengthUnit::Pixel)
-	};
-
-	for (const auto value : values)
+	while (System::Update())
 	{
-		Console.write(U"|");
-		Console << value;
-	}
+		// レイアウトの更新
+		layout.update(Scene::Rect());
 
-	// テスト：シリアライズ->デシリアライズ
+		// ツリーの四角形を描画
+		DrawFlexBox(document);
 
-	Console << U"\nTest 2:";
-
-	Array<FlexLayout::Style::StyleValue> restoredValues;
-
-	for (const auto value : values | std::views::drop(1))
-	{
-		if (value.type() == FlexLayout::Style::StyleValue::Type::Enum)
+		// Box[id="button"]に合わせてボタンを描画
+		if (buttonBox)
 		{
-			restoredValues.push_back(FlexLayout::Style::ParseValue(value.toString(), value.enumTypeId()));
-			continue;
-		}
-		else
-		{
-			restoredValues.push_back(FlexLayout::Style::ParseValue(value.toString(), value.type()));
-			continue;
+			if (auto rect = buttonBox->contentAreaRect())
+			{
+				SimpleGUI::Button(U"Hello, Yoga!", rect->pos, rect->w);
+			}
 		}
 	}
-
-	for (const auto value : restoredValues)
-	{
-		Console.write(U"|");
-		Console << value;
-	}
-
-	// テスト：パーサーのフォールバック
-
-	Console << U"\nTest 3:";
-
-	String input = U"123.0";
-	Console.write(U"|");
-	Console << FlexLayout::Style::ParseValue(
-		input,
-		FlexLayout::Style::StyleValue::Type::Length
-	);
-	Console.write(U"|");
-	Console << FlexLayout::Style::ParseValue(
-		input,
-		{ FlexLayout::Style::StyleValue::Type::Ratio, FlexLayout::Style::StyleValue::Type::Length }
-	);
-	Console.write(U"|");
-	Console << FlexLayout::Style::ParseValue(
-		input,
-		{ FlexLayout::Style::StyleValue::Type::Auto, FlexLayout::Style::StyleValue::Type::Ratio, FlexLayout::Style::StyleValue::Type::Length }
-	);
-
-	Console.readLine<String>();
 }

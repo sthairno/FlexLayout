@@ -61,29 +61,39 @@ namespace FlexLayout::Style
 
 		static std::tuple<bool, float, String> ParseFloatSuffix(const String& str)
 		{
-			std::basic_istringstream<char32> stream{ str.data() };
+			std::string buff = Unicode::ToUTF8(str);
+			std::istringstream stream{ buff };
 			stream >> std::noskipws;
 
-			float value;
-			if (not(stream >> value))
+			// `stream >> value`は数値のあとに'e'が続くと失敗するため、
+			// std::strtof()を使って数値を読み取る
+			// 
+			// e.g. "1.0em"
+
+			char* endptr = nullptr;
+			float value = std::strtof(buff.data(), &endptr);
+			if (errno == ERANGE || buff.data() == endptr ||
+				not std::isfinite(value))
 			{
 				return { false, 0.0f, { } };
 			}
+			stream.ignore(endptr - buff.data());
 
 			stream >> std::ws;
 			if (stream.eof())
 			{
+				// サフィックス無し
 				return { true, value, { } };
 			}
 
-			std::u32string suffix;
+			std::string suffix;
 			stream >> suffix;
 			if (!stream.eof())
 			{
 				return { false, 0.0F, { } };
 			}
 
-			return { true, value, { suffix } };
+			return { true, value, Unicode::FromUTF8(suffix) };
 		}
 
 		static bool ParseLengthUnit(const StringView suffix, LengthUnit& unit)

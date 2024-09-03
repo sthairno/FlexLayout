@@ -12,7 +12,6 @@ namespace FlexLayout::Style
 
 	inline StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number)
 	{
-		assert(value.valueless_by_exception());
 		switch (value.index())
 		{
 		case 0:	return ParseValue(std::get<0>(value), rule);

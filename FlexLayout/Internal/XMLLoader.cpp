@@ -135,7 +135,7 @@ namespace FlexLayout::Internal
 	{
 		if (tagName == U"Label")
 		{
-			return std::make_shared<FlexBoxImpl>(m_context, tagName);
+			return std::make_shared<LabelImpl>(m_context, tagName);
 		}
 		else if (tagName == U"Box")
 		{
