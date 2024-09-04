@@ -1,5 +1,5 @@
 <Layout useWebDefaults="true">
-	<Box style="font-size: 20px ; padding: 20; align-items: start; gap: 10 10;">
+	<Box style="font-size: 20px ; padding: 20; align-items: start; gap: 4; flex-direction: column;">
 		<Label style="font-size: 1.5em">FlexLayout</Label>
 		<Label style="border-width: 10">
 			複数行<br/>
@@ -19,7 +19,10 @@
 		<Label style="width: 100%; text-align: center;">text-align: center</Label>
 		<Label style="width: 100%; text-align: right;">text-align: right</Label>
 		<Box style="padding: 40;">
-			<Box id="button" style="min-height: 36; width: 40lh;" />
+			<Box id="button" style="min-height: 36; width: 400;" />
 		</Box>
+		<Box style="height: 1em"><Label>1em</Label></Box>
+		<Box style="height: 1lh"><Label>1lh</Label></Box>
+		<Box style="height: 1ex"><Label>1ex</Label></Box>
 	</Box>
 </Layout>

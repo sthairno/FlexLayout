@@ -9,14 +9,15 @@ namespace FlexLayout
 		class TreeContext;
 		class FlexBoxImpl;
 	}
+	class Label;
 
 	using StyleValue = Style::StyleValue;
 
-	class FlexBox
+	class Box
 	{
 	public:
 
-		FlexBox(std::shared_ptr<Internal::FlexBoxImpl> impl)
+		Box(std::shared_ptr<Internal::FlexBoxImpl> impl)
 			: m_impl(std::move(impl)) { }
 
 	public:
@@ -69,16 +70,20 @@ namespace FlexLayout
 			Style::ValueInputVariant v4
 		);
 
-		void draw(const s3d::ColorF& color = s3d::Palette::White) const;
+		s3d::Array<Box> children() const;
 
-		s3d::Array<FlexBox> children() const;
+		s3d::Array<Box> getElementsByClassName(s3d::StringView className) const;
 
-		s3d::Array<FlexBox> getElementsByClassName(s3d::StringView className) const;
+		s3d::Optional<Box> getElementById(s3d::StringView id) const;
 
-		s3d::Optional<FlexBox> getElementById(s3d::StringView id) const;
+		s3d::Optional<Label> asLabel() const;
 
 	protected:
 
 		std::shared_ptr<Internal::FlexBoxImpl> m_impl;
+
+	public:
+
+		virtual ~Box();
 	};
 }

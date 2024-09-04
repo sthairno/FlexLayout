@@ -8,7 +8,7 @@ namespace FlexLayout::Internal
 	{
 		Font font = SimpleGUI::GetFont();
 
-		float fontSizePixel = 16.0F;
+		float fontSizePx = 16.0F;
 
 		float lineHeightMul = 1.2F;
 
@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 
 		float fontRenderingScale() const
 		{
-			return font ? fontSizePixel / font.fontSize() : 1.0;
+			return font ? fontSizePx / font.fontSize() : 1.0;
 		}
 
 		float zeroGlyphAdvancePx() const
@@ -36,7 +36,7 @@ namespace FlexLayout::Internal
 
 		float lineHeightPx() const
 		{
-			return font.height() * fontRenderingScale() * lineHeightMul;
+			return fontSizePx * lineHeightMul;
 		}
 	};
 }

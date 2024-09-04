@@ -1,7 +1,7 @@
 ﻿#include <Siv3D.hpp>
-#include "FlexLayout/FlexLayout.hpp"
+#include "FlexLayout/Layout.hpp"
 
-void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
+void DrawFlexBox(const FlexLayout::Box& box, int depth = 0)
 {
 	const auto rect = box.marginAreaRect();
 	const Color color = HSV{ depth * 40, 0.8, 0.9 }.toColorF();
@@ -13,7 +13,10 @@ void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
 	}
 
 	// テキストを描画
-	box.draw(Palette::Black);
+	if (auto label = box.asLabel())
+	{
+		label->draw(Palette::Black);
+	}
 
 	for (const auto& child : box.children())
 	{
@@ -24,7 +27,7 @@ void DrawFlexBox(const FlexLayout::FlexBox& box, int depth = 0)
 void Main()
 {
 	// レイアウト本体
-	FlexLayout::FlexLayout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
+	FlexLayout::Layout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
 
 	while (System::Update())
 	{

@@ -99,10 +99,10 @@
     <ClCompile Include="FlexLayout\Internal\TreeContext.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\FlexLayout.cpp">
+    <ClCompile Include="FlexLayout\Layout.cpp">
       <Filter>Source Files\FlexLayout</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\FlexBox.cpp">
+    <ClCompile Include="FlexLayout\Box.cpp">
       <Filter>Source Files\FlexLayout</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Internal\LabelImpl.cpp">
@@ -142,6 +142,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Enum\Position.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Label.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -440,10 +443,10 @@
     <ClInclude Include="FlexLayout\Internal\TreeContext.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\FlexBox.hpp">
+    <ClInclude Include="FlexLayout\Box.hpp">
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\FlexLayout.hpp">
+    <ClInclude Include="FlexLayout\Layout.hpp">
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Internal\LabelImpl.hpp">
@@ -501,6 +504,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\FlexWrap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Label.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

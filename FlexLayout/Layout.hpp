@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "FlexBox.hpp"
+#include "Box.hpp"
+#include "Label.hpp"
 
 namespace tinyxml2
 {
@@ -17,45 +18,45 @@ namespace FlexLayout
 
 	using EnableHotReload = s3d::YesNo<struct PreserveWhitespace_tag>;
 
-	class FlexLayout
+	class Layout
 	{
 	public:
 
-		FlexLayout();
+		Layout();
 
-		inline explicit FlexLayout(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: FlexLayout()
+		inline explicit Layout(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
+			: Layout()
 		{
 			load(path, enableHotReload);
 		}
 
-		inline explicit FlexLayout(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: FlexLayout(path.data(), enableHotReload) {}
+		inline explicit Layout(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No)
+			: Layout(path.data(), enableHotReload) {}
 
-		inline explicit FlexLayout(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: FlexLayout(path.data(), enableHotReload) {}
+		inline explicit Layout(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
+			: Layout(path.data(), enableHotReload) {}
 
-		inline explicit FlexLayout(s3d::Arg::code_<String> code)
-			: FlexLayout()
+		inline explicit Layout(s3d::Arg::code_<String> code)
+			: Layout()
 		{
 			load(code);
 		}
 
 		template <class Reader, std::enable_if_t<std::is_base_of_v<s3d::IReader, Reader> && !std::is_lvalue_reference_v<Reader>>* = nullptr>
-		inline explicit FlexLayout(Reader&& reader)
-			: FlexLayout()
+		inline explicit Layout(Reader&& reader)
+			: Layout()
 		{
 			load(std::make_unique<Reader>(std::forward<Reader>(reader)));
 		}
 
-		inline explicit FlexLayout(std::unique_ptr<s3d::IReader>&& reader)
-			: FlexLayout()
+		inline explicit Layout(std::unique_ptr<s3d::IReader>&& reader)
+			: Layout()
 		{
 			load(std::forward<std::unique_ptr<s3d::IReader>>(reader));
 		}
 
-		inline explicit FlexLayout(const tinyxml2::XMLDocument& document)
-			: FlexLayout()
+		inline explicit Layout(const tinyxml2::XMLDocument& document)
+			: Layout()
 		{
 			load(document);
 		}
@@ -110,7 +111,7 @@ namespace FlexLayout
 			update(rect.w, rect.h, rect.pos);
 		}
 
-		Optional<FlexBox> document();
+		Optional<Box> document();
 
 	private:
 
@@ -130,6 +131,6 @@ namespace FlexLayout
 
 	public:
 
-		~FlexLayout();
+		~Layout();
 	};
 }

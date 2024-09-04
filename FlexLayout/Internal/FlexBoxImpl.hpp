@@ -102,6 +102,26 @@ namespace FlexLayout::Internal
 
 		void resetLayoutOffset();
 
+		RectF localMarginAreaRect() const;
+
+		RectF localBorderAreaRect() const;
+
+		RectF localPaddingAreaRect() const;
+
+		RectF localContentAreaRect() const;
+
+		Optional<RectF> marginAreaRect() const;
+
+		Optional<RectF> borderAreaRect() const;
+
+		Optional<RectF> paddingAreaRect() const;
+
+		Optional<RectF> contentAreaRect() const;
+
+		// --その他--
+
+		virtual bool isLabel() const noexcept { return false; }
+
 	private:
 
 		// ノード情報

@@ -18,8 +18,26 @@ namespace FlexLayout::Internal
 
 		void draw(const TextStyle& textStyle, const ColorF& color);
 
+		bool isLabel() const noexcept override { return true; }
+
 	private:
 
+		struct Impl;
+
 		String m_text;
+
+		Array<Glyph> m_glyphs;
+
+		Array<size_t> m_lineBreaks;
+
+		Array<double> m_lineWidths;
+
+		size_t lineCount() const { return m_lineWidths.size(); }
+
+		void updateConstraints(double width);
+
+		double computeBaseline(size_t lineIdx = Largest<size_t>) const;
+
+		SizeF computeBoundingBox() const;
 	};
 }

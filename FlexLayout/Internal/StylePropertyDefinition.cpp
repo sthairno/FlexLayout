@@ -17,7 +17,7 @@ namespace FlexLayout::Internal
 		{
 		case LengthUnit::Pixel: return demicalValue;
 		case LengthUnit::Ch: return style.zeroGlyphAdvancePx() * demicalValue;
-		case LengthUnit::Em: return style.fontSizePixel * demicalValue;
+		case LengthUnit::Em: return style.fontSizePx * demicalValue;
 		case LengthUnit::Ex: return style.xGlyphHeightPx() * demicalValue;
 		case LengthUnit::Ic: return style.cjkWaterGlyphAdvancePx() * demicalValue;
 		case LengthUnit::Lh: return style.lineHeightPx() * demicalValue;
@@ -870,11 +870,11 @@ namespace FlexLayout::Internal
 
 					if (auto parent = impl.parent())
 					{
-						textStyle.fontSizePixel = parent->computedTextStyle().fontSizePixel;
+						textStyle.fontSizePx = parent->computedTextStyle().fontSizePx;
 					}
 					else
 					{
-						textStyle.fontSizePixel = impl.context()->defaultTextStyle().fontSizePixel;
+						textStyle.fontSizePx = impl.context()->defaultTextStyle().fontSizePx;
 					}
 
 					// サイズ計算
@@ -883,10 +883,10 @@ namespace FlexLayout::Internal
 					switch (value.type())
 					{
 					case ValueType::Length:
-						textStyle.fontSizePixel = CalculateCSSLength(input[0], textStyle);
+						textStyle.fontSizePx = CalculateCSSLength(input[0], textStyle);
 						break;
 					case ValueType::Percentage:
-						textStyle.fontSizePixel = textStyle.fontSizePixel * value.getFloatValueUnchecked() / 100.0f;
+						textStyle.fontSizePx = textStyle.fontSizePx * value.getFloatValueUnchecked() / 100.0f;
 						break;
 					}
 
@@ -896,11 +896,11 @@ namespace FlexLayout::Internal
 				{
 					if (auto parent = impl.parent())
 					{
-						impl.computedTextStyle().fontSizePixel = parent->computedTextStyle().fontSizePixel;
+						impl.computedTextStyle().fontSizePx = parent->computedTextStyle().fontSizePx;
 					}
 					else
 					{
-						impl.computedTextStyle().fontSizePixel = impl.context()->defaultTextStyle().fontSizePixel;
+						impl.computedTextStyle().fontSizePx = impl.context()->defaultTextStyle().fontSizePx;
 					}
 				}
 			}
