@@ -323,6 +323,7 @@ namespace FlexLayout::Internal
 			}
 			else
 			{
+				Console << prop.value;
 				prop.definition.installCallback(self, prop.value);
 			}
 		};
