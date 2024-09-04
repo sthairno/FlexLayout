@@ -36,7 +36,7 @@ namespace FlexLayout::Internal
 		ComputedTextStyle m_defaultTextStyle;
 
 		/// @brief `FlexBoxImpl::scheduleStyleApplication()`でスケジュールされた要素の待機リスト
-		std::set<std::pair<size_t, std::weak_ptr<FlexBoxImpl>>, _WaitlistComp> m_styleApplicationWaitlist;
+		phmap::btree_set<std::pair<size_t, std::weak_ptr<FlexBoxImpl>>, _WaitlistComp> m_styleApplicationWaitlist;
 
 		YGNodeRef createNode() const;
 
