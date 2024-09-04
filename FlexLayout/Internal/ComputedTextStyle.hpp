@@ -6,7 +6,7 @@ namespace FlexLayout::Internal
 {
 	struct ComputedTextStyle
 	{
-		Font font;
+		Font font = SimpleGUI::GetFont();
 
 		float fontSizePixel = 16.0F;
 
@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 
 		float fontRenderingScale() const
 		{
-			return fontSizePixel / font.fontSize();
+			return font ? fontSizePixel / font.fontSize() : 1.0;
 		}
 
 		float zeroGlyphAdvancePx() const
