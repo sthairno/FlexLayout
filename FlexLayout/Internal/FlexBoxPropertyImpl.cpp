@@ -1,5 +1,4 @@
 ﻿#include "FlexBoxImpl.hpp"
-#include "../Util/LoadStyleToYogaNode.hpp"
 
 namespace FlexLayout::Internal
 {

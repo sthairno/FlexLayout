@@ -270,7 +270,6 @@
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp" />
-    <ClInclude Include="FlexLayout\Util\LoadStyleToYogaNode.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

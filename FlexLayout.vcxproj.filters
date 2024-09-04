@@ -440,9 +440,6 @@
     <ClInclude Include="FlexLayout\Internal\TreeContext.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Util\LoadStyleToYogaNode.hpp">
-      <Filter>Header Files\FlexLayout\Util</Filter>
-    </ClInclude>
     <ClInclude Include="FlexLayout\FlexBox.hpp">
       <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
