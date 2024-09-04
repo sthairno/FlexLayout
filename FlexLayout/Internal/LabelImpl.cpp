@@ -181,7 +181,7 @@ namespace FlexLayout::Internal
 	{
 		auto& style = computedTextStyle();
 		return {
-			*std::max_element(m_lineWidths.begin(), m_lineWidths.end()),
+			m_lineWidths.empty() ? 0.0 : *std::max_element(m_lineWidths.begin(), m_lineWidths.end()),
 			style.lineHeightPx() * lineCount()
 		};
 	}
