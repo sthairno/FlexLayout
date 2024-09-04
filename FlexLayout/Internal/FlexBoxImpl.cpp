@@ -62,4 +62,14 @@ namespace FlexLayout::Internal
 		}
 		return depth;
 	}
+
+	FlexBoxImpl& FlexBoxImpl::getRoot()
+	{
+		auto ptr = this;
+		while (ptr->parent())
+		{
+			ptr = ptr->parent();
+		}
+		return *ptr;
+	}
 }

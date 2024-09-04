@@ -1,6 +1,5 @@
 ﻿#include "FlexBoxImpl.hpp"
 #include "TreeContext.hpp"
-#include "StylePropertyDefinition.hpp"
 #include "../Style/StyleValueParser.hpp"
 
 namespace FlexLayout::Internal
@@ -75,7 +74,7 @@ namespace FlexLayout::Internal
 
 	const Array<Style::StyleValue>& FlexBoxImpl::getStyle(const StringView styleName)
 	{
-		return m_styles[styleName].value;
+		return getStyleProperty(styleName).value;
 	}
 
 	Array<Style::StyleValue> FlexBoxImpl::getStyle(const StringView styleName) const
@@ -139,17 +138,9 @@ namespace FlexLayout::Internal
 		}
 
 		// スタイルを作成 or 更新
-		auto& entry = m_styles[styleName];
+		auto& entry = getStyleProperty(styleName);
 		entry.value = Array<Style::StyleValue>(values.begin(), values.end());
-		if (entry.removed)
-		{
-			entry.event = _StyleValueEntry::Event::Added;
-			entry.removed = false;
-		}
-		else if(entry.event != _StyleValueEntry::Event::Added)
-		{
-			entry.event = _StyleValueEntry::Event::Modified;
-		}
+		entry.removed = false;
 
 		scheduleStyleApplication();
 
@@ -240,18 +231,9 @@ namespace FlexLayout::Internal
 		}
 
 		// スタイルを作成 or 更新
-		auto& entry = m_styles[styleName];
+		auto& entry = getStyleProperty(styleName);
 		entry.value = std::move(parsedValues);
-		if (entry.removed)
-		{
-			entry.event = _StyleValueEntry::Event::Added;
-			entry.removed = false;
-		}
-		else if (entry.event != _StyleValueEntry::Event::Added)
-		{
-			entry.event = _StyleValueEntry::Event::Modified;
-		}
-
+		entry.removed = false;
 		scheduleStyleApplication();
 
 		return true;
@@ -259,46 +241,39 @@ namespace FlexLayout::Internal
 
 	bool FlexBoxImpl::removeStyle(const StringView styleName)
 	{
-		auto& entry = m_styles[styleName];
+		auto itr = m_styles.find(styleName);
 
-		if (entry.removed)
+		if (itr == m_styles.end() || itr->second.removed)
 		{
 			return false;
 		}
 
-		entry.value.clear();
-		entry.removed = true;
-		switch (entry.event)
-		{
-		case _StyleValueEntry::Event::Added: // 相殺
-			entry.event = _StyleValueEntry::Event::None;
-			break;
-		default:
-			entry.event = _StyleValueEntry::Event::Removed;
-			scheduleStyleApplication();
-			break;
-		}
+		auto& prop = itr->second;
+
+		prop.value.clear();
+		prop.removed = true;
+		scheduleStyleApplication();
 
 		return false;
 	}
 
 	void FlexBoxImpl::clearStyles()
 	{
-		for (auto& [_, entry] : m_styles)
+		bool modified = false;
+		for (auto& [_, prop] : m_styles)
 		{
-			entry.value.clear();
-			entry.removed = true;
-			switch (entry.event)
+			if (not prop.removed)
 			{
-			case _StyleValueEntry::Event::Added: // 相殺
-				entry.event = _StyleValueEntry::Event::None;
-				break;
-			default:
-				entry.event = _StyleValueEntry::Event::Removed;
-				break;
+				prop.value.clear();
+				prop.removed = true;
+				modified = true;
 			}
 		}
-		scheduleStyleApplication();
+
+		if (modified)
+		{
+			scheduleStyleApplication();
+		}
 	}
 
 	void FlexBoxImpl::scheduleStyleApplication()
@@ -324,42 +299,63 @@ namespace FlexLayout::Internal
 		m_isStyleApplicationScheduled = true;
 	}
 
+	FlexBoxImpl::_StyleProperty& FlexBoxImpl::getStyleProperty(const StringView styleName)
+	{
+		auto result = m_styles.try_emplace(styleName, _StyleProperty{
+			.definition = StyleProperties.at(styleName)
+		});
+		return result.first->second;
+	}
+
+	FlexBoxImpl::_StyleProperty* FlexBoxImpl::tryGetStyleProperty(const StringView styleName)
+	{
+		auto itr = m_styles.find(styleName);
+		return itr != m_styles.end() ? &itr->second : nullptr;
+	}
+
 	void FlexBoxImpl::applyStylesImpl()
 	{
-		// 待機フラグを解除
+		const static auto ApplyProperty = [](FlexBoxImpl& self, _StyleProperty& prop)
+		{
+			if (prop.removed)
+			{
+				prop.definition.resetCallback(self);
+			}
+			else
+			{
+				prop.definition.installCallback(self, prop.value);
+			}
+		};
+
 		m_isStyleApplicationScheduled = false;
 
-		// スタイルを適用
-		for (auto& [name, entry] : m_styles)
+		// font,font-size,line-heightを事前に計算
+		// (emなど、フォントに関連するサイズ計算に必要)
+
+		m_computedTextStyle.font = m_parent
+			? m_parent->m_computedTextStyle.font
+			: m_context->defaultTextStyle().font;
+
+		auto lineHeightProp = getStyleProperty(U"line-height");
+		ApplyProperty(*this, lineHeightProp);
+
+		auto fontSizeProp = getStyleProperty(U"font-size");
+		ApplyProperty(*this, fontSizeProp);
+
+		// その他のスタイルを適用
+
+		for (auto& [name, prop] : m_styles)
 		{
-			switch (entry.event)
+			if (&prop == &fontSizeProp || &prop == &lineHeightProp)
 			{
-			case _StyleValueEntry::Event::Added:
-				Console << U"Added: {} = {}"_fmt(name, entry.value);
-				break;
-			case _StyleValueEntry::Event::Modified:
-				Console << U"Modified: {} = {}"_fmt(name, entry.value);
-				break;
-			case _StyleValueEntry::Event::Removed:
-				Console << U"Removed: {}"_fmt(name);
-				break;
+				continue;
 			}
 
-			//switch (entry.event)
-			//{
-			//case _StyleValueEntry::Event::Added:
-			//case _StyleValueEntry::Event::Modified:
-			//	assert(StyleProperties.at(name).applyCallback(*this, entry.value));
-			//	break;
-			//case _StyleValueEntry::Event::Removed:
-			//	assert(StyleProperties.at(name).resetCallback(*this));
-			//	break;
-			//}
-
-			entry.event = _StyleValueEntry::Event::None;
+			ApplyProperty(*this, prop);
 		}
 
-		// 子要素に再帰
+		// 子要素にも再帰
+
 		for (const auto& child : m_children)
 		{
 			child->applyStylesImpl();

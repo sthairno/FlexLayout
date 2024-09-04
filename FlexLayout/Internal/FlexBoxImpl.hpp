@@ -2,6 +2,7 @@
 #include "Common.hpp"
 #include "../Style/StyleValue.hpp"
 #include "ComputedTextStyle.hpp"
+#include "StylePropertyDefinition.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -36,6 +37,10 @@ namespace FlexLayout::Internal
 		/// @brief ルート要素からの深さを取得する
 		/// @return ルート要素の場合は0、それ以外は1以上
 		size_t getDepth() const;
+
+		/// @brief ルート要素を取得する
+		/// @remark 親要素が存在しない場合、自身を返します
+		FlexBoxImpl& getRoot();
 
 		// --プロパティ(FlexBoxPropertyImpl.cpp)--
 
@@ -123,7 +128,7 @@ namespace FlexLayout::Internal
 
 		// スタイル
 
-		struct _StyleValueEntry
+		struct _StyleProperty
 		{
 			enum class Event
 			{
@@ -133,20 +138,24 @@ namespace FlexLayout::Internal
 				Removed,
 			};
 
-			Array<Style::StyleValue> value;
+			const StylePropertyDefinition& definition;
 
-			Event event = Event::None;
+			Array<Style::StyleValue> value;
 
 			bool removed = true;
 		};
 
-		using _StyleValueTable = HashTable<String, _StyleValueEntry>;
+		using _StylePropertyTable = HashTable<String, _StyleProperty, decltype(StyleProperties)::hasher>;
 
-		_StyleValueTable m_styles;
+		_StylePropertyTable m_styles;
 
 		ComputedTextStyle m_computedTextStyle;
 
 		bool m_isStyleApplicationScheduled = false;
+
+		_StyleProperty& getStyleProperty(const StringView styleName);
+
+		_StyleProperty* tryGetStyleProperty(const StringView styleName);
 
 		void applyStylesImpl();
 
