@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Common.hpp"
 #include "Style/StyleValue.hpp"
+#include "Util/Thickness.hpp"
 
 namespace FlexLayout
 {
@@ -25,6 +26,12 @@ namespace FlexLayout
 		Optional<Vec2> offset() const;
 
 		RectF localRect() const;
+
+		Thickness margin() const;
+
+		Thickness border() const;
+
+		Thickness padding() const;
 
 		Optional<RectF> marginAreaRect() const;
 
@@ -79,6 +86,8 @@ namespace FlexLayout
 		s3d::Optional<Box> getElementById(s3d::StringView id) const;
 
 		s3d::Optional<Label> asLabel() const;
+
+		void drawFrame(const ColorF& color = Palette::White) const;
 
 	protected:
 

@@ -14,6 +14,21 @@ namespace FlexLayout
 		return m_impl->localMarginAreaRect();
 	}
 
+	Thickness Box::margin() const
+	{
+		return m_impl->margin();
+	}
+
+	Thickness Box::border() const
+	{
+		return m_impl->border();
+	}
+
+	Thickness Box::padding() const
+	{
+		return m_impl->padding();
+	}
+
 	Optional<RectF> Box::marginAreaRect() const
 	{
 		return m_impl->marginAreaRect();
@@ -133,6 +148,14 @@ namespace FlexLayout
 			return Label{ m_impl };
 		}
 		return none;
+	}
+
+	void Box::drawFrame(const ColorF& color) const
+	{
+		if (auto rect = m_impl->borderAreaRect())
+		{
+			m_impl->border().drawPadding(*rect, color);
+		}
 	}
 
 	Box::~Box() { }

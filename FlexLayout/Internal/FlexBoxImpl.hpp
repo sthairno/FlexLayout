@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Common.hpp"
 #include "../Style/StyleValue.hpp"
+#include "../Util/Thickness.hpp"
 #include "ComputedTextStyle.hpp"
 #include "StylePropertyDefinition.hpp"
 
@@ -104,21 +105,56 @@ namespace FlexLayout::Internal
 
 		void resetLayoutOffset();
 
+		Thickness margin() const;
+
+		Thickness border() const;
+
+		Thickness padding() const;
+
 		RectF localMarginAreaRect() const;
 
-		RectF localBorderAreaRect() const;
+		inline RectF localBorderAreaRect() const
+		{
+			return margin().shrinkRect(localMarginAreaRect());
+		}
 
-		RectF localPaddingAreaRect() const;
+		inline RectF localPaddingAreaRect() const
+		{
+			return border().shrinkRect(localBorderAreaRect());
+		}
 
-		RectF localContentAreaRect() const;
+		inline RectF localContentAreaRect() const
+		{
+			return padding().shrinkRect(localPaddingAreaRect());
+		}
 
-		Optional<RectF> marginAreaRect() const;
+		inline Optional<RectF> marginAreaRect() const
+		{
+			return m_layoutOffset
+				? localMarginAreaRect().movedBy(*m_layoutOffset)
+				: Optional<RectF>{};
+		}
 
-		Optional<RectF> borderAreaRect() const;
+		inline Optional<RectF> borderAreaRect() const
+		{
+			return m_layoutOffset
+				? localBorderAreaRect().movedBy(*m_layoutOffset)
+				: Optional<RectF>{};
+		}
 
-		Optional<RectF> paddingAreaRect() const;
+		inline Optional<RectF> paddingAreaRect() const
+		{
+			return m_layoutOffset
+				? localPaddingAreaRect().movedBy(*m_layoutOffset)
+				: Optional<RectF>{};
+		}
 
-		Optional<RectF> contentAreaRect() const;
+		inline Optional<RectF> contentAreaRect() const
+		{
+			return m_layoutOffset
+				? localContentAreaRect().movedBy(*m_layoutOffset)
+				: Optional<RectF>{};
+		}
 
 		// --その他--
 

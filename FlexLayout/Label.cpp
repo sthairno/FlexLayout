@@ -13,12 +13,12 @@ namespace FlexLayout
 		impl().setText(text);
 	}
 
-	void Label::draw(const ColorF& color)
+	void Label::draw(const ColorF& color) const
 	{
 		impl().draw(TextStyle::Default(), color);
 	}
 
-	void Label::draw(const TextStyle& textStyle, const ColorF& color)
+	void Label::draw(const TextStyle& textStyle, const ColorF& color) const
 	{
 		impl().draw(textStyle, color);
 	}

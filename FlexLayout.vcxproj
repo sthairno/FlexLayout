@@ -139,6 +139,7 @@
     <ClCompile Include="FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="FlexLayout\Style\StyleValueParser.cpp" />
+    <ClCompile Include="FlexLayout\Util\Thickness.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +273,7 @@
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp" />
+    <ClInclude Include="FlexLayout\Util\Thickness.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

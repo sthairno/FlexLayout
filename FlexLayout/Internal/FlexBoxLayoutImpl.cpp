@@ -52,6 +52,36 @@ namespace FlexLayout::Internal
 		}
 	}
 
+	Thickness FlexBoxImpl::margin() const
+	{
+		return Thickness{
+			YGNodeLayoutGetMargin(m_node, YGEdgeTop),
+			YGNodeLayoutGetMargin(m_node, YGEdgeRight),
+			YGNodeLayoutGetMargin(m_node, YGEdgeBottom),
+			YGNodeLayoutGetMargin(m_node, YGEdgeLeft)
+		};
+	}
+
+	Thickness FlexBoxImpl::border() const
+	{
+		return Thickness{
+			YGNodeLayoutGetBorder(m_node, YGEdgeTop),
+			YGNodeLayoutGetBorder(m_node, YGEdgeRight),
+			YGNodeLayoutGetBorder(m_node, YGEdgeBottom),
+			YGNodeLayoutGetBorder(m_node, YGEdgeLeft)
+		};
+	}
+
+	Thickness FlexBoxImpl::padding() const
+	{
+		return Thickness{
+			YGNodeLayoutGetPadding(m_node, YGEdgeTop),
+			YGNodeLayoutGetPadding(m_node, YGEdgeRight),
+			YGNodeLayoutGetPadding(m_node, YGEdgeBottom),
+			YGNodeLayoutGetPadding(m_node, YGEdgeLeft)
+		};
+	}
+
 	RectF FlexBoxImpl::localMarginAreaRect() const
 	{
 		return RectF{
@@ -61,63 +91,4 @@ namespace FlexLayout::Internal
 			YGNodeLayoutGetHeight(m_node)
 		};
 	}
-
-	RectF FlexBoxImpl::localBorderAreaRect() const
-	{
-		return localMarginAreaRect().stretched(
-			-YGNodeLayoutGetMargin(m_node, YGEdgeLeft),
-			-YGNodeLayoutGetMargin(m_node, YGEdgeTop),
-			-YGNodeLayoutGetMargin(m_node, YGEdgeRight),
-			-YGNodeLayoutGetMargin(m_node, YGEdgeBottom)
-		);
-	}
-
-	RectF FlexBoxImpl::localPaddingAreaRect() const
-	{
-		return localBorderAreaRect().stretched(
-			-YGNodeLayoutGetBorder(m_node, YGEdgeLeft),
-			-YGNodeLayoutGetBorder(m_node, YGEdgeTop),
-			-YGNodeLayoutGetBorder(m_node, YGEdgeRight),
-			-YGNodeLayoutGetBorder(m_node, YGEdgeBottom)
-		);
-	}
-
-	RectF FlexBoxImpl::localContentAreaRect() const
-	{
-		return localPaddingAreaRect().stretched(
-			-YGNodeLayoutGetPadding(m_node, YGEdgeLeft),
-			-YGNodeLayoutGetPadding(m_node, YGEdgeTop),
-			-YGNodeLayoutGetPadding(m_node, YGEdgeRight),
-			-YGNodeLayoutGetPadding(m_node, YGEdgeBottom)
-		);
-	}
-
-	Optional<RectF> FlexBoxImpl::marginAreaRect() const
-	{
-		return m_layoutOffset
-			? localMarginAreaRect().movedBy(*m_layoutOffset)
-			: Optional<RectF>{ };
-	}
-
-	Optional<RectF> FlexBoxImpl::borderAreaRect() const
-	{
-		return m_layoutOffset
-			? localBorderAreaRect().movedBy(*m_layoutOffset)
-			: Optional<RectF>{ };
-	}
-
-	Optional<RectF> FlexBoxImpl::paddingAreaRect() const
-	{
-		return m_layoutOffset
-			? localPaddingAreaRect().movedBy(*m_layoutOffset)
-			: Optional<RectF>{ };
-	}
-
-	Optional<RectF> FlexBoxImpl::contentAreaRect() const
-	{
-		return m_layoutOffset
-			? localContentAreaRect().movedBy(*m_layoutOffset)
-			: Optional<RectF>{ };
-	}
-
 }

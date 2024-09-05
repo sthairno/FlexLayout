@@ -21,9 +21,9 @@ namespace FlexLayout
 
 		void setText(const StringView text);
 
-		void draw(const ColorF& color = Palette::White);
+		void draw(const ColorF& color = Palette::White) const;
 
-		void draw(const TextStyle& textStyle, const ColorF& color = Palette::White);
+		void draw(const TextStyle& textStyle, const ColorF& color = Palette::White) const;
 
 	private:
 
