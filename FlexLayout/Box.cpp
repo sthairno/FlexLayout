@@ -34,6 +34,11 @@ namespace FlexLayout
 		return m_impl->contentAreaRect();
 	}
 
+	Array<StyleValue> Box::getStyle(const StringView key) const
+	{
+		return m_impl->getStyle(key);
+	}
+
 	bool Box::setStyle(const StringView key, const Array<StyleValue>& list)
 	{
 		return m_impl->setStyle(key, std::span{ list.begin(), list.end() });

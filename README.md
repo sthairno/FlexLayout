@@ -8,8 +8,9 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 ### レイアウトファイル
 
+`<Layout>`：レイアウトファイルの宣言    
 `<Box>`：ボックスレイアウトに対応したコンテナー   
-`<Label>`：テキストを描画できる要素 (改行は`<br/>`を使用)
+`<Label>`：テキストを描画できる要素 (改行には`<br/>`を使用)
 
 属性：
 
@@ -19,22 +20,22 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 > **記述例：**
 > ```xml
-> <Layout useWebDefaults="true">
+> <Layout>
 > 	<Box id="root">
 > 		<Label class="label">Hello, World!</Label>
 > 	</Box>
 > </Layout>
 > ```
 
-### C++クラス `FlexLayout::FlexLayout`
+### `FlexLayout::Layout`
 
 #### コンストラクタ
 
-- `FlexLayout{ U"hoge/レイアウトファイル.xml", FlexLayout::EnableHotReload::No }`
+- `Layout{ U"hoge/レイアウトファイル.xml", FlexLayout::EnableHotReload::No }`
   - レイアウトファイルのファイルパスを指定して初期化
   - 第２引数をFlexLayout::EnableHotReload::Yesにすると、ファイルの保存時にレイアウトファイルを自動で再読み込みします
 
-- `FlexLayout{ Arg::code=U"<Layout>...</Layout>" }`
+- `Layout{ Arg::code=U"<Layout>...</Layout>" }`
   - レイアウトのXMLを直接指定して初期化
 
 #### メンバ関数
@@ -48,6 +49,37 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
   ファイルを再読み込み (ファイルパスを指定した場合のみ使用可)
 
+- `update()`
+
+  ホットリロード、レイアウトの更新を実行   
+  引数にはレイアウトで使用する横幅、縦幅を設定できます
+
+- `document()`
+
+  ルート要素を取得します (`FlexLayout::Box`)
+
+> **実装例：**
+>
+> ```cpp
+> #include <Siv3D.hpp>
+> #include "FlexLayout/Layout.hpp"
+> 
+> void Main()
+> {
+> 	FlexLayout::Layout layout{ U"Layout.xml" };
+> 	
+> 	while(System::Update())
+> 	{
+> 		layout.update(Scene::Rect());
+> 		auto root = layout.document();
+> 	}
+> }
+> ```
+
+### `FlexLayout::Box` (`FlexLayout::Label`でも同様)
+
+#### メンバ関数
+
 - `getElementsByClassName(class)`
 
   クラス名から要素を検索
@@ -57,27 +89,36 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
   IDから要素を１つだけ取得   
   ここで取得した要素は、reloadなどで再読み込みしても参照が保持されます
 
-- `update()`
+- `marginAreaRect()`, `borderAreaRect()`, `paddingAreaRect()`, `contentAreaRect()`
 
-  ホットリロード、レイアウトの更新を実行   
-  引数にはレイアウトで使用する横幅、縦幅を設定できます
+  ボックスモデルの各領域を取得   
+  参照：[CSS 基本ボックスモデル入門](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)
 
-> **実装例：**
->
-> ```cpp
-> #include <Siv3D.hpp>
-> #include "FlexLayout/FlexLayout.hpp"
-> 
-> void Main()
-> {
-> 	FlexLayout::FlexLayout layout{ U"Layout.xml" };
-> 	
-> 	while(System::Update())
-> 	{
-> 		layout.update(Scene::Rect());
-> 	}
-> }
-> ```
+- `getStyle(U"property")`
+
+  要素のスタイルを取得   
+  値が設定されていない場合、空の配列を返します
+
+- `setStyle(U"property", ...)`
+
+  要素のスタイルを設定
+
+- `asLabel()`
+
+  `FlexLayout::Label`のインスタンスを取得 (`<Label/>`で宣言されていた時のみ有効)
+
+### `FlexLayout::Label`
+
+#### メンバ関数
+
+- `draw(...)`
+
+  ラベルの文字列を描画
+
+- `text()`, `setText(text)`
+
+  ラベルの文字列を取得,更新   
+  (描画に反映させるには`FlexLayout::Layout::update()`の呼び出しが必要です)
 
 ## インラインCSS
 
@@ -87,14 +128,16 @@ BoxとLabelはインラインCSSによるスタイル設定に対応していま
 
 ### 対応プロパティ
 
-- レイアウト関連 (https://www.yogalayout.dev/docs/styling/)
-  - `align-content`
-  - `align-items`
+- レイアウト関連
+  - align*
+    - `align-content`
+    - `align-items`
+    - `align-self`
   - `aspect-ratio`
   - `display`
-  - `flex` (`flex-basis`,`flex-grow`,`flex-shrink`)
-  - `flex-direction`
-  - `flex-wrap`
+  - flex*
+    - `flex` (`flex-basis`,`flex-grow`,`flex-shrink`)
+    - `flex-flow` (`flex-direction`,`flex-wrap`)
   - `gap` (`row-gap`,`column-gap`)
   - `position`
   - `top`,`right`,`bottom`,`left`
@@ -107,13 +150,9 @@ BoxとLabelはインラインCSSによるスタイル設定に対応していま
   - `height` (`max-width`, `max-height`)
 - ラベル関連
   - `font-size`
-    - px, %, em, rem(1rem=16pxとして計算)
   - `line-height`
     - 実数倍率のみ対応
   - `text-align`
-    - inherit, left, center, right
-  - `-siv3d-font`
-    - 描画に使用するFontAssetのアセット名 (デフォルトは`SimpleGUI::GetFont()`)
 
 ## 動作環境
 

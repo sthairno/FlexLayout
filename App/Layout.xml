@@ -1,4 +1,4 @@
-<Layout useWebDefaults="true">
+<Layout>
 	<Box style="font-size: 20px ; padding: 20; align-items: start; gap: 4; flex-direction: column;">
 		<Label style="font-size: 1.5em">FlexLayout</Label>
 		<Label style="border-width: 10">

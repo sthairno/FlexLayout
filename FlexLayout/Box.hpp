@@ -34,6 +34,8 @@ namespace FlexLayout
 
 		Optional<RectF> contentAreaRect() const;
 
+		Array<StyleValue> getStyle(const StringView key) const;
+
 		bool setStyle(const StringView key, const Array<StyleValue>& list);
 
 		bool setStyle(const StringView key, StyleValue value);

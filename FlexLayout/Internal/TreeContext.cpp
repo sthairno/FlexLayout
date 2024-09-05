@@ -5,8 +5,11 @@ namespace FlexLayout::Internal
 {
 	TreeContext::TreeContext()
 		: m_yogaConfig{ YGConfigNew() }
-		, m_dummyNode{ YGNodeNewWithConfig(m_yogaConfig) }
-	{ }
+		, m_dummyNode{ nullptr }
+	{
+		YGConfigSetUseWebDefaults(m_yogaConfig, true);
+		m_dummyNode = YGNodeNewWithConfig(m_yogaConfig);
+	}
 
 	YGNodeRef TreeContext::createNode() const
 	{
