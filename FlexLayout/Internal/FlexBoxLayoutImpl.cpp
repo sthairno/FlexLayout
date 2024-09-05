@@ -82,7 +82,7 @@ namespace FlexLayout::Internal
 		};
 	}
 
-	RectF FlexBoxImpl::localMarginAreaRect() const
+	RectF FlexBoxImpl::localBorderAreaRect() const
 	{
 		return RectF{
 			YGNodeLayoutGetLeft(m_node),

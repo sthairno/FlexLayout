@@ -11,7 +11,7 @@ namespace FlexLayout
 
 	RectF Box::localRect() const
 	{
-		return m_impl->localMarginAreaRect();
+		return m_impl->localBorderAreaRect();
 	}
 
 	Thickness Box::margin() const

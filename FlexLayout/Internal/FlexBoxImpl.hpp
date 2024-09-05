@@ -111,12 +111,12 @@ namespace FlexLayout::Internal
 
 		Thickness padding() const;
 
-		RectF localMarginAreaRect() const;
-
-		inline RectF localBorderAreaRect() const
+		inline RectF localMarginAreaRect() const
 		{
-			return margin().shrinkRect(localMarginAreaRect());
+			return margin().expandRect(localBorderAreaRect());
 		}
+
+		RectF localBorderAreaRect() const;
 
 		inline RectF localPaddingAreaRect() const
 		{
