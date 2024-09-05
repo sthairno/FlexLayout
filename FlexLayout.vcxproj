@@ -272,6 +272,7 @@
     <ClInclude Include="FlexLayout\Label.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValue.hpp" />
+    <ClInclude Include="FlexLayout\Style\StyleValueHelper.hpp" />
     <ClInclude Include="FlexLayout\Style\StyleValueParser.hpp" />
     <ClInclude Include="FlexLayout\Util\Thickness.hpp" />
   </ItemGroup>

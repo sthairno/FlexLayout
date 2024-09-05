@@ -318,4 +318,51 @@ namespace FlexLayout::Style
 
 		return { };
 	}
+
+	struct parser_visitor
+	{
+		detail::StyleValueMultiMatchRule rules;
+
+		StyleValue operator()(const StyleValue& value)
+		{
+			return rules.match(value)
+				? value
+				: StyleValue{ };
+		}
+
+		StyleValue operator()(std::int32_t value)
+		{
+			return ParseValue(value, rules);
+		}
+
+		StyleValue operator()(float value)
+		{
+			return ParseValue(value, rules);
+		}
+
+		StyleValue operator()(const StringView value)
+		{
+			return ParseValue(value, rules);
+		}
+
+		template<class Enum>
+		StyleValue operator()(Enum value)
+		{
+			for (auto& rule : rules.rules)
+			{
+				if (rule.type == StyleValue::Type::Enum &&
+					rule.enumTypeId == detail::style_enum_id_from_type<Enum>::value)
+				{
+					return StyleValue::Enum(value);
+				}
+			}
+
+			return { };
+		}
+	};
+
+	StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule)
+	{
+		return std::visit(parser_visitor{ rule }, value);
+	}
 }

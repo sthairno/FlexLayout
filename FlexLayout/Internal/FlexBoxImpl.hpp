@@ -79,7 +79,7 @@ namespace FlexLayout::Internal
 
 		bool setStyle(const StringView styleName, std::span<const Style::StyleValue> values);
 
-		bool setStyle(const StringView styleName, std::span<const std::variant<std::int32_t, float, const StringView>> values);
+		bool setStyle(const StringView styleName, std::span<const Style::ValueInputVariant> values);
 
 		bool removeStyle(const StringView styleName);
 

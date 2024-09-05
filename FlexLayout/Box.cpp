@@ -45,11 +45,6 @@ namespace FlexLayout
 		return m_impl->localContentAreaRect();
 	}
 
-	RectF Box::localRect() const
-	{
-		return m_impl->localBorderAreaRect();
-	}
-
 	Optional<RectF> Box::marginAreaRect() const
 	{
 		return m_impl->marginAreaRect();

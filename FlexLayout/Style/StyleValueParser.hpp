@@ -11,17 +11,7 @@ namespace FlexLayout::Style
 
 	StyleValue ParseValue(const StringView str, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
 
-	inline StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number)
-	{
-		switch (value.index())
-		{
-		case 0:	return ParseValue(std::get<0>(value), rule);
-		case 1: return ParseValue(std::get<1>(value), rule);
-		case 2: return ParseValue(std::get<2>(value), rule);
-		}
-
-		return { };
-	}
+	StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
 }
 
 namespace s3d

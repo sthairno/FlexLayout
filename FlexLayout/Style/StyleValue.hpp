@@ -7,6 +7,15 @@ namespace FlexLayout::Style
 {
 	namespace detail
 	{
+		template <typename VariantType, typename... Types>
+		struct concat_variant_types;
+
+		template <typename... VariantTypes, typename... Types>
+		struct concat_variant_types<std::variant<VariantTypes...>, Types...>
+		{
+			using type = std::variant<VariantTypes..., Types...>;
+		};
+
 		struct StyleValueParser;
 	}
 
@@ -200,7 +209,13 @@ namespace FlexLayout::Style
 		friend struct detail::StyleValueParser;
 	};
 
-	using ValueInputVariant = std::variant<std::int32_t, float, const StringView>;
+	using ValueInputVariant = detail::concat_variant_types<
+		detail::style_enum_variant,
+		StyleValue,
+		std::int32_t,
+		float,
+		const StringView
+	>::type;
 }
 
 template <>
