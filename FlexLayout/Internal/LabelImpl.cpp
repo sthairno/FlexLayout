@@ -96,8 +96,24 @@ namespace FlexLayout::Internal
 
 		// テキストを描画
 		{
-			const ScopedCustomShader2D shader{ Font::GetPixelShader(style.font.method()) };
+			// シェーダー関連
+			HasColor fontHasColor{ style.font.hasColor() };
+			if (textStyle.type != TextStyle::Type::Default && (not fontHasColor))
+			{
+				if (style.font.method() == FontMethod::SDF)
+				{
+					Graphics2D::SetSDFParameters(textStyle);
+				}
+				else
+				{
+					Graphics2D::SetMSDFParameters(textStyle);
+				}
+			}
+			Optional<ScopedCustomShader2D> shader = textStyle.type != TextStyle::Type::CustomShader
+				? MakeOptional<ScopedCustomShader2D>(Font::GetPixelShader(style.font.method(), textStyle.type, fontHasColor))
+				: none;
 
+			// 描画ロジック
 			size_t beginIdx = 0;
 			auto nextLineBreakItr = m_lineBreaks.cbegin();
 			for (auto [lineIdx, lineWidth] : Indexed(m_lineWidths))

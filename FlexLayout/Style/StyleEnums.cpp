@@ -16,8 +16,10 @@ namespace FlexLayout::Style::detail
 				return SearchRecursive<ID + 1>(enumId);
 			}
 		}
-
-		return { }; // Unreanchable
+		else
+		{
+			return { };
+		}
 	}
 
 	std::span<const StringView> GetValueNameList(EnumTypeId enumId)
@@ -29,7 +31,7 @@ namespace FlexLayout::Style::detail
 				enumId, std::variant_size_v<style_enum_variant> -1
 			));
 		}
-		
+
 		return SearchRecursive<0>(enumId);
 	}
 

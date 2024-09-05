@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 
 		float fontRenderingScale() const
 		{
-			return font ? fontSizePx / font.fontSize() : 1.0;
+			return font ? fontSizePx / font.fontSize() : 1.0F;
 		}
 
 		float zeroGlyphAdvancePx() const

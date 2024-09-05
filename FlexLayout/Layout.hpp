@@ -103,12 +103,19 @@ namespace FlexLayout
 
 		inline void update(s3d::SizeF size)
 		{
-			update(size.x, size.y);
+			update(
+				static_cast<float>(size.x),
+				static_cast<float>(size.y)
+			);
 		}
 
 		inline void update(s3d::RectF rect)
 		{
-			update(rect.w, rect.h, rect.pos);
+			update(
+				static_cast<float>(rect.w),
+				static_cast<float>(rect.h),
+				rect.pos
+			);
 		}
 
 		Optional<Box> document();
