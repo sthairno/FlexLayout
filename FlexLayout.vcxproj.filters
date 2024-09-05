@@ -67,12 +67,6 @@
     <Filter Include="Header Files\FlexLayout">
       <UniqueIdentifier>{a3b33c75-aa23-403f-a86e-fa4d1910ff39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\FlexLayout\Util">
-      <UniqueIdentifier>{d45e3f36-342b-4f72-9df9-95268a8b6234}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\FlexLayout\Util">
-      <UniqueIdentifier>{03412b8a-5953-4f3c-95d6-8599fff4e795}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\FlexLayout\Internal">
       <UniqueIdentifier>{42a083c6-6f40-4caf-ac9a-fbfff363feca}</UniqueIdentifier>
     </Filter>
@@ -123,29 +117,29 @@
     <ClCompile Include="FlexLayout\Enum\LengthUnit.cpp">
       <Filter>Source Files\FlexLayout\Enum</Filter>
     </ClCompile>
+    <ClCompile Include="FlexLayout\Label.cpp">
+      <Filter>Source Files\FlexLayout</Filter>
+    </ClCompile>
     <ClCompile Include="FlexLayout\Internal\FlexBoxImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\FlexBoxLookupImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\FlexBoxPropertyImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Internal\FlexBoxLayoutImpl.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Internal\StylePropertyDefinition.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxLookupImpl.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxPropertyImpl.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Internal\FlexBoxStyleImpl.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
     <ClCompile Include="FlexLayout\Enum\Position.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClCompile>
-    <ClCompile Include="FlexLayout\Label.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FlexLayout\Internal\StylePropertyDefinition.cpp">
+      <Filter>Source Files\FlexLayout\Internal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -476,38 +470,38 @@
     <ClInclude Include="FlexLayout\Enum\LengthUnit.hpp">
       <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Enum\TextAlign.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Internal\StylePropertyDefinition.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FlexLayout\Label.hpp">
+      <Filter>Header Files\FlexLayout</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\AlignItems.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\AlignSelf.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Enum\Display.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlexLayout\Enum\JustifyContent.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\Direction.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\Display.hpp">
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\FlexDirection.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
     <ClInclude Include="FlexLayout\Enum\FlexWrap.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FlexLayout\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Label.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FlexLayout\Enum\JustifyContent.hpp">
+      <Filter>Header Files\FlexLayout\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\TextAlign.hpp">
+      <Filter>Header Files\FlexLayout\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Internal\StylePropertyDefinition.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp">
+      <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
