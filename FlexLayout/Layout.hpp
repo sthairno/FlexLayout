@@ -2,6 +2,7 @@
 #include "Common.hpp"
 #include "Box.hpp"
 #include "Label.hpp"
+#include "Util/StyleValueHelper.hpp"
 
 namespace tinyxml2
 {
