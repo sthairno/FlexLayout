@@ -1,10 +1,15 @@
-﻿#include "../Enum/Common.hpp"
+﻿#pragma once
+#include "../Enum/Common.hpp"
 
-// StyleValueで使う列挙型の登録方法
+////////////////////////////////////////////////////
+//
+// StyleValueで使用する列挙型の定義
+//
+// 列挙型の追加方法
 // 1. ディレクトリ FlexLayout/Enum/ に新しいヘッダファイルを追加
-// 2. 新しいファイル内にenum classと<重要>Style::detail::style_enum_traitsを実装
+// 2. 新しいファイル内にenum classとStyle::detail::style_enum_traitsを実装
 // 3. このファイルにincludeとenumを追加
-
+//
 ////////////////////////////////////////////////////
 
 // vvvvv--include--vvvvv

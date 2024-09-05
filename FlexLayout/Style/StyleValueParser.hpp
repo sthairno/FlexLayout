@@ -1,4 +1,5 @@
-﻿#include "../Common.hpp"
+﻿#pragma once
+#include "../Common.hpp"
 #include "StyleValue.hpp"
 #include "StyleValueMatchRule.hpp"
 

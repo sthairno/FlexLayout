@@ -1,5 +1,7 @@
 ﻿#include "FlexBoxImpl.hpp"
 
+// FlexBoxImplのノード検索に関する実装
+
 namespace FlexLayout::Internal
 {
 	void FlexBoxImpl::lookupNodesByClassName(Array<std::shared_ptr<FlexBoxImpl>>& list, const String& className, size_t limit)

@@ -2,6 +2,8 @@
 #include "TreeContext.hpp"
 #include "../Style/StyleValueParser.hpp"
 
+// FlexBoxImplのスタイルに関する実装
+
 namespace FlexLayout::Internal
 {
 	void FlexBoxImpl::ApplyStyles(TreeContext& context)

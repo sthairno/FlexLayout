@@ -96,6 +96,8 @@ namespace FlexLayout::Internal
 
 		// --レイアウト(FlexBoxLayoutImpl.cpp)--
 
+		static void CalculateLayout(FlexBoxImpl& node, Optional<float> width, Optional<float> height);
+
 		Optional<Vec2> layoutOffset() const { return m_layoutOffset; }
 
 		void setLayoutOffsetRecursive(Optional<Vec2> offset, bool force = false);

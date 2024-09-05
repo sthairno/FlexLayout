@@ -1,7 +1,18 @@
 ﻿#include "FlexBoxImpl.hpp"
 
+// FlexBoxImplのレイアウトに関する実装
+
 namespace FlexLayout::Internal
 {
+	void FlexBoxImpl::CalculateLayout(FlexBoxImpl& node, Optional<float> width, Optional<float> height)
+	{
+		YGNodeCalculateLayout(
+			node.m_node,
+			width.value_or(YGUndefined),
+			height.value_or(YGUndefined),
+			YGDirectionLTR);
+	}
+
 	void FlexBoxImpl::setLayoutOffsetRecursive(Optional<Vec2> offset, bool force)
 	{
 		// 更新部分だけ処理する

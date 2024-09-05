@@ -110,11 +110,7 @@ namespace FlexLayout
 		if (m_root)
 		{
 			// レイアウト計算
-			YGNodeCalculateLayout(
-				m_root->yogaNode(),
-				width.value_or(YGUndefined),
-				height.value_or(YGUndefined),
-				YGDirectionLTR);
+			Internal::FlexBoxImpl::CalculateLayout(*m_root, width, height);
 
 			// グローバル座標の更新
 			m_root->setLayoutOffsetRecursive(offset);

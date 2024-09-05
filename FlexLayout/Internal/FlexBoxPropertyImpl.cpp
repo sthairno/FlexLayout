@@ -1,5 +1,7 @@
 ﻿#include "FlexBoxImpl.hpp"
 
+// FlexBoxImplのプロパティに関する実装
+
 namespace FlexLayout::Internal
 {
 	Optional<String> FlexBoxImpl::getProperty(const StringView key) const

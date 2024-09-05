@@ -6,6 +6,7 @@ namespace FlexLayout::Internal
 {
 	class FlexBoxImpl;
 
+	/// @brief FlexBoxImplのツリー内で共有されるデータ
 	class TreeContext
 	{
 	public:
