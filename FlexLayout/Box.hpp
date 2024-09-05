@@ -23,56 +23,100 @@ namespace FlexLayout
 
 	public:
 
+		/// @brief ローカル座標からグローバル座標へのオフセットを取得する
 		Optional<Vec2> offset() const;
 
-		RectF localRect() const;
-
+		/// @brief マージンの計算幅を取得
 		Thickness margin() const;
 
+		/// @brief ボーダーの計算幅を取得
 		Thickness border() const;
 
+		/// @brief パディングの計算幅を取得
 		Thickness padding() const;
 
+		/// @brief 親要素が基準としたマージン領域(マージンの外側)の矩形を取得する
+		RectF localMarginAreaRect() const;
+
+		/// @brief 親要素が基準としたボーダー領域(マージンの内側,枠の外側)の矩形を取得する
+		RectF localBorderAreaRect() const;
+
+		/// @brief 親要素が基準としたパディング領域(枠の内側,パディングの外側)の矩形を取得する
+		RectF localPaddingAreaRect() const;
+
+		/// @brief 親要素が基準としたコンテンツ領域(パディングの内側)の矩形を取得する
+		RectF localContentAreaRect() const;
+
+		/// @brief 親要素を基準とした矩形を取得する
+		inline RectF localRect() const { return localBorderAreaRect(); }
+
+		/// @brief マージン領域(マージンの外側)の矩形を取得する
 		Optional<RectF> marginAreaRect() const;
 
+		/// @brief ボーダー領域(マージンの内側,枠の外側)の矩形を取得する
 		Optional<RectF> borderAreaRect() const;
 
+		/// @brief パディング領域(枠の内側,パディングの外側)の矩形を取得する
 		Optional<RectF> paddingAreaRect() const;
 
+		/// @brief コンテンツ領域(パディングの内側)の矩形を取得する
 		Optional<RectF> contentAreaRect() const;
 
-		Array<StyleValue> getStyle(const StringView key) const;
+		/// @brief 計算した矩形を取得する
+		inline Optional<RectF> rect() const { return borderAreaRect(); }
 
-		bool setStyle(const StringView key, const Array<StyleValue>& list);
+		/// @brief 指定されたスタイルの値を取得する
+		/// @return 値が設定されていない場合は空の配列を返す
+		Array<StyleValue> getStyle(const StringView styleName) const;
 
-		bool setStyle(const StringView key, StyleValue value);
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool setStyle(const StringView styleName, const Array<StyleValue>& list);
 
-		bool setStyle(const StringView key, StyleValue v1, StyleValue v2);
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool setStyle(const StringView styleName, StyleValue value);
 
-		bool setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3);
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2);
 
-		bool setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4);
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3);
 
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4);
+
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView key,
+			const StringView styleName,
 			Style::ValueInputVariant value
 		);
 
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView key,
+			const StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2
 		);
 
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView key,
+			const StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2,
 			Style::ValueInputVariant v3
 		);
 
+		/// @brief 指定されたスタイルの値を設定する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView key,
+			const StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2,
 			Style::ValueInputVariant v3,
@@ -85,8 +129,10 @@ namespace FlexLayout
 
 		s3d::Optional<Box> getElementById(s3d::StringView id) const;
 
+		/// @brief Labelのインスタンスに変換する
 		s3d::Optional<Label> asLabel() const;
 
+		/// @brief 枠線を描画する
 		void drawFrame(const ColorF& color = Palette::White) const;
 
 	protected:

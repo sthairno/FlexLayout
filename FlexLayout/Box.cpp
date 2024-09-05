@@ -9,10 +9,6 @@ namespace FlexLayout
 		return m_impl->layoutOffset();
 	}
 
-	RectF Box::localRect() const
-	{
-		return m_impl->localBorderAreaRect();
-	}
 
 	Thickness Box::margin() const
 	{
@@ -27,6 +23,31 @@ namespace FlexLayout
 	Thickness Box::padding() const
 	{
 		return m_impl->padding();
+	}
+	
+	RectF Box::localMarginAreaRect() const
+	{
+		return m_impl->localMarginAreaRect();
+	}
+
+	RectF Box::localBorderAreaRect() const
+	{
+		return m_impl->localBorderAreaRect();
+	}
+
+	RectF Box::localPaddingAreaRect() const
+	{
+		return m_impl->localPaddingAreaRect();
+	}
+
+	RectF Box::localContentAreaRect() const
+	{
+		return m_impl->localContentAreaRect();
+	}
+
+	RectF Box::localRect() const
+	{
+		return m_impl->localBorderAreaRect();
 	}
 
 	Optional<RectF> Box::marginAreaRect() const
@@ -49,72 +70,72 @@ namespace FlexLayout
 		return m_impl->contentAreaRect();
 	}
 
-	Array<StyleValue> Box::getStyle(const StringView key) const
+	Array<StyleValue> Box::getStyle(const StringView styleName) const
 	{
-		return m_impl->getStyle(key);
+		return m_impl->getStyle(styleName);
 	}
 
-	bool Box::setStyle(const StringView key, const Array<StyleValue>& list)
+	bool Box::setStyle(const StringView styleName, const Array<StyleValue>& list)
 	{
-		return m_impl->setStyle(key, std::span{ list.begin(), list.end() });
+		return m_impl->setStyle(styleName, std::span{ list.begin(), list.end() });
 	}
 
-	bool Box::setStyle(const StringView key, StyleValue value)
+	bool Box::setStyle(const StringView styleName, StyleValue value)
 	{
-		return m_impl->setStyle(key, std::array{ value });
+		return m_impl->setStyle(styleName, std::array{ value });
 	}
 
-	bool Box::setStyle(const StringView key, StyleValue v1, StyleValue v2)
+	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2 });
 	}
 
-	bool Box::setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3)
+	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2, v3 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2, v3 });
 	}
 
-	bool Box::setStyle(const StringView key, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4)
+	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2, v3, v4 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2, v3, v4 });
 	}
 
 	bool Box::setStyle(
-		const StringView key,
+		const StringView styleName,
 		Style::ValueInputVariant value
 	)
 	{
-		return m_impl->setStyle(key, std::array{ value });
+		return m_impl->setStyle(styleName, std::array{ value });
 	}
 
 	bool Box::setStyle(
-		const StringView key,
+		const StringView styleName,
 		Style::ValueInputVariant v1,
 		Style::ValueInputVariant v2
 	)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2 });
 	}
 
 	bool Box::setStyle(
-		const StringView key,
+		const StringView styleName,
 		Style::ValueInputVariant v1,
 		Style::ValueInputVariant v2,
 		Style::ValueInputVariant v3
 	)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2, v3 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2, v3 });
 	}
 
 	bool Box::setStyle(
-		const StringView key,
+		const StringView styleName,
 		Style::ValueInputVariant v1,
 		Style::ValueInputVariant v2,
 		Style::ValueInputVariant v3,
 		Style::ValueInputVariant v4
 	)
 	{
-		return m_impl->setStyle(key, std::array{ v1, v2, v3, v4 });
+		return m_impl->setStyle(styleName, std::array{ v1, v2, v3, v4 });
 	}
 
 	Array<Box> Box::children() const

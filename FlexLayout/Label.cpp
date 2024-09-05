@@ -3,9 +3,9 @@
 
 namespace FlexLayout
 {
-	const StringView Label::text() const
+	String Label::text() const
 	{
-		return impl().text();
+		return String{ impl().text() };
 	}
 
 	void Label::setText(const StringView text)
