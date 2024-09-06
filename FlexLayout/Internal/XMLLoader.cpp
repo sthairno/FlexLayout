@@ -4,6 +4,27 @@
 
 namespace FlexLayout::Internal
 {
+	namespace detail
+	{
+		std::string ToLower(const std::string_view& str)
+		{
+			std::string result{ str };
+			std::transform(
+				result.cbegin(),
+				result.cend(),
+				result.begin(),
+				[](unsigned char c) { return std::tolower(c); }
+			);
+			return result;
+		}
+	}
+
+	XMLLoader::XMLLoader(std::shared_ptr<TreeContext> context)
+		: m_context(context)
+	{
+		assert(m_context);
+	}
+
 	bool XMLLoader::load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document)
 	{
 		if (document.Error())
@@ -12,49 +33,56 @@ namespace FlexLayout::Internal
 		}
 
 		auto rootElement = document.RootElement();
-
-		if (!rootElement || rootElement->Name() != "Layout"sv)
+		if (!rootElement || detail::ToLower(rootElement->Name()) != "layout")
 		{
 			return false;
 		}
 
-		bool useWebDefaults = false;
-		if (rootElement->QueryBoolAttribute("useWebDefaults", &useWebDefaults) == tinyxml2::XML_SUCCESS)
-		{
-			m_context->setUseWebDefaults(useWebDefaults);
-		}
-
-		loadBegin();
-
 		if (auto childElement = rootElement->FirstChildElement())
 		{
-			rootRef = loadNode(*childElement);
+			rootRef = loadNode(*childElement, true);
 		}
 		else
 		{
 			rootRef.reset();
 		}
 
-		loadEnd();
+		m_id2NodeDic = std::move(m_id2NodeDicNext);
+		m_id2NodeDicNext.clear();
 
 		return true;
 	}
 
-	std::shared_ptr<FlexBoxImpl> XMLLoader::loadNode(const tinyxml2::XMLElement& element)
+	void XMLLoader::clearCache()
+	{
+		m_id2NodeDic.clear();
+		m_id2NodeDicNext.clear();
+		m_rootCache.reset();	
+	}
+
+	std::shared_ptr<FlexBoxImpl> XMLLoader::loadNode(const tinyxml2::XMLElement& element, bool isRoot)
 	{
 		std::shared_ptr<FlexBoxImpl> node;
 
-		auto idSrc = element.Attribute("id");
-
 		String tagName = Unicode::FromUTF8(element.Name());
-		String id = idSrc ? Unicode::FromUTF8(idSrc) : U"";
+		tagName.lowercase();
 
-		if (auto cachedNode = popNode(id); cachedNode && cachedNode->tagName() == tagName)
+		auto idOrNull = element.Attribute("id");
+		String id = idOrNull ? Unicode::FromUTF8(idOrNull) : U"";
+
+		// キャッシュからnodeへ取得、見つからない場合は新規作成
+		auto cachedNode = popNode(id);
+		if (cachedNode && cachedNode->tagName() == tagName)
 		{
 			node = cachedNode;
 		}
+		else if (isRoot && m_rootCache)
+		{
+			node = m_rootCache;
+		}
 		else if (auto createdNode = createNode(tagName))
 		{
+			// キャッシュにヒットしない場合は新規作成
 			node = createdNode;
 		}
 		else
@@ -62,9 +90,14 @@ namespace FlexLayout::Internal
 			return nullptr;
 		}
 
+		// 次回読み込みのためにキャッシュに保存
 		if (node->id())
 		{
 			pushNode(node);
+		}
+		if (isRoot)
+		{
+			m_rootCache = node;
 		}
 
 		// 属性の読み込み
@@ -75,13 +108,13 @@ namespace FlexLayout::Internal
 		}
 
 		// タグごとに処理を分岐
-		if (node->tagName() == U"Label")
+		if (node->tagName() == U"label")
 		{
 			node->removeChildren();
 			reinterpret_cast<LabelImpl&>(*node)
 				.setText(loadInnerText(element));
 		}
-		else if (node->tagName() == U"Box")
+		else if (node->tagName() == U"box")
 		{
 			auto newChildren = loadChildren(element);
 			node->setChildren(newChildren);
@@ -133,18 +166,17 @@ namespace FlexLayout::Internal
 
 	std::shared_ptr<FlexBoxImpl> XMLLoader::createNode(const StringView tagName)
 	{
-		if (tagName == U"Label")
+		if (tagName == U"label")
 		{
 			return std::make_shared<LabelImpl>(m_context, tagName);
 		}
-		else if (tagName == U"Box")
+
+		if (tagName == U"box")
 		{
 			return std::make_shared<FlexBoxImpl>(m_context, tagName);
 		}
-		else
-		{
-			return nullptr;
-		}
+		
+		return nullptr;
 	}
 
 	bool XMLLoader::pushNode(std::shared_ptr<FlexBoxImpl> item)
@@ -175,14 +207,5 @@ namespace FlexLayout::Internal
 			m_id2NodeDic.erase(itr);
 			return tmp;
 		}
-	}
-
-	void XMLLoader::loadBegin()
-	{ }
-
-	void XMLLoader::loadEnd()
-	{
-		m_id2NodeDic = std::move(m_id2NodeDicNext);
-		m_id2NodeDicNext.clear();
 	}
 }
