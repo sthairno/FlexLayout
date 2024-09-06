@@ -512,10 +512,10 @@
     <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="FlexLayout\Util\StyleValueHelper.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FlexLayout\Util\Thickness.hpp">
+      <Filter>Header Files\FlexLayout\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Util\StyleValueHelper.hpp">
       <Filter>Header Files\FlexLayout\Util</Filter>
     </ClInclude>
   </ItemGroup>
