@@ -253,6 +253,7 @@
     <ClInclude Include="FlexLayout\Enum\AlignSelf.hpp" />
     <ClInclude Include="FlexLayout\Enum\Direction.hpp" />
     <ClInclude Include="FlexLayout\Enum\Display.hpp" />
+    <ClInclude Include="FlexLayout\Enum\NodeType.hpp" />
     <ClInclude Include="FlexLayout\Enum\FlexDirection.hpp" />
     <ClInclude Include="FlexLayout\Enum\FlexWrap.hpp" />
     <ClInclude Include="FlexLayout\Enum\JustifyContent.hpp" />

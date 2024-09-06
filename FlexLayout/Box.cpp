@@ -159,7 +159,7 @@ namespace FlexLayout
 
 	Optional<Label> Box::asLabel() const
 	{
-		if (m_impl->isLabel())
+		if (m_impl->type() == NodeType::Label)
 		{
 			return Label{ m_impl };
 		}

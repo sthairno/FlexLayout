@@ -12,13 +12,13 @@ namespace FlexLayout::Internal
 
 	public:
 
+		NodeType type() const noexcept override { return NodeType::Label; }
+
 		const StringView text() const { return m_text; }
 
 		void setText(const StringView text);
 
 		void draw(const TextStyle& textStyle, const ColorF& color);
-
-		bool isLabel() const noexcept override { return true; }
 
 	private:
 

@@ -26,16 +26,14 @@ namespace FlexLayout::Internal
 
 		HashTable<String, std::shared_ptr<FlexBoxImpl>> m_id2NodeDicNext;
 
-		std::shared_ptr<FlexBoxImpl> loadNode(const tinyxml2::XMLElement& element, bool isRoot = false);
+		std::shared_ptr<FlexBoxImpl> loadNode(const tinyxml2::XMLElement& element, bool isRoot);
 
 		Array<std::shared_ptr<FlexBoxImpl>> loadChildren(const tinyxml2::XMLElement& element);
 
-		String loadInnerText(const tinyxml2::XMLElement& element);
-
 		std::shared_ptr<FlexBoxImpl> createNode(const StringView tagName);
 
-		bool pushNode(std::shared_ptr<FlexBoxImpl> item);
+		bool cacheNodeById(std::shared_ptr<FlexBoxImpl> node);
 
-		std::shared_ptr<FlexBoxImpl> popNode(const StringView id);
+		std::shared_ptr<FlexBoxImpl> getCachedNode(const StringView id, Optional<NodeType> type = unspecified, bool useRootCache = true);
 	};
 }

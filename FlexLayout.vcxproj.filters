@@ -518,5 +518,8 @@
     <ClInclude Include="FlexLayout\Util\StyleValueHelper.hpp">
       <Filter>Header Files\FlexLayout\Util</Filter>
     </ClInclude>
+    <ClInclude Include="FlexLayout\Enum\NodeType.hpp">
+      <Filter>Header Files\FlexLayout\Enum</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

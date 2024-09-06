@@ -2,6 +2,7 @@
 #include "Common.hpp"
 #include "../Style/StyleValue.hpp"
 #include "../Util/Thickness.hpp"
+#include "../Enum/NodeType.hpp"
 #include "ComputedTextStyle.hpp"
 #include "StylePropertyDefinition.hpp"
 
@@ -24,6 +25,8 @@ namespace FlexLayout::Internal
 		YGNodeConstRef yogaNode() const { return m_node; }
 
 		const StringView tagName() const { return m_tagName; }
+
+		virtual NodeType type() const noexcept { return NodeType::Box; }
 
 		// --ツリー関連(FlexBoxImpl.cpp)--
 
@@ -155,10 +158,6 @@ namespace FlexLayout::Internal
 				? localContentAreaRect().movedBy(*m_layoutOffset)
 				: Optional<RectF>{};
 		}
-
-		// --その他--
-
-		virtual bool isLabel() const noexcept { return false; }
 
 	private:
 
