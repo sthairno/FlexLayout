@@ -27,8 +27,6 @@ namespace FlexLayout::Internal
 
 		friend FlexBoxImpl;
 
-		using _WaitlistComp = decltype([](const auto& a, const auto& b) { return a.first < b.first; });
-
 		YGConfigRef m_yogaConfig;
 
 		/// @brief スタイルの初期値を取得するためのダミーノード
@@ -37,7 +35,7 @@ namespace FlexLayout::Internal
 		ComputedTextStyle m_defaultTextStyle;
 
 		/// @brief `FlexBoxImpl::scheduleStyleApplication()`でスケジュールされた要素の待機リスト
-		phmap::btree_set<std::pair<size_t, std::weak_ptr<FlexBoxImpl>>, _WaitlistComp> m_styleApplicationWaitlist;
+		Array<std::weak_ptr<FlexBoxImpl>> m_styleApplicationWaitlist;
 
 		YGNodeRef createNode() const;
 

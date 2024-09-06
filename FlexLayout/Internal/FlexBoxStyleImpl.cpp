@@ -13,16 +13,30 @@ namespace FlexLayout::Internal
 			return;
 		}
 
-		Console << U"---";
-		for (const auto& [_, ptr] : context.m_styleApplicationWaitlist)
+		// 浅い順にソートしなおす
+		using _QueueValue = std::pair<size_t, std::shared_ptr<FlexBoxImpl>>;
+		using _QueueComp = decltype([](const _QueueValue& a, const _QueueValue& b) { return a.first > b.first; });
+		using _QueueType = std::priority_queue<_QueueValue, Array<_QueueValue>, _QueueComp>;
+		_QueueType queue;
+		for (const auto& weakptr : context.m_styleApplicationWaitlist)
 		{
-			auto item = ptr.lock();
-			if (item && item->m_isStyleApplicationScheduled)
+			if (auto item = weakptr.lock())
 			{
-				item->applyStylesImpl();
+				queue.push({ item->getDepth(), item });
 			}
 		}
 		context.m_styleApplicationWaitlist.clear();
+
+		// 適用
+		while (not queue.empty())
+		{
+			auto& [depth, item] = queue.top();
+			if (item->m_isStyleApplicationScheduled)
+			{
+				item->applyStylesImpl();
+			}
+			queue.pop();
+		}
 	}
 
 	void FlexBoxImpl::setCssText(const StringView cssText)
@@ -285,19 +299,8 @@ namespace FlexLayout::Internal
 			return;
 		}
 
-		// 親要素がスケジュール済みであるかを確認する
-		for (FlexBoxImpl* item = this; item; item = item->parent())
-		{
-			if (item->m_isStyleApplicationScheduled)
-			{
-				return;
-			}
-		}
-
-		// 待機リストに追加 (深さ順にソートされる)
-		m_context->m_styleApplicationWaitlist.insert({
-			getDepth(), weak_from_this()
-		});
+		// 待機リストに追加
+		m_context->m_styleApplicationWaitlist.push_back(weak_from_this());
 		m_isStyleApplicationScheduled = true;
 	}
 
