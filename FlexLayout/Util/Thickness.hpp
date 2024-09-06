@@ -44,14 +44,14 @@ namespace FlexLayout
 		value_type left = 0.0;
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(const Rect& lhs, const Rect& rhs) noexcept
+		friend constexpr bool operator ==(const s3d::Rect& lhs, const s3d::Rect& rhs) noexcept
 		{
 			return (lhs.pos == rhs.pos)
 				&& (lhs.size == rhs.size);
 		}
 
 		[[nodiscard]]
-		friend constexpr bool operator !=(const Rect& lhs, const Rect& rhs) noexcept
+		friend constexpr bool operator !=(const s3d::Rect& lhs, const s3d::Rect& rhs) noexcept
 		{
 			return (lhs.pos != rhs.pos)
 				|| (lhs.size != rhs.size);
@@ -151,18 +151,18 @@ namespace FlexLayout
 		}
 
 		[[nodiscard]]
-		constexpr SizeF shrinkSize(const SizeF& size) const noexcept
+		constexpr s3d::SizeF shrinkSize(const s3d::SizeF& size) const noexcept
 		{
-			return SizeF{
+			return s3d::SizeF{
 				size.x - left - right,
 				size.y - top - bottom
 			};
 		}
 
 		[[nodiscard]]
-		constexpr RectF shrinkRect(const RectF& rect) const noexcept
+		constexpr s3d::RectF shrinkRect(const s3d::RectF& rect) const noexcept
 		{
-			return RectF{
+			return s3d::RectF{
 				rect.x + left,
 				rect.y + top,
 				rect.w - left - right,
@@ -171,18 +171,18 @@ namespace FlexLayout
 		}
 
 		[[nodiscard]]
-		constexpr SizeF expandSize(const SizeF& size) const noexcept
+		constexpr s3d::SizeF expandSize(const s3d::SizeF& size) const noexcept
 		{
-			return SizeF{
+			return s3d::SizeF{
 				size.x + left + right,
 				size.y + top + bottom
 			};
 		}
 
 		[[nodiscard]]
-		constexpr RectF expandRect(const RectF& rect) const noexcept
+		constexpr s3d::RectF expandRect(const s3d::RectF& rect) const noexcept
 		{
-			return RectF{
+			return s3d::RectF{
 				rect.x - left,
 				rect.y - top,
 				rect.w + left + right,
@@ -191,11 +191,11 @@ namespace FlexLayout
 		}
 
 		[[nodiscard]]
-		constexpr Vec4 asVec4() const noexcept
+		constexpr s3d::Vec4 asVec4() const noexcept
 		{
-			return Vec4{ top, right, bottom, left };
+			return s3d::Vec4{ top, right, bottom, left };
 		}
 
-		void drawPadding(const RectF& rect, const ColorF& color) const;
+		void drawPadding(const s3d::RectF& rect, const s3d::ColorF& color) const;
 	};
 }

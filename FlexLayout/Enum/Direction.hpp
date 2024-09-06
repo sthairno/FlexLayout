@@ -12,7 +12,7 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<Direction>
 	{
-		static constexpr std::array<StringView, 8> names{
+		static constexpr std::array<s3d::StringView, 8> names{
 			U"ltr",
 			U"rtl"
 		};

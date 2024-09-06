@@ -4,7 +4,7 @@
 namespace FlexLayout
 {
 	/// @brief lengthプロパティの単位 | The unit of the length property
-	enum class LengthUnit : int8_t
+	enum class LengthUnit : std::int8_t
 	{
 		/// @brief ピクセル | Pixel
 		Pixel = 0,
@@ -28,7 +28,7 @@ namespace FlexLayout
 		Lh
 	};
 
-	void Formatter(FormatData& formatData, const LengthUnit& value);
+	void Formatter(s3d::FormatData& formatData, const LengthUnit& value);
 }
 
 template <>

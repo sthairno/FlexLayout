@@ -14,7 +14,7 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<FlexDirection>
 	{
-		static constexpr std::array<StringView, 4> names{
+		static constexpr std::array<s3d::StringView, 4> names{
 			U"row",
 			U"row-reverse",
 			U"column",

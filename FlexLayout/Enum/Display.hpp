@@ -12,7 +12,7 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<Display>
 	{
-		static constexpr std::array<StringView, 2> names{
+		static constexpr std::array<s3d::StringView, 2> names{
 			U"flex",
 			U"none"
 		};

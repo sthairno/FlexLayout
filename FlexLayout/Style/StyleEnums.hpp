@@ -68,12 +68,12 @@ namespace FlexLayout::Style
 		template <EnumTypeId ID>
 		using style_enum_traits_by_id = style_enum_traits<style_enum_by_id<ID>>;
 
-		std::span<const StringView> GetValueNameList(EnumTypeId enumId);
+		std::span<const s3d::StringView> GetValueNameList(EnumTypeId enumId);
 
-		const StringView GetValueName(EnumTypeId enumId, std::int32_t value);
+		const s3d::StringView GetValueName(EnumTypeId enumId, std::int32_t value);
 
 		template <class Enum>
-		inline const StringView GetValueName(Enum value)
+		inline const s3d::StringView GetValueName(Enum value)
 		{
 			return GetValueName(style_enum_id_from_type<Enum>::value, static_cast<std::int32_t>(value));
 		}

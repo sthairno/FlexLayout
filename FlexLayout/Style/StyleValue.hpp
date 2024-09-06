@@ -52,20 +52,20 @@ namespace FlexLayout::Style
 			return m_valueType != Type::Unspecified;
 		}
 
-		friend void Formatter(FormatData& formatData, const StyleValue& value);
+		friend void Formatter(s3d::FormatData& formatData, const StyleValue& value);
 
 	public:
 
 		Type type() const noexcept { return m_valueType; }
 
 		template<typename EnumType>
-		Optional<EnumType> getEnumValue() const noexcept
+		s3d::Optional<EnumType> getEnumValue() const noexcept
 		{
 			auto id = detail::style_enum_id_from_type<EnumType>::value;
 
 			if (m_valueType != Type::Enum || m_enumTypeId != id)
 			{
-				return none;
+				return s3d::none;
 			}
 
 			return static_cast<EnumType>(m_intValue);
@@ -78,19 +78,19 @@ namespace FlexLayout::Style
 			return static_cast<EnumType>(m_intValue);
 		}
 
-		Optional<int32_t> getIntValue() const noexcept
+		s3d::Optional<int32_t> getIntValue() const noexcept
 		{
 			if (m_valueType == Type::Integer)
 			{
 				return m_intValue;
 			}
 
-			return none;
+			return s3d::none;
 		}
 
 		int32_t getIntValueUnchecked() const noexcept { return m_intValue; }
 
-		Optional<float> getFloatValue() const noexcept
+		s3d::Optional<float> getFloatValue() const noexcept
 		{
 			switch (m_valueType)
 			{
@@ -100,7 +100,7 @@ namespace FlexLayout::Style
 			case Type::Length:
 				return m_floatValue;
 			}
-			return none;
+			return s3d::none;
 		}
 
 		float getFloatValueUnchecked() const noexcept { return m_floatValue; }
@@ -109,7 +109,7 @@ namespace FlexLayout::Style
 
 		LengthUnit lengthUnit() const noexcept { return m_lengthUnit; }
 
-		String toString() const;
+		s3d::String toString() const;
 
 	public:
 
@@ -214,7 +214,7 @@ namespace FlexLayout::Style
 		StyleValue,
 		std::int32_t,
 		float,
-		const StringView
+		const s3d::StringView
 	>::type;
 }
 

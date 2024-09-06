@@ -18,7 +18,7 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<JustifyContent>
 	{
-		static constexpr std::array<StringView, 8> names{
+		static constexpr std::array<s3d::StringView, 8> names{
 			U"center",
 			U"start",
 			U"end",

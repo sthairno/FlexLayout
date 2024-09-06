@@ -37,7 +37,7 @@ namespace FlexLayout
 		inline explicit Layout(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
 			: Layout(path.data(), enableHotReload) {}
 
-		inline explicit Layout(s3d::Arg::code_<String> code)
+		inline explicit Layout(s3d::Arg::code_<s3d::String> code)
 			: Layout()
 		{
 			load(code);
@@ -84,7 +84,7 @@ namespace FlexLayout
 
 		inline bool load(std::unique_ptr<s3d::IReader>&& reader)
 		{
-			load(Arg::code = s3d::TextReader{ std::move(reader) }.readAll());
+			load(s3d::Arg::code = s3d::TextReader{ std::move(reader) }.readAll());
 		}
 
 		bool load(const tinyxml2::XMLDocument& element);
@@ -99,7 +99,7 @@ namespace FlexLayout
 
 		inline void update()
 		{
-			update(none, none);
+			update(s3d::none, s3d::none);
 		}
 
 		inline void update(s3d::SizeF size)
@@ -119,7 +119,7 @@ namespace FlexLayout
 			);
 		}
 
-		Optional<Box> document();
+		s3d::Optional<Box> document();
 
 	private:
 

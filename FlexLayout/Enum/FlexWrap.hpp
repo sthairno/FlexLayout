@@ -13,7 +13,7 @@ namespace FlexLayout
 	template<>
 	struct Style::detail::style_enum_traits<FlexWrap>
 	{
-		static constexpr std::array<StringView, 3> names{
+		static constexpr std::array<s3d::StringView, 3> names{
 			U"nowrap",
 			U"wrap",
 			U"wrap-reverse"

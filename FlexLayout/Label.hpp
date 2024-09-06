@@ -19,16 +19,16 @@ namespace FlexLayout
 
 		/// @brief 描画する文字列を取得する
 		/// @remark レイアウトを更新するまでは描画に反映されません
-		String text() const;
+		s3d::String text() const;
 
 		/// @brief 描画する文字列を設定する
-		void setText(const StringView text);
+		void setText(const s3d::StringView text);
 
 		/// @brief 文字列を描画する
-		void draw(const ColorF& color = Palette::White) const;
+		void draw(const s3d::ColorF& color = s3d::Palette::White) const;
 
 		/// @brief 文字列を描画する
-		void draw(const TextStyle& textStyle, const ColorF& color = Palette::White) const;
+		void draw(const s3d::TextStyle& textStyle, const s3d::ColorF& color = s3d::Palette::White) const;
 
 	private:
 

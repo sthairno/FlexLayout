@@ -24,7 +24,7 @@ namespace FlexLayout
 	public:
 
 		/// @brief ローカル座標からグローバル座標へのオフセットを取得する
-		Optional<Vec2> offset() const;
+		s3d::Optional<s3d::Vec2> offset() const;
 
 		/// @brief マージンの計算幅を取得
 		Thickness margin() const;
@@ -36,70 +36,70 @@ namespace FlexLayout
 		Thickness padding() const;
 
 		/// @brief 親要素が基準としたマージン領域(マージンの外側)の矩形を取得する
-		RectF localMarginAreaRect() const;
+		s3d::RectF localMarginAreaRect() const;
 
 		/// @brief 親要素が基準としたボーダー領域(マージンの内側,枠の外側)の矩形を取得する
-		RectF localBorderAreaRect() const;
+		s3d::RectF localBorderAreaRect() const;
 
 		/// @brief 親要素が基準としたパディング領域(枠の内側,パディングの外側)の矩形を取得する
-		RectF localPaddingAreaRect() const;
+		s3d::RectF localPaddingAreaRect() const;
 
 		/// @brief 親要素が基準としたコンテンツ領域(パディングの内側)の矩形を取得する
-		RectF localContentAreaRect() const;
+		s3d::RectF localContentAreaRect() const;
 
 		/// @brief 親要素を基準とした矩形を取得する
-		inline RectF localRect() const { return localBorderAreaRect(); }
+		inline s3d::RectF localRect() const { return localBorderAreaRect(); }
 
 		/// @brief マージン領域(マージンの外側)の矩形を取得する
-		Optional<RectF> marginAreaRect() const;
+		s3d::Optional<s3d::RectF> marginAreaRect() const;
 
 		/// @brief ボーダー領域(マージンの内側,枠の外側)の矩形を取得する
-		Optional<RectF> borderAreaRect() const;
+		s3d::Optional<s3d::RectF> borderAreaRect() const;
 
 		/// @brief パディング領域(枠の内側,パディングの外側)の矩形を取得する
-		Optional<RectF> paddingAreaRect() const;
+		s3d::Optional<s3d::RectF> paddingAreaRect() const;
 
 		/// @brief コンテンツ領域(パディングの内側)の矩形を取得する
-		Optional<RectF> contentAreaRect() const;
+		s3d::Optional<s3d::RectF> contentAreaRect() const;
 
 		/// @brief 計算した矩形を取得する
-		inline Optional<RectF> rect() const { return borderAreaRect(); }
+		inline s3d::Optional<s3d::RectF> rect() const { return borderAreaRect(); }
 
 		/// @brief 指定されたスタイルの値を取得する
 		/// @return 値が設定されていない場合は空の配列を返す
-		Array<StyleValue> getStyle(const StringView styleName) const;
+		s3d::Array<StyleValue> getStyle(const s3d::StringView styleName) const;
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
-		bool setStyle(const StringView styleName, const Array<StyleValue>& list);
+		bool setStyle(const s3d::StringView styleName, const s3d::Array<StyleValue>& list);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
-		bool setStyle(const StringView styleName, StyleValue value);
+		bool setStyle(const s3d::StringView styleName, StyleValue value);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
-		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2);
+		bool setStyle(const s3d::StringView styleName, StyleValue v1, StyleValue v2);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
-		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3);
+		bool setStyle(const s3d::StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
-		bool setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4);
+		bool setStyle(const s3d::StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView styleName,
+			const s3d::StringView styleName,
 			Style::ValueInputVariant value
 		);
 
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView styleName,
+			const s3d::StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2
 		);
@@ -107,7 +107,7 @@ namespace FlexLayout
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView styleName,
+			const s3d::StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2,
 			Style::ValueInputVariant v3
@@ -116,7 +116,7 @@ namespace FlexLayout
 		/// @brief 指定されたスタイルの値を設定する
 		/// @return 成功した場合はtrue, 失敗した場合はfalse
 		bool setStyle(
-			const StringView styleName,
+			const s3d::StringView styleName,
 			Style::ValueInputVariant v1,
 			Style::ValueInputVariant v2,
 			Style::ValueInputVariant v3,
@@ -133,7 +133,7 @@ namespace FlexLayout
 		s3d::Optional<Label> asLabel() const;
 
 		/// @brief 枠線を描画する
-		void drawFrame(const ColorF& color = Palette::White) const;
+		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
 
 	protected:
 

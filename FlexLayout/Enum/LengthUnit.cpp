@@ -1,6 +1,6 @@
 ﻿#include "LengthUnit.hpp"
 
-void FlexLayout::Formatter(FormatData& formatData, const LengthUnit& value)
+void FlexLayout::Formatter(s3d::FormatData& formatData, const LengthUnit& value)
 {
-	formatData.string += U"{}"_fmt(value);
+	formatData.string += fmt::format(U"{}", value);
 }
