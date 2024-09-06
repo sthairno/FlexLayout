@@ -56,7 +56,7 @@ namespace FlexLayout::Internal
 	size_t FlexBoxImpl::getDepth() const
 	{
 		size_t depth = 0;
-		for (const FlexBoxImpl* item = this; item; item = item->parent())
+		for (const FlexBoxImpl* item = parent(); item; item = item->parent())
 		{
 			depth++;
 		}
