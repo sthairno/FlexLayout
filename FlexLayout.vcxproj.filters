@@ -85,6 +85,12 @@
     <Filter Include="Header Files\FlexLayout\Enum">
       <UniqueIdentifier>{40b96a73-863b-4399-862e-1694d1628685}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\FlexLayout\Util">
+      <UniqueIdentifier>{dfb94d74-3a4c-4b87-b2a1-f59bd6de2887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FlexLayout\Util">
+      <UniqueIdentifier>{3dc4d739-485d-4113-bb7d-01065b281d0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -140,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="FlexLayout\Internal\StylePropertyDefinition.cpp">
       <Filter>Source Files\FlexLayout\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexLayout\Util\Thickness.cpp">
+      <Filter>Source Files\FlexLayout\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +511,12 @@
     </ClInclude>
     <ClInclude Include="FlexLayout\Internal\ComputedTextStyle.hpp">
       <Filter>Header Files\FlexLayout\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Util\StyleValueHelper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLayout\Util\Thickness.hpp">
+      <Filter>Header Files\FlexLayout\Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
