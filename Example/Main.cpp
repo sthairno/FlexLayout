@@ -1,5 +1,5 @@
 ﻿#include <Siv3D.hpp>
-#include "FlexLayout/Layout.hpp"
+#include <FlexLayout.hpp>
 
 // <数値>_px や <数値>_ch などのリテラルを使えるようにする
 using namespace FlexLayout::Literals;
