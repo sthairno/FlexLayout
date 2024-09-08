@@ -1,6 +1,6 @@
 # FlexLayout
 
-![hot_reload_demo](assets/hot_reload_demo.gif)
+![hot_reload_demo](Docs/hot_reload_demo.gif)
 
 OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/Learn/CSS/CSS_layout/Flexbox)を使ったUIレイアウトができるライブラリです
 
