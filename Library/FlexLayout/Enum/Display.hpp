@@ -17,9 +17,11 @@ namespace FlexLayout
 			U"none"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGDisplay, 8> to_yoga{
 			YGDisplayFlex,
 			YGDisplayNone
 		};
+#endif
 	};
 }

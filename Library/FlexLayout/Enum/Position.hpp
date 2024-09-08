@@ -19,10 +19,12 @@ namespace FlexLayout
 			U"absolute"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGPositionType, 3> to_yoga{
 			YGPositionTypeStatic,
 			YGPositionTypeRelative,
 			YGPositionTypeAbsolute
 		};
+#endif
 	};
 }

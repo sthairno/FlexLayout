@@ -21,11 +21,13 @@ namespace FlexLayout
 			U"column-reverse"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGFlexDirection, 4> to_yoga{
 			YGFlexDirectionRow,
 			YGFlexDirectionRowReverse,
 			YGFlexDirectionColumn,
 			YGFlexDirectionColumnReverse
 		};
+#endif
 	};
 }

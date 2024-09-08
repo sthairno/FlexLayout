@@ -19,10 +19,12 @@ namespace FlexLayout
 			U"wrap-reverse"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGWrap, 3> to_yoga{
 			YGWrapNoWrap,
 			YGWrapWrap,
 			YGWrapWrapReverse
 		};
+#endif
 	};
 }

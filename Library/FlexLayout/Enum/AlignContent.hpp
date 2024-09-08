@@ -31,6 +31,7 @@ namespace FlexLayout
 			U"stretch",
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGAlign, 9> to_yoga{
 			YGAlignCenter,
 			YGAlignFlexStart,
@@ -42,5 +43,6 @@ namespace FlexLayout
 			YGAlignSpaceEvenly,
 			YGAlignStretch
 		};
+#endif
 	};
 }

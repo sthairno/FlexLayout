@@ -17,9 +17,11 @@ namespace FlexLayout
 			U"rtl"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGDirection, 8> to_yoga{
 			YGDirectionLTR,
 			YGDirectionRTL
 		};
+#endif
 	};
 }

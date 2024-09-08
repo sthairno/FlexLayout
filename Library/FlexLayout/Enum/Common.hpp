@@ -1,6 +1,11 @@
 ﻿#pragma once
 #include "../Common.hpp"
-#include <yoga/YGEnums.h>
+
+#if defined YG_ENUM_DECL
+	#define FLEXLAYOUT_ENABLE_CONV_TO_YOGA 1
+#else
+	#define FLEXLAYOUT_ENABLE_CONV_TO_YOGA 0
+#endif
 
 namespace FlexLayout::Style::detail
 {
@@ -9,6 +14,8 @@ namespace FlexLayout::Style::detail
 	{
 		static constexpr std::array<s3d::StringView, 0> names{ };
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<int, 0> to_yoga;
+#endif
 	};
 }

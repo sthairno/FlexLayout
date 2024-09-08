@@ -29,6 +29,7 @@ namespace FlexLayout
 			U"space-evenly"
 		};
 
+#if FLEXLAYOUT_ENABLE_CONV_TO_YOGA
 		static constexpr std::array<YGJustify, 8> to_yoga{
 			YGJustifyCenter,
 			YGJustifyFlexStart,
@@ -39,5 +40,6 @@ namespace FlexLayout
 			YGJustifySpaceAround,
 			YGJustifySpaceEvenly
 		};
+#endif
 	};
 }
