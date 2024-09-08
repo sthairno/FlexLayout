@@ -363,9 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # OpenSiv3D Project
-App/AS_DEBUG
-*.exe
-Intermediate/
+**/App/AS_DEBUG
+**/App/*.exe
+Build/
 
 # vcpkg
 vcpkg_installed/

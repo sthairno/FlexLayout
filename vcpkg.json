@@ -6,5 +6,11 @@
     "yoga",
     "tinyxml2"
   ],
+  "overrides": [
+    {
+      "name": "tinyxml2",
+      "version": "8.0.0"
+    }
+  ],
   "builtin-baseline": "576379156e82da642f8d1834220876759f13534d"
 }

@@ -5,6 +5,11 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexLayout", "FlexLayout.vcxproj", "{43EAC364-E8E1-4956-A476-DB1F6123F177}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example", "Example\Example.vcxproj", "{7D4A65DB-01F6-4CC2-B33E-0C0CCC271D08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{43EAC364-E8E1-4956-A476-DB1F6123F177} = {43EAC364-E8E1-4956-A476-DB1F6123F177}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +20,10 @@ Global
 		{43EAC364-E8E1-4956-A476-DB1F6123F177}.Debug|x64.Build.0 = Debug|x64
 		{43EAC364-E8E1-4956-A476-DB1F6123F177}.Release|x64.ActiveCfg = Release|x64
 		{43EAC364-E8E1-4956-A476-DB1F6123F177}.Release|x64.Build.0 = Release|x64
+		{7D4A65DB-01F6-4CC2-B33E-0C0CCC271D08}.Debug|x64.ActiveCfg = Debug|x64
+		{7D4A65DB-01F6-4CC2-B33E-0C0CCC271D08}.Debug|x64.Build.0 = Debug|x64
+		{7D4A65DB-01F6-4CC2-B33E-0C0CCC271D08}.Release|x64.ActiveCfg = Release|x64
+		{7D4A65DB-01F6-4CC2-B33E-0C0CCC271D08}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
