@@ -35,10 +35,14 @@ runs:
       if: steps.cache-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        unzip -d '${{ runner.temp }}/sdk' '${{ runner.temp }}/sdk.zip'
-        mkdir -p '${{ inputs.destination }}'
-        cp "${{ runner.temp }}/sdk/$(ls sdk | head -n 1)/*" '${{ inputs.destination }}'
-        rm -r '${{ runner.temp }}/sdk' '${{ runner.temp }}/sdk.zip'
+        tmp_zippath = '${{ runner.temp }}/sdk.zip'
+        tmp_sdkpath = '${{ runner.temp }}/sdk'
+        destination_path = '${{ inputs.destination }}'
+        
+        unzip -d $tmp_sdkpath $tmp_zippath
+        mkdir -p $destination_path
+        cp "$tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/*" $destination_path
+        rm -r $tmp_sdkpath $tmp_zippath
     
     - name: Set environment variable
       shell: bash
