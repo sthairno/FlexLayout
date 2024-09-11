@@ -4,6 +4,10 @@
 
 OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/Learn/CSS/CSS_layout/Flexbox)を使ったUIレイアウトができるライブラリです
 
+## 導入方法
+
+[Install.md](Docs/Install.md)
+
 ## 使い方
 
 ### レイアウトファイル
@@ -160,5 +164,10 @@ BoxとLabelはインラインCSSによるスタイル設定に対応していま
 
 ## 動作環境
 
-- OpenSiv3D 0.6.15
-- vcpkg
+- 依存ライブラリ
+  - OpenSiv3D 0.6.15
+  - yoga
+  - tinyxml2 (OpenSiv3Dと同一バージョン)
+- 開発環境
+  - MSVC
+  - vcpkg
