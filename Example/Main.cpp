@@ -4,6 +4,26 @@
 // <数値>_px や <数値>_ch などのリテラルを使えるようにする
 using namespace FlexLayout::Literals;
 
+namespace FlexLayout::SimpleGUI
+{
+	bool Button(StringView label, FlexLayout::Box& box, bool enabled = true)
+	{
+		bool result = false;
+
+		if (auto rect = box.rect())
+		{
+			result = s3d::SimpleGUI::Button(label, rect->pos, rect->w, enabled);
+		}
+
+		SizeF minSize = s3d::SimpleGUI::ButtonRegion(label, { 0, 0 }).size;
+
+		box.setStyle(U"min-width", StyleValue::Length(minSize.x, LengthUnit::Pixel));
+		box.setStyle(U"min-height", StyleValue::Length(minSize.y, LengthUnit::Pixel));
+
+		return result;
+	}
+}
+
 void Main()
 {
 	Window::SetStyle(WindowStyle::Sizable);
@@ -53,6 +73,11 @@ void Main()
 		if (auto document = layout.document())
 		{
 			drawBox(*document);
+
+			if (auto button = document->getElementById(U"button"))
+			{
+				FlexLayout::SimpleGUI::Button(U"Button", *button);
+			}
 		}
 
 		// マウスが乗っているボックスの各領域を描画
