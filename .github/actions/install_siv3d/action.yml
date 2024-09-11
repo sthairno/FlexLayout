@@ -35,10 +35,10 @@ runs:
       if: steps.cache-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        tmp_zippath = '${{ runner.temp }}/sdk.zip'
-        tmp_sdkpath = '${{ runner.temp }}/sdk'
-        destination_path = '${{ inputs.destination }}'
-        
+        tmp_zippath='${{ runner.temp }}/sdk.zip'
+        tmp_sdkpath='${{ runner.temp }}/sdk'
+        destination_path='${{ inputs.destination }}'
+
         unzip -d $tmp_sdkpath $tmp_zippath
         mkdir -p $destination_path
         cp "$tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/*" $destination_path
