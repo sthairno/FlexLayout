@@ -29,16 +29,16 @@ runs:
       if: steps.cache-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        curl -L -o ${{ runner.temp }}/sdk.zip "${{ inputs.download-url }}"
+        curl -L -o '${{ runner.temp }}/sdk.zip' '${{ inputs.download-url }}'
 
     - name: Extract SDK Files
       if: steps.cache-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        unzip -d ${{ runner.temp }}/sdk ${{ runner.temp }}/sdk.zip
-        mkdir -p ${{ inputs.destination }}
-        cp "${{ runner.temp }}/sdk/$(ls sdk | head -n 1)/*" ${{ inputs.destination }}
-        rm -r ${{ runner.temp }}/sdk ${{ runner.temp }}/sdk.zip
+        unzip -d '${{ runner.temp }}/sdk' '${{ runner.temp }}/sdk.zip'
+        mkdir -p '${{ inputs.destination }}'
+        cp "${{ runner.temp }}/sdk/$(ls sdk | head -n 1)/*" '${{ inputs.destination }}'
+        rm -r '${{ runner.temp }}/sdk' '${{ runner.temp }}/sdk.zip'
     
     - name: Set environment variable
       shell: bash
