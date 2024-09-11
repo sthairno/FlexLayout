@@ -16,7 +16,7 @@ jobs:
   build_flexlayout:
     runs-on: windows-latest
     env:
-      SIV3D_0_6_15: "/OpenSiv3D_SDK"
+      SIV3D_0_6_15: "OpenSiv3D_SDK"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
