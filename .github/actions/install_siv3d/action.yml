@@ -8,7 +8,7 @@ inputs:
   siv3d-version:
     description: OpenSiv3D version
     required: true
-  env:
+  siv3d-env:
     description: OpenSiv3D environment variable name
     required: true
   destination:
@@ -50,5 +50,5 @@ runs:
         fullpath=$(readlink -f '${{ inputs.destination }}')
         echo "OpenSiv3D SDK installed at: $fullpath"
         
-        echo "${{ inputs.env }}=$fullpath" >> $GITHUB_ENV
-        echo "SDK path variable is: ${{ inputs.env }}"
+        echo "${{ inputs.siv3d-env }}=$fullpath" >> $GITHUB_ENV
+        echo "SDK path variable is: ${{ inputs.siv3d-env }}"

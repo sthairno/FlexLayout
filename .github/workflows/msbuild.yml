@@ -28,6 +28,7 @@ jobs:
         with:
           download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
           siv3d-version: "0.6.15"
+          siv3d-env: "SIV3D_0_6_15"
           destination: "../OpenSiv3D_0.6.15"
       
       - name: Build FlexLayout
