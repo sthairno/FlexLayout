@@ -32,6 +32,8 @@ jobs:
           destination: "../OpenSiv3D_0.6.15"
       
       - name: Build FlexLayout
+        env:
+          SIV3D_0_6_15: ${{ env.SIV3D_0_6_15 }}
         run: |
           msbuild -version
           msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
