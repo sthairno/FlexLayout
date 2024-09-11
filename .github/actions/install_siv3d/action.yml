@@ -47,7 +47,7 @@ runs:
     - name: Set environment variable
       shell: bash
       run: |
-        fullpath=$(readlink -f $destination_path)
+        fullpath=$(readlink -f '${{ inputs.destination }}')
         echo "OpenSiv3D SDK installed at: $fullpath"
         
         echo "${{ inputs.env }}=$fullpath" >> $GITHUB_ENV
