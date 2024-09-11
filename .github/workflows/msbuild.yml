@@ -5,6 +5,10 @@ on:
   pull_request:
     types: [synchronize, opened]
 
+defaults:
+  run:
+    shell: bash
+
 env:
   MSBUILD_CONFIGURATION: Release
 
@@ -34,5 +38,6 @@ jobs:
       
       - name: Build FlexLayout
         run: |
+          SIV3D_0_6_15='${{ env.SIV3D_0_6_15 }}'
           msbuild -version
           msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
