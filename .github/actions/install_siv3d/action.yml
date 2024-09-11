@@ -8,9 +8,6 @@ inputs:
   siv3d-version:
     description: OpenSiv3D version
     required: true
-  siv3d-env:
-    description: OpenSiv3D environment variable name
-    required: true
   destination:
     description: Installation path
     default: '.'
@@ -50,12 +47,3 @@ runs:
       with:
         path: ${{ inputs.destination }}
         key: ${{ steps.restore-sdk-cache.outputs.cache-primary-key }}
-
-    - name: Set Environment Variable
-      shell: bash
-      run: |
-        fullpath=$(readlink -f '${{ inputs.destination }}')
-        echo "OpenSiv3D SDK installed at: $fullpath"
-        
-        echo "${{ inputs.siv3d-env }}=$fullpath" >> $GITHUB_ENV
-        echo "SDK path variable is: ${{ inputs.siv3d-env }}"

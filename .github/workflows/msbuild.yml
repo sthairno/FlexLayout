@@ -11,6 +11,8 @@ env:
 jobs:
   build_flexlayout:
     runs-on: windows-latest
+    env:
+      SIV3D_0_6_15: "/OpenSiv3D_0.6.15"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,12 +30,9 @@ jobs:
         with:
           download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
           siv3d-version: "0.6.15"
-          siv3d-env: "SIV3D_0_6_15"
-          destination: "../OpenSiv3D_0.6.15"
+          destination: ${{ env.SIV3D_0_6_15 }}
       
       - name: Build FlexLayout
-        env:
-          SIV3D_0_6_15: ${{ env.SIV3D_0_6_15 }}
         run: |
           msbuild -version
           msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
