@@ -9,6 +9,12 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+      - name: test1
+        shell: bash
+        run: |
+          pwd
+          ls -al
+          
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -17,7 +23,7 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: test
+      - name: test2
         shell: bash
         run: |
           pwd
