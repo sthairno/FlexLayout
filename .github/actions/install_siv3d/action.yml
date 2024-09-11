@@ -18,21 +18,21 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Cache SDK Files
-      id: cache-sdk
-      uses: actions/cache@v4
+    - name: Restore Cached SDK Files
+      id: restore-sdk-cache
+      uses: actions/cache/restore@v4
       with:
         path: ${{ inputs.destination }}
         key: siv3d-sdk-${{ inputs.siv3d-version }}
 
     - name: Download SDK Zip File
-      if: steps.cache-sdk.outputs.cache-hit != 'true'
+      if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         curl -L -o '${{ runner.temp }}/sdk.zip' '${{ inputs.download-url }}'
 
     - name: Extract SDK Files
-      if: steps.cache-sdk.outputs.cache-hit != 'true'
+      if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         tmp_zippath='${{ runner.temp }}/sdk.zip'
@@ -44,7 +44,14 @@ runs:
         cp -r $tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/* $destination_path
         rm -r $tmp_sdkpath $tmp_zippath
     
-    - name: Set environment variable
+    - name: Save SDK Files
+      if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ inputs.destination }}
+        key: ${{ steps.restore-sdk-cache.outputs.cache-primary-key }}
+
+    - name: Set Environment Variable
       shell: bash
       run: |
         fullpath=$(readlink -f '${{ inputs.destination }}')
