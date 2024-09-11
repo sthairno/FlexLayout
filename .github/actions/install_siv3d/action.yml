@@ -1,0 +1,50 @@
+name: Install OpenSiv3D SDK
+description: Download the OpenSiv3D SDK for Windows from the URL and unpack it to the destination path.
+
+inputs:
+  download-url:
+    description: Url for downloading .zip file
+    required: true
+  siv3d-version:
+    description: OpenSiv3D version
+    required: true
+  env:
+    description: OpenSiv3D environment variable name
+    required: true
+  destination:
+    description: Installation path
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache SDK Files
+      id: cache-sdk
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.destination }}
+        key: siv3d-sdk-${{ inputs.siv3d-version }}
+
+    - name: Download SDK Zip File
+      if: steps.cache-sdk.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        curl -L -o ${{ runner.temp }}/sdk.zip "${{ inputs.download-url }}"
+
+    - name: Extract SDK Files
+      if: steps.cache-sdk.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        unzip -d ${{ runner.temp }}/sdk ${{ runner.temp }}/sdk.zip
+        mkdir -p ${{ inputs.destination }}
+        cp "${{ runner.temp }}/sdk/$(ls sdk | head -n 1)/*" ${{ inputs.destination }}
+        rm -r ${{ runner.temp }}/sdk ${{ runner.temp }}/sdk.zip
+    
+    - name: Set environment variable
+      shell: bash
+      run: |
+        fullpath=$(readlink -f .)
+        echo "OpenSiv3D SDK installed at: $fullpath"
+        
+        echo "${{ inputs.env }}=$fullpath" >> $GITHUB_ENV
+        echo "SDK path variable is: ${{ inputs.env }}"

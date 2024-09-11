@@ -4,17 +4,14 @@ on:
   push:
   pull_request:
     types: [synchronize, opened]
-    
+
+env:
+  MSBUILD_CONFIGURATION: Release
+
 jobs:
-  build:
+  build_flexlayout:
     runs-on: windows-latest
     steps:
-      - name: test1
-        shell: bash
-        run: |
-          pwd
-          ls -al ..
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -23,8 +20,17 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: test2
-        shell: bash
+      - name: Install vcpkg MSVC integration
+        run: vcpkg integrate install
+
+      - name: Install OpenSiv3D SDK
+        uses: ./.github/actions/install_siv3d
+        with:
+          download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
+          siv3d-version: "0.6.15"
+          destination: "../OpenSiv3D_0.6.15"
+      
+      - name: Build FlexLayout
         run: |
-          pwd
-          ls -al
+          msbuild -version
+          msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
