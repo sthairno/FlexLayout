@@ -149,7 +149,6 @@ namespace FlexLayout::Internal
 		// 検証に失敗した場合
 		if (patternItr == definition.patterns.end())
 		{
-			Console << U"Ignored";
 			return false;
 		}
 
@@ -242,7 +241,6 @@ namespace FlexLayout::Internal
 		// 読み込みに失敗した場合
 		if (patternItr == definition.patterns.end())
 		{
-			Console << U"Ignored";
 			return false;
 		}
 
@@ -328,7 +326,6 @@ namespace FlexLayout::Internal
 			}
 			else
 			{
-				Console << prop.value;
 				prop.definition.installCallback(self, prop.value);
 			}
 		};
