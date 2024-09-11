@@ -82,7 +82,7 @@
     <ProjectReference />
     <Lib>
       <Verbose>true</Verbose>
-      <AdditionalDependencies>$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\$(VcpkgConfiguration)\lib\yogacore.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\debug\lib\yogacore.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -108,7 +108,7 @@
       <PrecompiledHeaderFile />
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\$(VcpkgConfiguration)\lib\yogacore.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\lib\yogacore.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
