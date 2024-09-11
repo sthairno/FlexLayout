@@ -41,13 +41,13 @@ runs:
 
         unzip -d $tmp_sdkpath $tmp_zippath
         mkdir -p $destination_path
-        cp "$tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/*" $destination_path
+        cp -r $tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/* $destination_path
         rm -r $tmp_sdkpath $tmp_zippath
     
     - name: Set environment variable
       shell: bash
       run: |
-        fullpath=$(readlink -f .)
+        fullpath=$(readlink -f $destination_path)
         echo "OpenSiv3D SDK installed at: $fullpath"
         
         echo "${{ inputs.env }}=$fullpath" >> $GITHUB_ENV
