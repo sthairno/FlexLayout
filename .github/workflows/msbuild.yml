@@ -13,8 +13,8 @@ jobs:
         shell: bash
         run: |
           pwd
-          ls -al
-          
+          ls -al ..
+
       - name: Checkout
         uses: actions/checkout@v4
 
