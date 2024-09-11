@@ -40,6 +40,9 @@ runs:
         mkdir -p $destination_path
         cp -r $tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/* $destination_path
         rm -r $tmp_sdkpath $tmp_zippath
+
+        echo $destination_path
+        ls -al $destination_path
     
     - name: Save SDK Files
       if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
