@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include <Siv3D/Optional.hpp>
-#include <Siv3D/Rect.hpp>
-#include <Siv3D/RectF.hpp>
-#include <Siv3D/ColorF.hpp>
+#include <Siv3D/2DShapes.hpp>
 #include <Siv3D/2DShapesFwd.hpp>
 
 namespace FlexLayout
