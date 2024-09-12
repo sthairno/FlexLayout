@@ -47,7 +47,6 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Build\$(ProjectName)\Debug\</OutDir>
     <IntDir>$(SolutionDir)Build\$(ProjectName)\Debug\Intermediate\</IntDir>
-    <TargetName>$(ProjectName)_dbg</TargetName>
     <IncludePath>$(SIV3D_0_6_15)\include;$(SIV3D_0_6_15)\include\ThirdParty;$(IncludePath)</IncludePath>
     <PublicIncludeDirectories>$(SolutionDir)Library;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>

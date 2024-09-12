@@ -44,8 +44,6 @@ jobs:
         with:
           name: library
           path: |
-            Build/FlexLayout/Debug/FlexLayout_dbg.lib
-            Build/FlexLayout/Debug/FlexLayout_dbg.pdb
-            Build/FlexLayout/Release/FlexLayout.lib
-            Build/FlexLayout/Release/FlexLayout.pdb
+            Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }}/*.lib
+            Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }}/*.pdb
           if-no-files-found: error
