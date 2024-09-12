@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "../Common.hpp"
+#include <type_traits>
+#include <vector>
 #include "StyleValue.hpp"
 
 namespace FlexLayout::Style::detail

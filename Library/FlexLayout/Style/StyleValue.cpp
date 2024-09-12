@@ -1,4 +1,5 @@
-﻿#include "StyleValue.hpp"
+﻿#include <ThirdParty/fmt/format.h>
+#include "StyleValue.hpp"
 
 namespace FlexLayout::Style
 {
@@ -23,13 +24,13 @@ namespace FlexLayout::Style
 		return false;
 	}
 
-	void Formatter(FormatData& formatData, const StyleValue& value)
+	void Formatter(s3d::FormatData& formatData, const StyleValue& value)
 	{
-		formatData.string.append(U"{}"_fmt(value));
+		formatData.string.append(fmt::format(U"{}", value));
 	}
 
-	String StyleValue::toString() const
+	s3d::String StyleValue::toString() const
 	{
-		return U"{}"_fmt(*this);
+		return fmt::format(U"{}", *this);
 	}
 }

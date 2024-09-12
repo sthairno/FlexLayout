@@ -1,4 +1,5 @@
 ﻿#include "Layout.hpp"
+#include <Siv3D/FileSystem.hpp>
 #include "Internal/FlexBoxImpl.hpp"
 #include "Internal/XMLLoader.hpp"
 #include "Internal/TreeContext.hpp"
@@ -99,7 +100,7 @@ namespace FlexLayout
 		}
 
 		// ファイルの更新を反映 (ホットリロード)
-		if (m_pendingReload && m_reloadTimer.elapsed() > 0.5s)
+		if (m_pendingReload && m_reloadTimer.elapsed() > SecondsF{ 0.5 })
 		{
 			reload();
 		}

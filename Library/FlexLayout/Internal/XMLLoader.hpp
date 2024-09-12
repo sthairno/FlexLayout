@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <tinyxml2.h>
 #include "FlexBoxImpl.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {

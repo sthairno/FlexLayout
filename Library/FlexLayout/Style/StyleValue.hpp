@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "../Common.hpp"
+#include <Siv3D/Optional.hpp>
+#include <Siv3D/FormatData.hpp>
 #include "../Enum/LengthUnit.hpp"
 #include "StyleEnums.hpp"
 

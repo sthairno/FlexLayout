@@ -1,4 +1,8 @@
-﻿#include "StyleEnums.hpp"
+﻿#include <Siv3D/StringView.hpp>
+#include <ThirdParty/fmt/format.h>
+#include "StyleEnums.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Style::detail
 {

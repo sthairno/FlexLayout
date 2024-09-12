@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <yoga/Yoga.h>
 #include "ComputedTextStyle.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {

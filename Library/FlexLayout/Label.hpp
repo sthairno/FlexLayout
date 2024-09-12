@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <Siv3D/TextStyle.hpp>
 #include "Box.hpp"
 
 namespace FlexLayout

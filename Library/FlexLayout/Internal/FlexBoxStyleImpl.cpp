@@ -1,4 +1,5 @@
 ﻿#include "FlexBoxImpl.hpp"
+#include <Siv3D/Indexed.hpp>
 #include "TreeContext.hpp"
 #include "../Style/StyleValueParser.hpp"
 

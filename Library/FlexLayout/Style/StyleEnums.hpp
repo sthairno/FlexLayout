@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <variant>
+#include <span>
 #include "../Enum/Common.hpp"
 
 ////////////////////////////////////////////////////

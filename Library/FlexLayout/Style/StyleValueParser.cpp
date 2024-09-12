@@ -1,4 +1,8 @@
 ﻿#include "StyleValueParser.hpp"
+#include <Siv3D/String.hpp>
+#include <Siv3D/Indexed.hpp>
+
+using namespace s3d;
 
 namespace FlexLayout::Style
 {

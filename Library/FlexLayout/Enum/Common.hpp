@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "../Common.hpp"
+#include <array>
+#include <Siv3D/StringView.hpp>
 
 #if defined YG_ENUM_DECL
 	#define FLEXLAYOUT_ENABLE_CONV_TO_YOGA 1

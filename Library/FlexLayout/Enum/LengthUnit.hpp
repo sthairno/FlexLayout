@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "../Common.hpp"
+#include <ThirdParty/fmt/format.h>
+#include <Siv3D/FormatData.hpp>
+#include <Siv3D/FormatLiteral.hpp>
 
 namespace FlexLayout
 {
@@ -32,11 +34,11 @@ namespace FlexLayout
 }
 
 template <>
-struct SIV3D_HIDDEN fmt::formatter<FlexLayout::LengthUnit, s3d::char32>
+struct SIV3D_HIDDEN fmt::formatter<FlexLayout::LengthUnit, char32_t>
 {
 	std::u32string tag;
 
-	auto parse(fmt::basic_format_parse_context<s3d::char32>& ctx)
+	auto parse(fmt::basic_format_parse_context<char32_t>& ctx)
 	{
 		return s3d::detail::GetFormatTag(tag, ctx);
 	}
@@ -47,6 +49,6 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::LengthUnit, s3d::char32>
 		constexpr static std::u32string_view names[] = {
 			U"px", U"ch", U"em", U"ex", U"ic", U"lh"
 		};
-		return format_to(ctx.out(), names[static_cast<int8_t>(value)]);
+		return format_to(ctx.out(), names[static_cast<std::int8_t>(value)]);
 	}
 };

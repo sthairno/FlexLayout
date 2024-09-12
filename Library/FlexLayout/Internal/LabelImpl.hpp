@@ -1,6 +1,11 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <Siv3D/StringView.hpp>
+#include <Siv3D/TextStyle.hpp>
+#include <Siv3D/ColorF.hpp>
+#include <Siv3D/Glyph.hpp>
 #include "FlexBoxImpl.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {

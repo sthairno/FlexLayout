@@ -1,5 +1,7 @@
 ﻿#include "Thickness.hpp"
 
+using namespace s3d;
+
 void FlexLayout::Thickness::drawPadding(const RectF& rect, const ColorF& color) const
 {
 	if (not *this)

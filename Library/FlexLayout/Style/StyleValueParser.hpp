@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Common.hpp"
+#include <Siv3D/Parse.hpp>
 #include "StyleValue.hpp"
 #include "StyleValueMatchRule.hpp"
 
@@ -9,7 +9,7 @@ namespace FlexLayout::Style
 
 	StyleValue ParseValue(float value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
 
-	StyleValue ParseValue(const StringView str, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
+	StyleValue ParseValue(const s3d::StringView str, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
 
 	StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule = StyleValue::Type::Number);
 }
@@ -17,7 +17,7 @@ namespace FlexLayout::Style
 namespace s3d
 {
 	template<>
-	inline FlexLayout::Style::StyleValue Parse<FlexLayout::Style::StyleValue>(const StringView s)
+	inline FlexLayout::Style::StyleValue Parse<FlexLayout::Style::StyleValue>(const s3d::StringView s)
 	{
 		if (auto value = FlexLayout::Style::ParseValue(s))
 		{
@@ -27,7 +27,7 @@ namespace s3d
 		detail::ThrowParseError("FlexLayout::Style::StyleValue", s);
 	}
 
-	inline Optional<FlexLayout::Style::StyleValue> ParseOpt(const StringView s)
+	inline Optional<FlexLayout::Style::StyleValue> ParseOpt(const s3d::StringView s)
 	{
 		if (auto value = FlexLayout::Style::ParseValue(s))
 		{

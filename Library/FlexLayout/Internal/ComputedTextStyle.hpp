@@ -1,6 +1,9 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <Siv3D/Font.hpp>
+#include <Siv3D/SimpleGUI.hpp>
 #include "../Enum/TextAlign.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {

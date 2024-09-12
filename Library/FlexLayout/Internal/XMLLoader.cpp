@@ -1,4 +1,5 @@
-﻿#include "XMLLoader.hpp"
+﻿#include <Siv3D/Unicode.hpp>
+#include "XMLLoader.hpp"
 #include "LabelImpl.hpp"
 #include "TreeContext.hpp"
 #include "../Util/StyleValueHelper.hpp"
@@ -44,7 +45,7 @@ namespace FlexLayout::Internal
 				}
 				else if (auto childElement = child->ToElement())
 				{
-					if (childElement->Name() == "br"sv)
+					if (childElement->Name() == "br")
 					{
 						innerText += '\n';
 					}
@@ -84,7 +85,7 @@ namespace FlexLayout::Internal
 			return false;
 		}
 
-		if (rootName == "layout"sv)
+		if (rootName == "layout")
 		{
 			// 独自フォーマットのXMLとして読み込み
 
@@ -103,11 +104,11 @@ namespace FlexLayout::Internal
 				rootRef.reset();
 			}
 		}
-		else if (rootName == "html"sv)
+		else if (rootName == "html")
 		{
 			// 簡易的なHTMLとして読み込み
 
-			if (auto bodyElement = detail::FirstChildElement(rootElement, "body"sv))
+			if (auto bodyElement = detail::FirstChildElement(rootElement, "body"))
 			{
 				rootRef = loadBodyNode(*bodyElement);
 			}

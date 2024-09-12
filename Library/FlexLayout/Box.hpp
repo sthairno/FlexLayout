@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Common.hpp"
 #include "Style/StyleValue.hpp"
 #include "Util/Thickness.hpp"
 

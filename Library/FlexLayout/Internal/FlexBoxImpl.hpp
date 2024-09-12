@@ -1,10 +1,18 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <yoga/Yoga.h>
+#include <Siv3D/StringView.hpp>
+#include <Siv3D/Array.hpp>
+#include <Siv3D/Optional.hpp>
+#include <Siv3D/Vector2D.hpp>
+#include <Siv3D/RectF.hpp>
+#include <Siv3D/HashTable.hpp>
 #include "../Style/StyleValue.hpp"
 #include "../Util/Thickness.hpp"
 #include "../Enum/NodeType.hpp"
 #include "ComputedTextStyle.hpp"
 #include "StylePropertyDefinition.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {

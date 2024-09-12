@@ -1,4 +1,8 @@
 ﻿#include "LabelImpl.hpp"
+#include <Siv3D/ScopedCustomShader2D.hpp>
+#include <Siv3D/Indexed.hpp>
+#include <Siv3D/Step.hpp>
+#include <Siv3D/Char.hpp>
 
 namespace FlexLayout::Internal
 {

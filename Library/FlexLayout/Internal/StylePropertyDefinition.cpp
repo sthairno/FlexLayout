@@ -1,7 +1,7 @@
-﻿#include "StylePropertyDefinition.hpp"
+﻿#include <yoga/YGNodeStyle.h>
+#include "StylePropertyDefinition.hpp"
 #include "TreeContext.hpp"
 #include "FlexBoxImpl.hpp"
-#include <yoga/YGNodeStyle.h>
 
 namespace FlexLayout::Internal
 {

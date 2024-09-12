@@ -1,5 +1,8 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <Siv3D/IReader.hpp>
+#include <Siv3D/TextReader.hpp>
+#include <Siv3D/DirectoryWatcher.hpp>
+#include <Siv3D/Stopwatch.hpp>
 #include "Box.hpp"
 #include "Label.hpp"
 #include "Util/StyleValueHelper.hpp"
@@ -17,7 +20,7 @@ namespace FlexLayout
 		class XMLLoader;
 	}
 
-	using EnableHotReload = s3d::YesNo<struct PreserveWhitespace_tag>;
+	using EnableHotReload = s3d::YesNo<struct EnableHotReload_tag>;
 
 	class Layout
 	{

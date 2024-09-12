@@ -1,6 +1,11 @@
 ﻿#pragma once
-#include "Common.hpp"
+#include <functional>
+#include <vector>
+#include <Siv3D/StringView.hpp>
+#include <Siv3D/HeterogeneousLookupHelper.hpp>
 #include "../Style/StyleValueMatchRule.hpp"
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {
@@ -21,5 +26,5 @@ namespace FlexLayout::Internal
 		StyleResetCallback resetCallback;
 	};
 
-	extern const std::unordered_map<StringView, StylePropertyDefinition, s3d::StringHash> StyleProperties;
+	extern const std::unordered_map<s3d::StringView, StylePropertyDefinition, s3d::StringHash> StyleProperties;
 }
