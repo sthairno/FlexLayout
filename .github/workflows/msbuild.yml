@@ -38,3 +38,14 @@ jobs:
           $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
           msbuild -version
           msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
+
+      - name: Upload Libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: library
+          path: |
+            Build/FlexLayout/Debug/FlexLayout_dbg.lib
+            Build/FlexLayout/Debug/FlexLayout_dbg.pdb
+            Build/FlexLayout/Release/FlexLayout.lib
+            Build/FlexLayout/Release/FlexLayout.pdb
+          if-no-files-found: error
