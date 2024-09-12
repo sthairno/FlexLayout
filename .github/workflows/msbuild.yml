@@ -38,6 +38,16 @@ jobs:
           $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
           msbuild -version
           msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
+      
+      - name: Print Outputs
+        run: |
+          Get-ChildItem -Path Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }} -File | ForEach-Object {
+              $fileSizeMB = "{0:N2}" -f ($_.Length / 1MB)
+              [PSCustomObject]@{
+                  FileName = $_.Name
+                  SizeMB   = $fileSizeMB
+              }
+          } | Format-Table -AutoSize
 
       - name: Upload Libraries
         uses: actions/upload-artifact@v4
