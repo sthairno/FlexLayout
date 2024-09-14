@@ -34,10 +34,6 @@ jobs:
           siv3d-version: "0.6.15"
           destination: ${{ env.SIV3D_0_6_15 }}
       
-      - name: Install Build Dependencies
-        run: |
-          vcpkg install
-  
       - name: Build FlexLayout
         shell: pwsh
         run: |
