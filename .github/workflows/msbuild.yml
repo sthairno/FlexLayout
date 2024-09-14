@@ -7,11 +7,13 @@ on:
 
 env:
   ARTIFACT_NAME: FlexLayout-Windows
-  OUTPUT_DIR: Output
 
 jobs:
   build_flexlayout:
     runs-on: windows-latest
+    env:
+      OUTPUT_DIR: Output
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +28,13 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      
       - name: Install OpenSiv3D SDK
         uses: ./.github/actions/install_siv3d
         with:
