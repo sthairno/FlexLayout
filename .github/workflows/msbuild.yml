@@ -62,6 +62,7 @@ jobs:
   
   build_example:
     runs-on: windows-latest
+    needs: build_flexlayout
     env:
       SIV3D_0_6_15: "OpenSiv3D_SDK"
     steps:
