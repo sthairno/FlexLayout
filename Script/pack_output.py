@@ -37,8 +37,6 @@ print(SOURCE_IGNORE_DIRS[0])
 
 def copy_headers(output_root: str) -> set[str]:
     def _ignore_patterns(path: str, names: list[str]):
-        print(path, names)
-
         ignored_names = []
         for name in names:
             full_path = os.path.abspath(os.path.join(path, name))
