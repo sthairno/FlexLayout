@@ -5,22 +5,36 @@ inputs:
   download-url:
     description: Url for downloading .zip file
     required: true
-  siv3d-version:
-    description: OpenSiv3D version
+  siv3d-env:
+    description: Name of a environment variable
     required: true
   destination:
-    description: Installation path
-    default: '.'
+    description: Destination path to install SDK
+
+outputs:
+  destination: ${{ steps.set-destination-path.outputs.path }}
 
 runs:
   using: 'composite'
   steps:
+    - name: Determine installation path
+      id: set-destination-path
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const envname = core.getInput("siv3d-env", { required: true });
+          const dest_input = core.getInput("destination");
+          const dest = core.toPlatformPath(dest_input ? dest_input : "/OpenSiv3D_SDK");
+
+          core.exportVariable(envname, dest);
+          core.setOutput("path", dest);
+
     - name: Restore Cached SDK Files
       id: restore-sdk-cache
       uses: actions/cache/restore@v4
       with:
-        path: ${{ inputs.destination }}
-        key: siv3d-sdk-${{ inputs.siv3d-version }}
+        path: ${{ steps.set-destination-path.outputs.path }}
+        key: ${{ inputs.siv3d-env }}
 
     - name: Download SDK Zip File
       if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
@@ -34,19 +48,18 @@ runs:
       run: |
         tmp_zippath='${{ runner.temp }}/sdk.zip'
         tmp_sdkpath=$(echo '${{ runner.temp }}/sdk' | sed 's|\\|/|g') # for cp command
-        destination_path='${{ inputs.destination }}'
+        destination_path='${{ steps.set-destination-path.outputs.path }}'
 
         unzip -d $tmp_sdkpath $tmp_zippath
         mkdir -p $destination_path
         cp -r $tmp_sdkpath/$(ls $tmp_sdkpath | head -n 1)/* $destination_path
         rm -r $tmp_sdkpath $tmp_zippath
 
-        echo $destination_path
         ls -al $destination_path
     
     - name: Save SDK Files
       if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
-        path: ${{ inputs.destination }}
+        path: ${{ steps.set-destination-path.outputs.path }}
         key: ${{ steps.restore-sdk-cache.outputs.cache-primary-key }}

@@ -32,8 +32,7 @@ jobs:
         uses: ./.github/actions/install_siv3d
         with:
           download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
-          siv3d-version: "0.6.15"
-          destination: ${{ env.SIV3D_0_6_15 }}
+          siv3d-env: SIV3D_0_6_15
       
       - name: Build FlexLayout
         shell: pwsh
@@ -63,8 +62,6 @@ jobs:
   build_example:
     runs-on: windows-latest
     needs: build_flexlayout
-    env:
-      SIV3D_0_6_15: "OpenSiv3D_SDK"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,8 +75,7 @@ jobs:
         uses: ./.github/actions/install_siv3d
         with:
           download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
-          siv3d-version: "0.6.15"
-          destination: ${{ env.SIV3D_0_6_15 }}
+          siv3d-env: SIV3D_0_6_15
       
       - name: Download FlexLayout
         uses: actions/download-artifact@v4
@@ -94,12 +90,13 @@ jobs:
       
       - name: Build Example
         shell: pwsh
+        working-directory: ./Example
         run: |
           $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
           msbuild -version
           echo "::group::Debug"
-          msbuild ./Example/Example.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
+          msbuild ./Example.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
           echo "::endgroup::"
           echo "::group::Release"
-          msbuild ./Example/Example.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
+          msbuild ./Example.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
           echo "::endgroup::"
