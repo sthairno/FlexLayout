@@ -11,9 +11,6 @@ inputs:
   destination:
     description: Destination path to install SDK
 
-outputs:
-  destination: ${{ steps.set-destination-path.outputs.path }}
-
 runs:
   using: 'composite'
   steps:
