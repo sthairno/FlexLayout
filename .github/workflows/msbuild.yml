@@ -6,6 +6,7 @@ on:
     types: [synchronize, opened]
 
 env:
+  ARTIFACT_NAME: FlexLayout-Windows
   OUTPUT_DIR: Output
 
 jobs:
@@ -55,6 +56,49 @@ jobs:
       - name: Upload Output
         uses: actions/upload-artifact@v4
         with:
-          name: FlexLayout-Windows
+          name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.OUTPUT_DIR }}
           if-no-files-found: error
+  
+  build_example:
+    runs-on: windows-latest
+    env:
+      SIV3D_0_6_15: "OpenSiv3D_SDK"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
+
+      - name: Install OpenSiv3D SDK
+        uses: ./.github/actions/install_siv3d
+        with:
+          download-url: "https://siv3d.jp/downloads/Siv3D/manual/0.6.15/OpenSiv3D_SDK_0.6.15.zip"
+          siv3d-version: "0.6.15"
+          destination: ${{ env.SIV3D_0_6_15 }}
+      
+      - name: Download FlexLayout
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ runner.temp }}/FlexLayout
+      
+      - name: Copy FlexLayout Files To SDK Directory
+        run: |
+          cp -r ${{ runner.temp }}/FlexLayout/* ${{ env.SIV3D_0_6_15 }}
+          tree ${{ env.SIV3D_0_6_15 }}
+      
+      - name: Build Example
+        shell: pwsh
+        run: |
+          $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
+          msbuild -version
+          echo "::group::Debug"
+          msbuild ./Example.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
+          echo "::endgroup::"
+          echo "::group::Release"
+          msbuild ./Example.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
+          echo "::endgroup::"
