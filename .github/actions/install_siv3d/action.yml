@@ -10,21 +10,25 @@ inputs:
     required: true
   destination:
     description: Destination path to install SDK
-    default: "/OpenSiv3D_SDK"
 
 runs:
   using: 'composite'
   steps:
-    - name: Export Variables
+    - name: Determine installation path
       id: set-destination-path
       shell: bash
-      run: echo "${{ inputs.siv3d-env }}=${{ inputs.destination }}" >> $GITHUB_ENV
+      run: |
+        input_dest='${{ inputs.destination }}'
+        destination_path=${input_dest:='${{ runner.temp }}/OpenSiv3D_SDK'}
+        
+        echo '${{ inputs.siv3d-env }}=$destination_path' >> $GITHUB_ENV
+        echo "path=$destination_path" >> "$GITHUB_OUTPUT"
 
     - name: Restore Cached SDK Files
       id: restore-sdk-cache
       uses: actions/cache/restore@v4
       with:
-        path: ${{ inputs.destination }}
+        path: ${{ steps.set-destination-path.outputs.path }}
         key: ${{ inputs.siv3d-env }}
 
     - name: Download SDK Zip File
@@ -39,7 +43,7 @@ runs:
       run: |
         tmp_zippath='${{ runner.temp }}/sdk.zip'
         tmp_sdkpath=$(echo '${{ runner.temp }}/sdk' | sed 's|\\|/|g') # for cp command
-        destination_path='${{ inputs.destination }}'
+        destination_path='${{ steps.set-destination-path.outputs.path }}'
 
         unzip -d $tmp_sdkpath $tmp_zippath
         mkdir -p $destination_path
@@ -52,5 +56,5 @@ runs:
       if: steps.restore-sdk-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
-        path: ${{ inputs.destination }}
+        path: ${{ steps.set-destination-path.outputs.path }}
         key: ${{ steps.restore-sdk-cache.outputs.cache-primary-key }}
