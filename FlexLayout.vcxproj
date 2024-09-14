@@ -143,6 +143,7 @@
     <ClInclude Include="Library\FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="Library\FlexLayout\Label.hpp" />
     <ClInclude Include="Library\FlexLayout\Layout.hpp" />
+    <ClInclude Include="Library\FlexLayout\Libraries.hpp" />
     <ClInclude Include="Library\FlexLayout\Style\StyleEnums.hpp" />
     <ClInclude Include="Library\FlexLayout\Style\StyleValue.hpp" />
     <ClInclude Include="Library\FlexLayout\Style\StyleValueMatchRule.hpp" />
