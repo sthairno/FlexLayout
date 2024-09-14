@@ -415,11 +415,6 @@
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FlexLayout.vcxproj">
-      <Project>{43eac364-e8e1-4956-a476-db1f6123f177}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
