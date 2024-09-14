@@ -6,7 +6,7 @@ on:
     types: [synchronize, opened]
 
 env:
-  MSBUILD_CONFIGURATION: Release
+  OUTPUT_DIR: Output
 
 jobs:
   build_flexlayout:
@@ -17,13 +17,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Add msbuild to PATH
+      - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
 
-      - name: Install vcpkg MSVC integration
-        run: vcpkg integrate install
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
       - name: Install OpenSiv3D SDK
         uses: ./.github/actions/install_siv3d
@@ -32,28 +34,27 @@ jobs:
           siv3d-version: "0.6.15"
           destination: ${{ env.SIV3D_0_6_15 }}
       
+      - name: Install Build Dependencies
+        run: |
+          vcpkg install
+  
       - name: Build FlexLayout
         shell: pwsh
         run: |
           $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
           msbuild -version
-          msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=${{ env.MSBUILD_CONFIGURATION }} -p:platform=x64
+          vcpkg integrate install
+          msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
+          msbuild ./FlexLayout.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
       
-      - name: Print Outputs
+      - name: Create Output
         run: |
-          Get-ChildItem -Path Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }} -File | ForEach-Object {
-              $fileSizeMB = "{0:N2}" -f ($_.Length / 1MB)
-              [PSCustomObject]@{
-                  FileName = $_.Name
-                  SizeMB   = $fileSizeMB
-              }
-          } | Format-Table -AutoSize
+          python ./Script/pack_output.py ${{ env.OUTPUT_DIR }}
+          tree ${{ env.OUTPUT_DIR }}
 
-      - name: Upload Libraries
+      - name: Upload Output
         uses: actions/upload-artifact@v4
         with:
-          name: library
-          path: |
-            Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }}/*.lib
-            Build/FlexLayout/${{ env.MSBUILD_CONFIGURATION }}/*.pdb
+          name: FlexLayout-Windows
+          path: ${{ env.OUTPUT_DIR }}
           if-no-files-found: error

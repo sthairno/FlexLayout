@@ -362,10 +362,11 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# OpenSiv3D Project
+# Project
 **/App/AS_DEBUG
 **/App/*.exe
 Build/
+Output/
 
 # vcpkg
 vcpkg_installed/
