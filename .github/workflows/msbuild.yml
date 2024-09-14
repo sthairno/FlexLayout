@@ -89,7 +89,7 @@ jobs:
       
       - name: Copy FlexLayout Files To SDK Directory
         run: |
-          cp -r ${{ runner.temp }}/FlexLayout/* ${{ env.SIV3D_0_6_15 }}
+          Copy-Item ${{ runner.temp }}/FlexLayout/* ${{ env.SIV3D_0_6_15 }} -Recurse -ErrorAction SilentlyContinue
           tree ${{ env.SIV3D_0_6_15 }}
       
       - name: Build Example
