@@ -98,8 +98,8 @@ jobs:
           $env:SIV3D_0_6_15 = "${{ env.SIV3D_0_6_15 }}"
           msbuild -version
           echo "::group::Debug"
-          msbuild ./Example.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
+          msbuild ./Example/Example.vcxproj -m -t:build -p:configuration=Debug -p:platform=x64
           echo "::endgroup::"
           echo "::group::Release"
-          msbuild ./Example.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
+          msbuild ./Example/Example.vcxproj -m -t:build -p:configuration=Release -p:platform=x64
           echo "::endgroup::"
