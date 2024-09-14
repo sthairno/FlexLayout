@@ -20,8 +20,8 @@ runs:
       run: |
         input_dest='${{ inputs.destination }}'
         destination_path=${input_dest:='${{ runner.temp }}/OpenSiv3D_SDK'}
-        
-        echo '${{ inputs.siv3d-env }}=$destination_path' >> $GITHUB_ENV
+
+        echo "${{ inputs.siv3d-env }}=$destination_path" >> $GITHUB_ENV
         echo "path=$destination_path" >> "$GITHUB_OUTPUT"
 
     - name: Restore Cached SDK Files
