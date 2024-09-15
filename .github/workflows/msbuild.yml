@@ -2,6 +2,12 @@ name: MSBuild
 
 on:
   push:
+    paths:
+      - '.github/**'
+      - 'Script/**'
+      - '*.cpp'
+      - '*.hpp'
+      - '*.vcxproj'
   pull_request:
     types: [synchronize, opened]
 
