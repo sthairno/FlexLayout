@@ -16,7 +16,9 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 2. FlexLayoutの最新版zipファイルをダウンロード
 
-4. OpenSiv3D SDKのフォルダを開き、ダウンロードした.zipファイルの中身をコピーする
+    [Releases](https://github.com/sthairno/FlexLayout/releases) → `FlexLayout-Windows.zip`
+
+3. OpenSiv3D SDKのフォルダを開き、ダウンロードした.zipファイルの中身をコピーする
 
     > **SDKのフォルダを簡単に開く方法**    
     > `Win`+`R`キーを押し、以下のコマンドを実行してください：
@@ -26,9 +28,9 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
     
     https://github.com/user-attachments/assets/332176ee-b63c-4221-b9b2-30aa3a1da5bc
 
-6. Visual Studioで通常通りOpenSiv3Dのプロジェクトを作成する
+4. Visual Studioで通常通りOpenSiv3Dのプロジェクトを作成する
 
-7. `Main.cpp`などの先頭に、`FlexLayout.hpp`をインクルードする
+5. `Main.cpp`などの先頭に、`FlexLayout.hpp`をインクルードする
 
    ```diff
      #include <Siv3D.hpp>
