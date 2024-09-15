@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\dll">
+      <UniqueIdentifier>{19e15662-4c12-4a34-ae26-f1e4c55e2ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\dll\soundtouch">
+      <UniqueIdentifier>{32f7e60d-8013-4bc5-97f2-ea46ff0eb44c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine">
+      <UniqueIdentifier>{dd0f627e-1b27-4b22-bd33-cc62510e3a5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font">
+      <UniqueIdentifier>{7e18b547-b2a2-46d4-8735-e97fa50deb52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\soundfont">
+      <UniqueIdentifier>{4c0a52c1-e26c-4fb0-8f66-9d159a27e1ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\texture">
+      <UniqueIdentifier>{c2c61b9f-26e5-4d11-af08-b440078e2859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\fontawesome">
+      <UniqueIdentifier>{ab17fde8-8462-494e-83c4-a2c8282a848f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\materialdesignicons">
+      <UniqueIdentifier>{8b14efac-ff68-46db-8547-a9449e1b81b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\mplus">
+      <UniqueIdentifier>{90f12eb8-452b-4c24-b387-90d6f03cf8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\noto-cjk">
+      <UniqueIdentifier>{e515dda5-8ec6-467d-ad63-4473ba6a2bb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\noto-emoji">
+      <UniqueIdentifier>{bf0377f2-4172-4f4c-92fa-28160e525693}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\texture\box-shadow">
+      <UniqueIdentifier>{8c8c80fe-a6dc-452d-b92d-fbb22ec16326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\engine\font\min">
+      <UniqueIdentifier>{1b103960-f11a-4515-b4f1-f59333ce00d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="App\Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App\dll\soundtouch\SoundTouch_x64.dll">
+      <Filter>Resource Files\dll\soundtouch</Filter>
+    </None>
+    <None Include="App\engine\font\fontawesome\fontawesome-brands.otf.zstdcmp">
+      <Filter>Resource Files\engine\font\fontawesome</Filter>
+    </None>
+    <None Include="App\engine\font\fontawesome\fontawesome-solid.otf.zstdcmp">
+      <Filter>Resource Files\engine\font\fontawesome</Filter>
+    </None>
+    <None Include="App\engine\font\materialdesignicons\license.md">
+      <Filter>Resource Files\engine\font\materialdesignicons</Filter>
+    </None>
+    <None Include="App\engine\font\materialdesignicons\materialdesignicons-webfont.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\materialdesignicons</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-black.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-bold.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-heavy.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-light.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-medium.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-regular.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\mplus-1p-thin.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\mplus\LICENSE_E">
+      <Filter>Resource Files\engine\font\mplus</Filter>
+    </None>
+    <None Include="App\engine\font\noto-cjk\LICENSE">
+      <Filter>Resource Files\engine\font\noto-cjk</Filter>
+    </None>
+    <None Include="App\engine\font\noto-cjk\NotoSansCJK-Regular.ttc.zstdcmp">
+      <Filter>Resource Files\engine\font\noto-cjk</Filter>
+    </None>
+    <None Include="App\engine\font\noto-cjk\NotoSansJP-Regular.otf.zstdcmp">
+      <Filter>Resource Files\engine\font\noto-cjk</Filter>
+    </None>
+    <None Include="App\engine\font\noto-emoji\LICENSE">
+      <Filter>Resource Files\engine\font\noto-emoji</Filter>
+    </None>
+    <None Include="App\engine\font\noto-emoji\NotoColorEmoji.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\noto-emoji</Filter>
+    </None>
+    <None Include="App\engine\font\noto-emoji\NotoEmoji-Regular.ttf.zstdcmp">
+      <Filter>Resource Files\engine\font\noto-emoji</Filter>
+    </None>
+    <None Include="App\engine\soundfont\GMGSx.sf2.zstdcmp">
+      <Filter>Resource Files\engine\soundfont</Filter>
+    </None>
+    <None Include="App\engine\font\min\LICENSE">
+      <Filter>Resource Files\engine\font\min</Filter>
+    </None>
+    <None Include="App\engine\font\min\siv3d-min.woff">
+      <Filter>Resource Files\engine\font\min</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="App\engine\font\fontawesome\LICENSE.txt">
+      <Filter>Resource Files\engine\font\fontawesome</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

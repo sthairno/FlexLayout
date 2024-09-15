@@ -8,6 +8,7 @@ on:
       - '*.cpp'
       - '*.hpp'
       - '*.vcxproj'
+      - '!Test/**'
   pull_request:
     types: [synchronize, opened]
 
