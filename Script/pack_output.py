@@ -11,7 +11,7 @@ LIB_FILES: list[(str, str)] = {
         "FlexLayout/FlexLayout_d.lib"
     ),
     (
-        os.path.join(PROJECT_PATH, "Build", "FlexLayout", "Debug", "FlexLayout_d.lib"),
+        os.path.join(PROJECT_PATH, "Build", "FlexLayout", "Release", "FlexLayout.lib"),
         "FlexLayout/FlexLayout.lib"
     ),
     (
