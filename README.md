@@ -6,11 +6,42 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 ## 導入方法
 
-https://github.com/user-attachments/assets/332176ee-b63c-4221-b9b2-30aa3a1da5bc
+> [!NOTE]
+> 現在Windows版Siv3Dのみ対応しています (Mac,Linux,Webは今後対応予定)
+
+> [!IMPORTANT]
+> OpenSiv3D v0.6.15以外のバージョンでは正しく動作しない可能性があります
+
+1. [Windows版 OpenSiv3D SDK v0.6.15](https://siv3d.github.io/ja-jp/download/windows/)をインストールする
+
+2. FlexLayoutの最新版zipファイルをダウンロード
+
+4. OpenSiv3D SDKのフォルダを開き、ダウンロードした.zipファイルの中身をコピーする
+
+    > **SDKのフォルダを簡単に開く方法**    
+    > `Win`+`R`キーを押し、以下のコマンドを実行してください：
+    > ```
+    > explorer.exe %SIV3D_0_6_15%
+    > ```
+    
+    https://github.com/user-attachments/assets/332176ee-b63c-4221-b9b2-30aa3a1da5bc
+
+6. Visual Studioで通常通りOpenSiv3Dのプロジェクトを作成する
+
+7. `Main.cpp`などの先頭に、`FlexLayout.hpp`をインクルードする
+
+   ```diff
+     #include <Siv3D.hpp>
+   + #include <FlexLayout.hpp>
+
+     ...
+   ```
 
 ## 使い方
 
-### レイアウトファイル
+実装例は[サンプルコード](Example/)もご覧ください
+
+### レイアウトファイル (XML)
 
 `<Layout>`：レイアウトファイルの宣言    
 `<Box>`：ボックスレイアウトに対応したコンテナー   
@@ -164,10 +195,13 @@ BoxとLabelはインラインCSSによるスタイル設定に対応していま
 
 ## 動作環境
 
+- プラットフォーム
+  - Windows 10/11
 - 依存ライブラリ
-  - OpenSiv3D 0.6.15
-  - yoga
-  - tinyxml2 (OpenSiv3Dと同一バージョン)
+  - [OpenSiv3D](https://github.com/Siv3D/OpenSiv3D) 0.6.15
+  - [yoga](https://github.com/facebook/yoga)
+  - [tinyxml2](https://github.com/leethomason/tinyxml2) (OpenSiv3Dと同一バージョン)
 - 開発環境
   - MSVC
   - vcpkg
+  - Python3
