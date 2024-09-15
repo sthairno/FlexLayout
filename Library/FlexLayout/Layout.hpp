@@ -26,44 +26,50 @@ namespace FlexLayout
 	{
 	public:
 
-		Layout();
+		using OnLoadCallback = std::function<void(Box&)>;
 
-		inline explicit Layout(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: Layout()
+		Layout(OnLoadCallback onLoad = nullptr);
+
+		inline explicit Layout(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No, OnLoadCallback onLoad = nullptr)
+			: Layout(onLoad)
 		{
 			load(path, enableHotReload);
 		}
 
-		inline explicit Layout(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: Layout(path.data(), enableHotReload) {}
+		inline explicit Layout(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No, OnLoadCallback onLoad = nullptr)
+			: Layout(path.data(), enableHotReload, onLoad) {}
 
-		inline explicit Layout(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
-			: Layout(path.data(), enableHotReload) {}
+		inline explicit Layout(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No, OnLoadCallback onLoad = nullptr)
+			: Layout(path.data(), enableHotReload, onLoad) {}
 
-		inline explicit Layout(s3d::Arg::code_<s3d::String> code)
-			: Layout()
+		inline explicit Layout(s3d::Arg::code_<s3d::String> code, OnLoadCallback onLoad = nullptr)
+			: Layout(onLoad)
 		{
 			load(code);
 		}
 
 		template <class Reader, std::enable_if_t<std::is_base_of_v<s3d::IReader, Reader> && !std::is_lvalue_reference_v<Reader>>* = nullptr>
-		inline explicit Layout(Reader&& reader)
-			: Layout()
+		inline explicit Layout(Reader&& reader, OnLoadCallback onLoad = nullptr)
+			: Layout(onLoad)
 		{
 			load(std::make_unique<Reader>(std::forward<Reader>(reader)));
 		}
 
-		inline explicit Layout(std::unique_ptr<s3d::IReader>&& reader)
-			: Layout()
+		inline explicit Layout(std::unique_ptr<s3d::IReader>&& reader, OnLoadCallback onLoad = nullptr)
+			: Layout(onLoad)
 		{
 			load(std::forward<std::unique_ptr<s3d::IReader>>(reader));
 		}
 
-		inline explicit Layout(const tinyxml2::XMLDocument& document)
-			: Layout()
+		inline explicit Layout(const tinyxml2::XMLDocument& document, OnLoadCallback onLoad = nullptr)
+			: Layout(onLoad)
 		{
 			load(document);
 		}
+
+	public:
+
+		OnLoadCallback onLoad;
 
 		bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No);
 

@@ -6,8 +6,9 @@
 
 namespace FlexLayout
 {
-	Layout::Layout()
-		: m_context(std::make_shared<Internal::TreeContext>())
+	Layout::Layout(OnLoadCallback onLoad)
+		: onLoad(onLoad)
+		, m_context(std::make_shared<Internal::TreeContext>())
 		, m_loader(std::make_unique<Internal::XMLLoader>(m_context))
 	{ }
 
@@ -59,7 +60,16 @@ namespace FlexLayout
 
 	bool Layout::load(const tinyxml2::XMLDocument& document)
 	{
-		return m_loader->load(m_root, document);
+		if (m_loader->load(m_root, document))
+		{
+			if (onLoad)
+			{
+				Box root{ m_root };
+				onLoad(root);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	bool Layout::reload()
