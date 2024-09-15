@@ -6,7 +6,7 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
 
 ## 導入方法
 
-[Install.md](Docs/Install.md)
+https://github.com/user-attachments/assets/332176ee-b63c-4221-b9b2-30aa3a1da5bc
 
 ## 使い方
 
