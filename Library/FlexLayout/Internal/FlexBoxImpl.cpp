@@ -26,7 +26,7 @@ namespace FlexLayout::Internal
 		for (auto& child : m_children)
 		{
 			child->m_parent = nullptr;
-			child->resetLayoutOffset();
+			child->clearLayoutOffsetRecursive();
 		}
 
 		Array<YGNodeRef> nodes(Arg::reserve = children.size());
@@ -47,7 +47,7 @@ namespace FlexLayout::Internal
 		{
 			auto& child = *itr;
 			child->m_parent = nullptr;
-			child->resetLayoutOffset();
+			child->clearLayoutOffsetRecursive();
 			child.reset();
 		}
 		m_children.clear();

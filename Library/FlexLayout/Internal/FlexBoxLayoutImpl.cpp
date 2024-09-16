@@ -30,7 +30,9 @@ namespace FlexLayout::Internal
 		if (offset && YGNodeStyleGetDisplay(m_node) != YGDisplayNone)
 		{
 			m_layoutOffset = *offset;
-			childOffset = *offset + Vec2{ YGNodeLayoutGetLeft(m_node), YGNodeLayoutGetTop(m_node) };
+			childOffset = m_propergateOffsetToChildren
+				? *offset + Vec2{ YGNodeLayoutGetLeft(m_node), YGNodeLayoutGetTop(m_node) }
+				: Vec2::Zero();
 		}
 		else
 		{
@@ -43,12 +45,12 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	void FlexBoxImpl::resetLayoutOffset()
+	void FlexBoxImpl::clearLayoutOffsetRecursive()
 	{
 		m_layoutOffset.reset();
 		for (const auto& child : m_children)
 		{
-			child->resetLayoutOffset();
+			child->clearLayoutOffsetRecursive();
 		}
 	}
 

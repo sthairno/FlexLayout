@@ -9,6 +9,15 @@ namespace FlexLayout
 		return m_impl->layoutOffset();
 	}
 
+	bool Box::propergateOffset() const
+	{
+		return m_impl->propergateOffset();
+	}
+
+	void Box::setPropergateOffset(bool propergate)
+	{
+		m_impl->setPropergateOffset(propergate);
+	}
 
 	Thickness Box::margin() const
 	{

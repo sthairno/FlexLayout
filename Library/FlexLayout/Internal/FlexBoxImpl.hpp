@@ -114,7 +114,11 @@ namespace FlexLayout::Internal
 
 		void setLayoutOffsetRecursive(Optional<Vec2> offset, bool force = false);
 
-		void resetLayoutOffset();
+		void clearLayoutOffsetRecursive();
+
+		bool propergateOffset() const { return m_propergateOffsetToChildren; }
+
+		inline void setPropergateOffset(bool propergate) { m_propergateOffsetToChildren = propergate; }
 
 		Thickness margin() const;
 
@@ -226,7 +230,11 @@ namespace FlexLayout::Internal
 
 		// レイアウト
 
+		/// @brief ローカル座標からグローバル座標へ変換
 		Optional<Vec2> m_layoutOffset;
+
+		/// @brief `setLayoutOffsetRecursive`呼び出し時に、子要素にオフセットを伝播させる
+		bool m_propergateOffsetToChildren = true;
 
 	public:
 

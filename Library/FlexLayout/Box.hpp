@@ -25,6 +25,14 @@ namespace FlexLayout
 		/// @brief ローカル座標からグローバル座標へのオフセットを取得する
 		s3d::Optional<s3d::Vec2> offset() const;
 
+		/// @brief 親要素のオフセットを子要素に伝播させるか
+		/// @details falseの場合、子要素のオフセットの基準位置を{ 0, 0 }にします。Transform2Dなどユーザーが座標変換を行う際に無効にします。
+		bool propergateOffset() const;
+
+		/// @brief 親要素のオフセットを子要素に伝播させるか
+		/// @details falseの場合、子要素のオフセットの基準位置を{ 0, 0 }にします。Transform2Dなどユーザーが座標変換を行う際に無効にします。
+		void setPropergateOffset(bool propergate);
+
 		/// @brief マージンの計算幅を取得
 		Thickness margin() const;
 
