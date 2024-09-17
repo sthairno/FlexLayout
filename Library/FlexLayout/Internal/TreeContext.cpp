@@ -1,4 +1,5 @@
-﻿#include "TreeContext.hpp"
+﻿#include <Siv3D/FontAsset.hpp>
+#include "TreeContext.hpp"
 #include "FlexBoxImpl.hpp"
 
 namespace FlexLayout::Internal
@@ -34,6 +35,17 @@ namespace FlexLayout::Internal
 		m_dummyNode = YGNodeNewWithConfig(m_yogaConfig);
 	}
 
+	void TreeContext::setFontLoader(std::function<Font(StringView)> loader)
+	{
+		assert(loader);
+		m_fontLoader = std::move(loader);
+	}
+
+	Font TreeContext::loadFont(StringView id) const
+	{
+		return m_fontLoader(id);
+	}
+
 	TreeContext::~TreeContext()
 	{
 		YGNodeFree(m_dummyNode);
@@ -41,5 +53,11 @@ namespace FlexLayout::Internal
 
 		YGConfigFree(m_yogaConfig);
 		m_yogaConfig = nullptr;
+	}
+
+	Font TreeContext::DefaultFontLoader(StringView id)
+	{
+		FontAsset::Wait(id);
+		return FontAsset{ id };
 	}
 }

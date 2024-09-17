@@ -142,6 +142,16 @@ namespace FlexLayout
 		return m_impl->setStyle(styleName, std::array{ v1, v2, v3, v4 });
 	}
 
+	s3d::Font Box::font() const
+	{
+		return m_impl->font();
+	}
+
+	void Box::setFont(s3d::Font font)
+	{
+		m_impl->setFont(font);
+	}
+
 	Array<Box> Box::children() const
 	{
 		return m_impl->children().map([](const auto& child) { return Box{ child }; });

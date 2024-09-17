@@ -18,6 +18,10 @@ namespace FlexLayout::Internal
 		{
 			return getCssText();
 		}
+		else if (key == U"siv3d-font")
+		{
+			return fontId();
+		}
 		else if (const auto it = m_additonalProperties.find(key);
 			it != m_additonalProperties.end())
 		{
@@ -53,6 +57,10 @@ namespace FlexLayout::Internal
 		{
 			setCssText(value);
 		}
+		else if (key == U"siv3d-font")
+		{
+			setFont(value);
+		}
 		else
 		{
 			m_additonalProperties[key] = value;
@@ -73,6 +81,10 @@ namespace FlexLayout::Internal
 		{
 			clearStyles();
 		}
+		else if (key == U"siv3d-font")
+		{
+			setFont({ }, U"");
+		}
 		else
 		{
 			m_additonalProperties.erase(key);
@@ -84,6 +96,7 @@ namespace FlexLayout::Internal
 		m_id.reset();
 		m_classes.clear();
 		clearStyles();
+		setFont({ }, U"");
 		m_additonalProperties.clear();
 	}
 

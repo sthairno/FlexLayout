@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <Siv3D/Font.hpp>
 #include "Style/StyleValue.hpp"
 #include "Util/Thickness.hpp"
 
@@ -129,6 +130,10 @@ namespace FlexLayout
 			Style::ValueInputVariant v3,
 			Style::ValueInputVariant v4
 		);
+
+		s3d::Font font() const;
+
+		void setFont(s3d::Font font);
 
 		s3d::Array<Box> children() const;
 

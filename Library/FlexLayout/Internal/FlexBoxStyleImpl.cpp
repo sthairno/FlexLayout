@@ -303,6 +303,33 @@ namespace FlexLayout::Internal
 		m_isStyleApplicationScheduled = true;
 	}
 
+	void FlexBoxImpl::setFont(const Font& font, const StringView fontId)
+	{
+		if (font == m_font.font)
+		{
+			return;
+		}
+
+		m_font = _FontProperty{
+			.font = font,
+			.id = font ? String{ fontId } : U""
+		};
+
+		scheduleStyleApplication();
+	}
+
+	void FlexBoxImpl::setFont(const StringView fontId)
+	{
+		if (fontId.empty())
+		{
+			setFont({ }, U"");
+		}
+		else
+		{
+			setFont(m_context->loadFont(fontId), fontId);
+		}
+	}
+
 	FlexBoxImpl::_StyleProperty& FlexBoxImpl::getStyleProperty(const StringView styleName)
 	{
 		auto result = m_styles.try_emplace(styleName, _StyleProperty{
@@ -333,12 +360,12 @@ namespace FlexLayout::Internal
 
 		m_isStyleApplicationScheduled = false;
 
-		// font,font-size,line-heightを事前に計算
+		// font,font-size,line-height,text-alignを事前に計算
 		// (emなど、フォントに関連するサイズ計算に必要)
 
-		m_computedTextStyle.font = m_parent
-			? m_parent->m_computedTextStyle.font
-			: m_context->defaultTextStyle().font;
+		m_computedTextStyle.font = m_font.font
+			? m_font.font
+			: m_parent ? m_parent->m_computedTextStyle.font : m_context->defaultTextStyle().font; // デフォルト値
 
 		auto lineHeightProp = getStyleProperty(U"line-height");
 		ApplyProperty(*this, lineHeightProp);
@@ -346,11 +373,14 @@ namespace FlexLayout::Internal
 		auto fontSizeProp = getStyleProperty(U"font-size");
 		ApplyProperty(*this, fontSizeProp);
 
+		auto textAlignProp = getStyleProperty(U"text-align");
+		ApplyProperty(*this, textAlignProp);
+
 		// その他のスタイルを適用
 
 		for (auto& [name, prop] : m_styles)
 		{
-			if (&prop == &fontSizeProp || &prop == &lineHeightProp)
+			if (&prop == &fontSizeProp || &prop == &lineHeightProp || &prop == &textAlignProp)
 			{
 				continue;
 			}

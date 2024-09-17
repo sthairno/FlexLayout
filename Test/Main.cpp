@@ -12,6 +12,12 @@ using namespace FlexLayout::Literals;
 
 void Main()
 {
+	FontAsset::Register(U"fontasset", 10);
+	FontAsset::Wait(U"fontasset");
+
+	Font font{ 10 };
+	Font fontasset = FontAsset{ U"fontasset" };
+
 	{
 		bool called = false;
 		auto callback = [&](FlexLayout::Box& box) -> void
@@ -55,5 +61,46 @@ void Main()
 		root->setPropergateOffset(false);
 		root->setLayoutOffsetRecursive(s3d::Vec2{ 0, 0 }, true);
 		assert((child->layoutOffset() == s3d::Vec2{ 0, 0 }));
+	}
+
+	{
+		std::shared_ptr<FlexLayout::Internal::FlexBoxImpl> root;
+
+		tinyxml2::XMLDocument document;
+		document.Parse(R"(
+			<Layout>
+				<Box siv3d-font="fontasset"><Box/></Box>
+			</Layout>
+		)");
+
+		FlexLayout::Internal::XMLLoader{
+			std::make_shared<FlexLayout::Internal::TreeContext>()
+		}.load(root, document);
+
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root->context());
+
+		auto child = root->children()[0];
+
+		assert((root->computedTextStyle().font == fontasset));
+		assert((child->computedTextStyle().font == fontasset));
+	}
+
+	{
+		auto context = std::make_shared<FlexLayout::Internal::TreeContext>();
+		std::shared_ptr<FlexLayout::Internal::FlexBoxImpl> root;
+
+		tinyxml2::XMLDocument document;
+		document.Parse(R"(
+			<Layout>
+				<Box siv3d-font="invalid"/>
+			</Layout>
+		)");
+
+		FlexLayout::Internal::XMLLoader{ context }.load(root, document);
+
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((root->font().isEmpty()));
+		assert((root->computedTextStyle().font == context->defaultTextStyle().font));
 	}
 }

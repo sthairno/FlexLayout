@@ -6,6 +6,7 @@
 #include <Siv3D/Vector2D.hpp>
 #include <Siv3D/RectF.hpp>
 #include <Siv3D/HashTable.hpp>
+#include <Siv3D/FontAsset.hpp>
 #include "../Style/StyleValue.hpp"
 #include "../Util/Thickness.hpp"
 #include "../Enum/NodeType.hpp"
@@ -96,9 +97,19 @@ namespace FlexLayout::Internal
 
 		void clearStyles();
 
+		bool isStyleApplicationScheduled() const { return m_isStyleApplicationScheduled; }
+
 		/// @brief `applyStyleRecursive()`の呼び出しを予約する
 		/// @remark 親要素で予約されていた場合、予約をスキップします
 		void scheduleStyleApplication();
+
+		Font font() const { return m_font.font; }
+
+		Optional<String> fontId() const { return m_font.id ? none : MakeOptional(m_font.id); }
+
+		void setFont(const Font& font, const StringView fontId = U"");
+
+		void setFont(const StringView fontId);
 
 		// --検索(FlexBoxLookupImpl.cpp)--
 
@@ -214,9 +225,18 @@ namespace FlexLayout::Internal
 			bool removed = true;
 		};
 
+		struct _FontProperty
+		{
+			Font font{ };
+
+			String id = U"";
+		};
+
 		using _StylePropertyTable = HashTable<String, _StyleProperty, decltype(StyleProperties)::hasher>;
 
 		_StylePropertyTable m_styles;
+
+		_FontProperty m_font;
 
 		ComputedTextStyle m_computedTextStyle;
 
