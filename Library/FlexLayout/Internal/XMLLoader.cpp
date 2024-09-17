@@ -45,7 +45,7 @@ namespace FlexLayout::Internal
 				}
 				else if (auto childElement = child->ToElement())
 				{
-					if (childElement->Name() == "br")
+					if (childElement->Name() == std::string_view{ "br" })
 					{
 						innerText += '\n';
 					}
