@@ -232,7 +232,7 @@ namespace FlexLayout::Internal
 			String id = U"";
 		};
 
-		using _StylePropertyTable = HashTable<String, _StyleProperty, decltype(StyleProperties)::hasher>;
+		using _StylePropertyTable = HashTable<String, _StyleProperty, decltype(StylePropertyDefinitionList)::hasher>;
 
 		_StylePropertyTable m_styles;
 

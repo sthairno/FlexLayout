@@ -337,7 +337,7 @@ namespace FlexLayout::Internal
 	const static Style::detail::StyleValueMultiMatchRule FlexShrinkPattern{ ValueType::Number };
 	const static Style::detail::StyleValueMultiMatchRule FlexBasisPattern{ ValueType::Length, ValueType::Percentage, ValueType::Auto };
 
-	const std::unordered_map<StringView, StylePropertyDefinition, s3d::StringHash> StyleProperties = {
+	const HashTable<StringView, StylePropertyDefinition, s3d::StringHash> StylePropertyDefinitionList = {
 		{
 			U"align-content",
 			StylePropertyDefinition {

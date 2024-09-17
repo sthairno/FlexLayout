@@ -139,6 +139,7 @@
     <ClInclude Include="Library\FlexLayout\Internal\FlexBoxImpl.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\LabelImpl.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\StylePropertyDefinition.hpp" />
+    <ClInclude Include="Library\FlexLayout\Internal\StyleProperty.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\TreeContext.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="Library\FlexLayout\Label.hpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxPropertyImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxStyleImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\LabelImpl.cpp" />
+    <ClCompile Include="Library\FlexLayout\Internal\StyleProperty.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\StylePropertyDefinition.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\TreeContext.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\XMLLoader.cpp" />

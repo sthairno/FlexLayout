@@ -112,8 +112,8 @@ namespace FlexLayout::Internal
 			return removeStyle(styleName);
 		}
 
-		auto definitionItr = StyleProperties.find(styleName);
-		if (definitionItr == StyleProperties.end())
+		auto definitionItr = StylePropertyDefinitionList.find(styleName);
+		if (definitionItr == StylePropertyDefinitionList.end())
 		{
 			return false;
 		}
@@ -170,8 +170,8 @@ namespace FlexLayout::Internal
 			return removeStyle(styleName);
 		}
 
-		auto definitionItr = StyleProperties.find(styleName);
-		if (definitionItr == StyleProperties.end())
+		auto definitionItr = StylePropertyDefinitionList.find(styleName);
+		if (definitionItr == StylePropertyDefinitionList.end())
 		{
 			return false;
 		}
@@ -333,7 +333,7 @@ namespace FlexLayout::Internal
 	FlexBoxImpl::_StyleProperty& FlexBoxImpl::getStyleProperty(const StringView styleName)
 	{
 		auto result = m_styles.try_emplace(styleName, _StyleProperty{
-			.definition = StyleProperties.at(styleName)
+			.definition = StylePropertyDefinitionList.at(styleName)
 		});
 		return result.first->second;
 	}

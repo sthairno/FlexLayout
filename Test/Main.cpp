@@ -4,6 +4,7 @@
 #include <yoga/Yoga.h>
 #include <FlexLayout/Internal/TreeContext.hpp>
 #include <FlexLayout/Internal/XMLLoader.hpp>
+#include <FlexLayout/Internal/StyleProperty.hpp>
 #include <FlexLayout/Layout.hpp>
 
 SIV3D_SET(s3d::EngineOption::Renderer::Headless)
@@ -102,5 +103,59 @@ void Main()
 
 		assert((root->font().isEmpty()));
 		assert((root->computedTextStyle().font == context->defaultTextStyle().font));
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
+		assert(tbl.group(StylePropertyGroup::Inline).size() == 0);
+
+		auto prop = tbl.get(StylePropertyGroup::Inline, U"top");
+
+		assert(prop);
+
+		assert(prop->removed);
+
+		assert(tbl.group(StylePropertyGroup::Inline).size() == 1);
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
+		auto prop = tbl.get(StylePropertyGroup::Inline, U"invalid");
+
+		assert(not prop);
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
+		tbl.get(StylePropertyGroup::Inline, U"top", true);
+		tbl.get(StylePropertyGroup::Inline, U"bottom", true);
+		tbl.get(StylePropertyGroup::Inline, U"left", true);
+		tbl.get(StylePropertyGroup::Inline, U"top", true);
+
+		assert(tbl.group(StylePropertyGroup::Inline)[0].keyHash == StylePropertyDefinitionList.hash(U"bottom"));
+		assert(tbl.group(StylePropertyGroup::Inline)[1].keyHash == StylePropertyDefinitionList.hash(U"left"));
+		assert(tbl.group(StylePropertyGroup::Inline)[2].keyHash == StylePropertyDefinitionList.hash(U"top"));
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
+		tbl.get(StylePropertyGroup::Inline, U"top");
+		tbl.get(StylePropertyGroup::Inline, U"bottom");
+		tbl.get(StylePropertyGroup::Inline, U"left");
+
+		assert(tbl.find(StylePropertyGroup::Inline, U"top"));
+		assert(!tbl.find(StylePropertyGroup::Inline, U"right"));
 	}
 }

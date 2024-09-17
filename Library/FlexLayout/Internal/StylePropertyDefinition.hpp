@@ -3,6 +3,7 @@
 #include <vector>
 #include <Siv3D/StringView.hpp>
 #include <Siv3D/HeterogeneousLookupHelper.hpp>
+#include <Siv3D/HashTable.hpp>
 #include "../Style/StyleValueMatchRule.hpp"
 
 using namespace s3d;
@@ -17,14 +18,14 @@ namespace FlexLayout::Internal
 	struct StylePropertyDefinition
 	{
 		/// @brief 受け付ける入力値のパターン
-		std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> patterns;
+		const std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> patterns;
 
 		/// @brief 入力値をFlexBoxImplに反映させるコールバック
-		StyleInstallCallback installCallback;
+		const StyleInstallCallback installCallback;
 
 		/// @brief プロパティを初期設定に戻すコールバック
-		StyleResetCallback resetCallback;
+		const StyleResetCallback resetCallback;
 	};
 
-	extern const std::unordered_map<s3d::StringView, StylePropertyDefinition, s3d::StringHash> StyleProperties;
+	extern const HashTable<s3d::StringView, StylePropertyDefinition, s3d::StringHash> StylePropertyDefinitionList;
 }
