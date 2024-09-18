@@ -3,32 +3,56 @@
 
 namespace FlexLayout::Internal
 {
-	struct StyleProperty
+	class StyleProperty
 	{
-		size_t keyHash;
+	public:
 
-		decltype(StylePropertyDefinitionList)::const_pointer definition;
+		StyleProperty(StyleProperty&&) = default;
+
+		StyleProperty& operator =(StyleProperty&&) = default;
+
+		StyleProperty(const StyleProperty&) = delete;
+
+		StyleProperty& operator =(const StyleProperty&) = delete;
 
 		Array<Style::StyleValue> value;
 
-		bool removed;
+		inline const StringView name() const { return m_definition->first; }
 
-		inline const StringView name() const
-		{
-			return definition->first;
-		}
+		inline size_t keyHash() const { return m_keyHash; }
 
-		inline bool install(FlexBoxImpl& impl) const
-		{
-			return definition->second.installCallback(impl, value);
-		}
+		inline const StylePropertyDefinition& definition() const { return m_definition->second; }
 
-		inline void reset(FlexBoxImpl& impl) const
-		{
-			definition->second.resetCallback(impl);
-		}
+		inline auto& patterns() const { return m_definition->second.patterns; }
+
+		inline bool install(FlexBoxImpl& impl) const { return m_definition->second.installCallback(impl, value); }
+
+		inline void reset(FlexBoxImpl& impl) const { m_definition->second.resetCallback(impl); }
+
+		inline bool removed() const { return value.empty(); }
+
+		inline void clear() { value.clear(); }
+
+		inline static size_t Hash(StringView key) { return StylePropertyDefinitionList.hash(key); }
+
+	protected:
+
+		friend class StylePropertyTable;
+
+		StyleProperty(size_t keyHash, decltype(StylePropertyDefinitionList)::const_pointer definition)
+			: m_keyHash(keyHash)
+			, m_definition(definition)
+			, value() { }
+
+	private:
+
+		size_t m_keyHash;
+
+		decltype(StylePropertyDefinitionList)::const_pointer m_definition;
 	};
 
+	/// @brief スタイルのグループ
+	/// @remark 数値が大きいほど優先度が高い
 	enum class StylePropertyGroup : uint8
 	{
 		Preset = 0,
@@ -41,10 +65,16 @@ namespace FlexLayout::Internal
 	public:
 
 		using value_type = StyleProperty;
+
+		/// @brief グループごとのプロパティを格納するコンテナ
+		/// @remark インデックスが大きいほど優先度が高い。コンテナ内は同じプロパティが重複しないことが保証される。
 		using group_container_type = Array<value_type>;
+
+		using group_span_type = std::span<value_type>;
+
 		using container_type = std::array<group_container_type, 3>;
 
-		inline std::span<value_type> group(StylePropertyGroup group)
+		inline group_span_type group(StylePropertyGroup group)
 		{
 			// 配列の内容の編集は許可するが、配列そのものの操作は許可したくない
 
@@ -62,7 +92,7 @@ namespace FlexLayout::Internal
 		template<class Key>
 		inline value_type* get(StylePropertyGroup group, const Key& key, bool moveToBack = false)
 		{
-			return get(group, key, Hash(key), moveToBack);
+			return get(group, key, StyleProperty::Hash(key), moveToBack);
 		}
 
 		const value_type* find(StylePropertyGroup group, size_t hash) const;
@@ -70,7 +100,7 @@ namespace FlexLayout::Internal
 		template<class Key>
 		inline const value_type* find(StylePropertyGroup group, const Key& key) const
 		{
-			return find(group, Hash(key));
+			return find(group, StyleProperty::Hash(key));
 		}
 
 		value_type* find(StylePropertyGroup group, size_t hash);
@@ -78,7 +108,7 @@ namespace FlexLayout::Internal
 		template<class Key>
 		inline value_type* find(StylePropertyGroup group, const Key& key)
 		{
-			return find(group, Hash(key));
+			return find(group, StyleProperty::Hash(key));
 		}
 
 		const value_type* find(size_t hash) const;
@@ -86,7 +116,7 @@ namespace FlexLayout::Internal
 		template<class Key>
 		inline const value_type* find(const Key& key) const
 		{
-			return find(Hash(key));
+			return find(StyleProperty::Hash(key));
 		}
 
 		constexpr container_type::iterator begin() noexcept { return m_table.begin(); }
@@ -112,11 +142,6 @@ namespace FlexLayout::Internal
 		constexpr container_type::const_reverse_iterator crbegin() const noexcept { return m_table.crbegin(); }
 
 		constexpr container_type::const_reverse_iterator crend() const noexcept { return m_table.crend(); }
-
-		static size_t Hash(StringView key) noexcept
-		{
-			return StylePropertyDefinitionList.hash(key);
-		}
 
 	private:
 

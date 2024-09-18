@@ -9,7 +9,7 @@ namespace FlexLayout::Internal
 		auto itr = std::find_if(
 			container.begin(),
 			container.end(),
-			[hash](const StyleProperty& item) { return item.keyHash == hash; }
+			[hash](const StyleProperty& item) { return item.keyHash() == hash; }
 		);
 
 		if (itr == container.end())
@@ -21,12 +21,7 @@ namespace FlexLayout::Internal
 				return nullptr;
 			}
 
-			container.emplace_back(StyleProperty{
-				.keyHash = hash,
-				.definition = &(*defItr),
-				.value = { },
-				.removed = true
-			});
+			container.emplace_back(StyleProperty{ hash, &(*defItr) });
 
 			return &container.back();
 		}
@@ -50,7 +45,7 @@ namespace FlexLayout::Internal
 		auto itr = std::find_if(
 			container.cbegin(),
 			container.cend(),
-			[hash](const StyleProperty& item) { return item.keyHash == hash; }
+			[hash](const StyleProperty& item) { return item.keyHash() == hash; }
 		);
 
 		return itr == container.cend()
@@ -71,7 +66,7 @@ namespace FlexLayout::Internal
 			auto itr = std::find_if(
 				containerItr->cbegin(),
 				containerItr->cend(),
-				[hash](const StyleProperty& item) { return item.keyHash == hash; }
+				[hash](const StyleProperty& item) { return item.keyHash() == hash; }
 			);
 
 			if (itr != containerItr->cend())
