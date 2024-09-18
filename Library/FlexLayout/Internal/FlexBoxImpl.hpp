@@ -11,7 +11,7 @@
 #include "../Util/Thickness.hpp"
 #include "../Enum/NodeType.hpp"
 #include "ComputedTextStyle.hpp"
-#include "StylePropertyDefinition.hpp"
+#include "StyleProperty.hpp"
 
 using namespace s3d;
 
@@ -81,21 +81,19 @@ namespace FlexLayout::Internal
 
 		const ComputedTextStyle& computedTextStyle() const { return m_computedTextStyle; }
 
-		void setCssText(const StringView cssText);
+		void setInlineCssText(const StringView cssText);
 
-		String getCssText() const;
+		String getInlineCssText() const;
 
-		const Array<Style::StyleValue>& getStyle(const StringView styleName);
+		Array<Style::StyleValue> getStyle(StylePropertyGroup group, const StringView styleName) const;
 
-		Array<Style::StyleValue> getStyle(const StringView styleName) const;
+		bool setStyle(StylePropertyGroup group, const StringView styleName, std::span<const Style::StyleValue> values);
 
-		bool setStyle(const StringView styleName, std::span<const Style::StyleValue> values);
+		bool setStyle(StylePropertyGroup group, const StringView styleName, std::span<const Style::ValueInputVariant> values);
 
-		bool setStyle(const StringView styleName, std::span<const Style::ValueInputVariant> values);
+		bool removeStyle(StylePropertyGroup group, const StringView styleName);
 
-		bool removeStyle(const StringView styleName);
-
-		void clearStyles();
+		void clearStyles(Optional<StylePropertyGroup> group);
 
 		bool isStyleApplicationScheduled() const { return m_isStyleApplicationScheduled; }
 
@@ -208,23 +206,6 @@ namespace FlexLayout::Internal
 
 		// スタイル
 
-		struct _StyleProperty
-		{
-			enum class Event
-			{
-				None,
-				Added,
-				Modified,
-				Removed,
-			};
-
-			const StylePropertyDefinition& definition;
-
-			Array<Style::StyleValue> value;
-
-			bool removed = true;
-		};
-
 		struct _FontProperty
 		{
 			Font font{ };
@@ -232,19 +213,13 @@ namespace FlexLayout::Internal
 			String id = U"";
 		};
 
-		using _StylePropertyTable = HashTable<String, _StyleProperty, decltype(StylePropertyDefinitionList)::hasher>;
-
-		_StylePropertyTable m_styles;
+		StylePropertyTable m_styles;
 
 		_FontProperty m_font;
 
 		ComputedTextStyle m_computedTextStyle;
 
 		bool m_isStyleApplicationScheduled = false;
-
-		_StyleProperty& getStyleProperty(const StringView styleName);
-
-		_StyleProperty* tryGetStyleProperty(const StringView styleName);
 
 		void applyStylesImpl();
 

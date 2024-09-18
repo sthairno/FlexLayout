@@ -76,32 +76,32 @@ namespace FlexLayout
 
 	Array<StyleValue> Box::getStyle(const StringView styleName) const
 	{
-		return m_impl->getStyle(styleName);
+		return m_impl->getStyle(Internal::StylePropertyGroup::Inline, styleName);
 	}
 
 	bool Box::setStyle(const StringView styleName, const Array<StyleValue>& list)
 	{
-		return m_impl->setStyle(styleName, std::span{ list.begin(), list.end() });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::span{ list.begin(), list.end() });
 	}
 
 	bool Box::setStyle(const StringView styleName, StyleValue value)
 	{
-		return m_impl->setStyle(styleName, std::array{ value });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ value });
 	}
 
 	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2 });
 	}
 
 	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2, v3 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2, v3 });
 	}
 
 	bool Box::setStyle(const StringView styleName, StyleValue v1, StyleValue v2, StyleValue v3, StyleValue v4)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2, v3, v4 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2, v3, v4 });
 	}
 
 	bool Box::setStyle(
@@ -109,7 +109,7 @@ namespace FlexLayout
 		Style::ValueInputVariant value
 	)
 	{
-		return m_impl->setStyle(styleName, std::array{ value });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ value });
 	}
 
 	bool Box::setStyle(
@@ -118,7 +118,7 @@ namespace FlexLayout
 		Style::ValueInputVariant v2
 	)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2 });
 	}
 
 	bool Box::setStyle(
@@ -128,7 +128,7 @@ namespace FlexLayout
 		Style::ValueInputVariant v3
 	)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2, v3 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2, v3 });
 	}
 
 	bool Box::setStyle(
@@ -139,7 +139,7 @@ namespace FlexLayout
 		Style::ValueInputVariant v4
 	)
 	{
-		return m_impl->setStyle(styleName, std::array{ v1, v2, v3, v4 });
+		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2, v3, v4 });
 	}
 
 	s3d::Font Box::font() const

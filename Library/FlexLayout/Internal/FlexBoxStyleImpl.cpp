@@ -40,8 +40,10 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	void FlexBoxImpl::setCssText(const StringView cssText)
+	void FlexBoxImpl::setInlineCssText(const StringView cssText)
 	{
+		clearStyles(StylePropertyGroup::Inline);
+
 		size_t beginIdx = 0;
 		size_t endIdx = 0;
 		while (endIdx < cssText.length())
@@ -73,56 +75,54 @@ namespace FlexLayout::Internal
 				continue;
 			}
 
-			setStyle(propertyName, std::array<Style::ValueInputVariant, 1>{ propertyValue });
+			setStyle(StylePropertyGroup::Inline, propertyName, std::array<Style::ValueInputVariant, 1>{ propertyValue });
 		}
 	}
 
-	String FlexBoxImpl::getCssText() const
+	String FlexBoxImpl::getInlineCssText() const
 	{
 		String tmp;
 
-		for (const auto& [key, value] : m_styles)
+		for (const auto& entry : m_styles.group(StylePropertyGroup::Inline))
 		{
-			tmp += U"{}: {}"_fmt(key, value.value.join(U" ", U"", U""));
+			if (not entry.removed())
+			{
+				tmp += U"{}: {};"_fmt(entry.name(), entry.value.join(U" ", U"", U""));
+			}
 		}
 
 		return tmp;
 	}
 
-	const Array<Style::StyleValue>& FlexBoxImpl::getStyle(const StringView styleName)
+	Array<Style::StyleValue> FlexBoxImpl::getStyle(StylePropertyGroup group, const StringView styleName) const
 	{
-		return getStyleProperty(styleName).value;
-	}
-
-	Array<Style::StyleValue> FlexBoxImpl::getStyle(const StringView styleName) const
-	{
-		if (auto itr = m_styles.find(styleName); itr != m_styles.end())
+		if (auto entry = m_styles.find(group, styleName))
 		{
-			return itr->second.value;
+			return entry->value;
 		}
 
 		return { };
 	}
 
-	bool FlexBoxImpl::setStyle(const StringView styleName, const std::span<const Style::StyleValue> values)
+	bool FlexBoxImpl::setStyle(StylePropertyGroup group, const StringView styleName, const std::span<const Style::StyleValue> values)
 	{
 		if (values.empty() ||
 			std::all_of(values.begin(), values.end(), [](auto& v){ return v.type() == Style::StyleValue::Type::Unspecified; }))
 		{
-			return removeStyle(styleName);
+			return removeStyle(group, styleName);
 		}
 
-		auto definitionItr = StylePropertyDefinitionList.find(styleName);
-		if (definitionItr == StylePropertyDefinitionList.end())
+		auto entry = m_styles.get(group, styleName, true);
+		if (not entry)
 		{
 			return false;
 		}
 
-		const auto& definition = definitionItr->second;
+		const auto& patterns = entry->patterns();
 
 		// いずれかのパターンに合致するか検証
-		auto patternItr = definition.patterns.begin();
-		for (; patternItr != definition.patterns.end(); patternItr++)
+		auto patternItr = patterns.begin();
+		for (; patternItr != patterns.end(); patternItr++)
 		{
 			auto& pattern = *patternItr;
 
@@ -148,35 +148,33 @@ namespace FlexLayout::Internal
 		}
 
 		// 検証に失敗した場合
-		if (patternItr == definition.patterns.end())
+		if (patternItr == patterns.end())
 		{
 			return false;
 		}
 
-		// スタイルを作成 or 更新
-		auto& entry = getStyleProperty(styleName);
-		entry.value = Array<Style::StyleValue>(values.begin(), values.end());
-		entry.removed = false;
+		// スタイルを更新
+		entry->value = Array<Style::StyleValue>(values.begin(), values.end());
 
 		scheduleStyleApplication();
 
 		return true;
 	}
 
-	bool FlexBoxImpl::setStyle(const StringView styleName, std::span<const Style::ValueInputVariant> inputs)
+	bool FlexBoxImpl::setStyle(StylePropertyGroup group, const StringView styleName, std::span<const Style::ValueInputVariant> inputs)
 	{
 		if (inputs.empty())
 		{
-			return removeStyle(styleName);
+			return removeStyle(group, styleName);
 		}
 
-		auto definitionItr = StylePropertyDefinitionList.find(styleName);
-		if (definitionItr == StylePropertyDefinitionList.end())
+		auto entry = m_styles.get(group, styleName, true);
+		if (not entry)
 		{
 			return false;
 		}
 
-		const auto& definition = definitionItr->second;
+		const auto& definition = entry->definition();
 
 		// 引数が文字列1つの場合、配列として処理して参照を切り替える
 		Array<Style::ValueInputVariant> tmpInputs;
@@ -246,42 +244,53 @@ namespace FlexLayout::Internal
 		}
 
 		// スタイルを作成 or 更新
-		auto& entry = getStyleProperty(styleName);
-		entry.value = std::move(parsedValues);
-		entry.removed = false;
+		entry->value = std::move(parsedValues);
 		scheduleStyleApplication();
 
 		return true;
 	}
 
-	bool FlexBoxImpl::removeStyle(const StringView styleName)
+	bool FlexBoxImpl::removeStyle(StylePropertyGroup group, const StringView styleName)
 	{
-		auto itr = m_styles.find(styleName);
+		auto entry = m_styles.find(group, styleName);
 
-		if (itr == m_styles.end() || itr->second.removed)
+		if (not entry || entry->removed())
 		{
 			return false;
 		}
 
-		auto& prop = itr->second;
+		entry->clear();
 
-		prop.value.clear();
-		prop.removed = true;
 		scheduleStyleApplication();
 
 		return false;
 	}
 
-	void FlexBoxImpl::clearStyles()
+	void FlexBoxImpl::clearStyles(Optional<StylePropertyGroup> group)
 	{
 		bool modified = false;
-		for (auto& [_, prop] : m_styles)
+
+		const auto removeAll = [&](StylePropertyTable::group_span_type g)
 		{
-			if (not prop.removed)
+			for (auto& entry : g)
 			{
-				prop.value.clear();
-				prop.removed = true;
-				modified = true;
+				if (not entry.removed())
+				{
+					entry.clear();
+					modified = true;
+				}
+			}
+		};
+
+		if (group)
+		{
+			removeAll(m_styles.group(*group));
+		}
+		else
+		{
+			for (auto& g : m_styles)
+			{
+				removeAll(g);
 			}
 		}
 
@@ -330,63 +339,67 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	FlexBoxImpl::_StyleProperty& FlexBoxImpl::getStyleProperty(const StringView styleName)
-	{
-		auto result = m_styles.try_emplace(styleName, _StyleProperty{
-			.definition = StylePropertyDefinitionList.at(styleName)
-		});
-		return result.first->second;
-	}
-
-	FlexBoxImpl::_StyleProperty* FlexBoxImpl::tryGetStyleProperty(const StringView styleName)
-	{
-		auto itr = m_styles.find(styleName);
-		return itr != m_styles.end() ? &itr->second : nullptr;
-	}
-
 	void FlexBoxImpl::applyStylesImpl()
 	{
-		const static auto ApplyProperty = [](FlexBoxImpl& self, _StyleProperty& prop)
-		{
-			if (prop.removed)
+		const static auto ApplyProperty = [](FlexBoxImpl& self, const StyleProperty* prop)
 			{
-				prop.definition.resetCallback(self);
-			}
-			else
-			{
-				prop.definition.installCallback(self, prop.value);
-			}
-		};
+				if (not prop)
+				{
+					return;
+				}
+
+				if (prop->removed())
+				{
+					prop->reset(self);
+				}
+				else
+				{
+					prop->install(self);
+				}
+			};
 
 		m_isStyleApplicationScheduled = false;
 
 		// font,font-size,line-height,text-alignを事前に計算
 		// (emなど、フォントに関連するサイズ計算に必要)
 
+		const static size_t lineHeightHash = StyleProperty::Hash(U"line-height");
+		const static size_t fontSizeHash = StyleProperty::Hash(U"font-size");
+		const static size_t textAlignHash = StyleProperty::Hash(U"text-align");
+
 		m_computedTextStyle.font = m_font.font
-			? m_font.font
+			? m_font.font // 設定値
 			: m_parent ? m_parent->m_computedTextStyle.font : m_context->defaultTextStyle().font; // デフォルト値
 
-		auto lineHeightProp = getStyleProperty(U"line-height");
+		auto lineHeightProp = m_styles.find(lineHeightHash);
 		ApplyProperty(*this, lineHeightProp);
 
-		auto fontSizeProp = getStyleProperty(U"font-size");
+		auto fontSizeProp = m_styles.find(fontSizeHash);
 		ApplyProperty(*this, fontSizeProp);
 
-		auto textAlignProp = getStyleProperty(U"text-align");
+		auto textAlignProp = m_styles.find(textAlignHash);
 		ApplyProperty(*this, textAlignProp);
 
-		// その他のスタイルを適用
+		// その他のスタイル
+		
+		// TODO: 優先順位の昇順に適用
+		//for (const auto& group : m_styles)
+		//{
+		//	for (auto& prop : group)
+		//	{
+		//		if (prop.keyHash() == lineHeightHash ||
+		//			prop.keyHash() == fontSizeHash ||
+		//			prop.keyHash() == textAlignHash)
+		//		{
+		//			continue;
+		//		}
 
-		for (auto& [name, prop] : m_styles)
-		{
-			if (&prop == &fontSizeProp || &prop == &lineHeightProp || &prop == &textAlignProp)
-			{
-				continue;
-			}
-
-			ApplyProperty(*this, prop);
-		}
+		//		if (not prop.removed())
+		//		{
+		//			prop.install(*this);
+		//		}
+		//	}
+		//}
 
 		// 子要素にも再帰
 

@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 		}
 		else if (key == U"style")
 		{
-			return getCssText();
+			return getInlineCssText();
 		}
 		else if (key == U"siv3d-font")
 		{
@@ -55,7 +55,7 @@ namespace FlexLayout::Internal
 		}
 		else if (key == U"style")
 		{
-			setCssText(value);
+			setInlineCssText(value);
 		}
 		else if (key == U"siv3d-font")
 		{
@@ -79,7 +79,7 @@ namespace FlexLayout::Internal
 		}
 		else if (key == U"style")
 		{
-			clearStyles();
+			clearStyles(StylePropertyGroup::Inline);
 		}
 		else if (key == U"siv3d-font")
 		{
@@ -95,7 +95,7 @@ namespace FlexLayout::Internal
 	{
 		m_id.reset();
 		m_classes.clear();
-		clearStyles();
+		clearStyles(StylePropertyGroup::Inline);
 		setFont({ }, U"");
 		m_additonalProperties.clear();
 	}
