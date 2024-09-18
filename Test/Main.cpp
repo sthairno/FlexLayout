@@ -136,6 +136,27 @@ void Main()
 
 		StylePropertyTable tbl;
 
+		tbl.get(StylePropertyGroup::Inline, U"top");
+
+		assert(!tbl.find(StylePropertyGroup::StyleSheet, U"top"));
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
+		auto a = tbl.get(StylePropertyGroup::StyleSheet, U"top");
+		auto b = tbl.get(StylePropertyGroup::Inline, U"top");
+
+		assert(tbl.find(U"top") == b);
+	}
+
+	{
+		using namespace FlexLayout::Internal;
+
+		StylePropertyTable tbl;
+
 		tbl.get(StylePropertyGroup::Inline, U"top", true);
 		tbl.get(StylePropertyGroup::Inline, U"bottom", true);
 		tbl.get(StylePropertyGroup::Inline, U"left", true);
