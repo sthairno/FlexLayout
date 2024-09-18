@@ -27,5 +27,5 @@ namespace FlexLayout::Internal
 		const StyleResetCallback resetCallback;
 	};
 
-	extern const HashTable<s3d::StringView, StylePropertyDefinition, s3d::StringHash> StylePropertyDefinitionList;
+	extern const HashTable<s3d::StringView, StylePropertyDefinition> StylePropertyDefinitionList;
 }
