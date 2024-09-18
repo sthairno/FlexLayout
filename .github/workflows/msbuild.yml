@@ -5,9 +5,9 @@ on:
     paths:
       - '.github/**'
       - 'Script/**'
-      - '*.cpp'
-      - '*.hpp'
-      - '*.vcxproj'
+      - '**.cpp'
+      - '**.hpp'
+      - '**.vcxproj'
       - '!Test/**'
   pull_request:
     types: [synchronize, opened]
