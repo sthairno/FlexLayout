@@ -2,11 +2,6 @@
 
 namespace FlexLayout::Internal
 {
-	const Array<StylePropertyTable::value_type>& StylePropertyTable::group(StylePropertyGroup group) const
-	{
-		return m_table[static_cast<uint8>(group)];
-	}
-
 	StylePropertyTable::value_type* StylePropertyTable::get(StylePropertyGroup group, StringView key, size_t hash, bool moveToBack)
 	{
 		auto& container = m_table[static_cast<uint8>(group)];
@@ -28,7 +23,7 @@ namespace FlexLayout::Internal
 
 			container.emplace_back(StyleProperty{
 				.keyHash = hash,
-				.definition = &defItr->second,
+				.definition = &(*defItr),
 				.value = { },
 				.removed = true
 			});
@@ -48,18 +43,43 @@ namespace FlexLayout::Internal
 		return &(*itr);
 	}
 
-	StylePropertyTable::value_type* StylePropertyTable::find(StylePropertyGroup group, size_t hash)
+	const StylePropertyTable::value_type* StylePropertyTable::find(StylePropertyGroup group, size_t hash) const
 	{
 		auto& container = m_table[static_cast<uint8>(group)];
 
 		auto itr = std::find_if(
-			container.begin(),
-			container.end(),
+			container.cbegin(),
+			container.cend(),
 			[hash](const StyleProperty& item) { return item.keyHash == hash; }
 		);
 
-		return itr == container.end()
+		return itr == container.cend()
 			? nullptr
 			: &(*itr);
+	}
+
+	StylePropertyTable::value_type* StylePropertyTable::find(StylePropertyGroup group, size_t hash)
+	{
+		const auto& self = *this;
+		return const_cast<value_type*>(self.find(group, hash));
+	}
+
+	const StylePropertyTable::value_type* StylePropertyTable::find(size_t hash) const
+	{
+		for (const auto& container : m_table)
+		{
+			auto itr = std::find_if(
+				container.cbegin(),
+				container.cend(),
+				[hash](const StyleProperty& item) { return item.keyHash == hash; }
+			);
+
+			if (itr != container.cend())
+			{
+				return &(*itr);
+			}
+		}
+
+		return nullptr;
 	}
 }
