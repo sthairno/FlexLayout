@@ -1,5 +1,10 @@
 ﻿#include "FlexBoxImpl.hpp"
+#include <stack>
+#include <map>
+#include <set>
 #include <Siv3D/Indexed.hpp>
+#include <Siv3D/Console.hpp>
+#include <ThirdParty/parallel_hashmap/btree.h>
 #include "TreeContext.hpp"
 #include "../Style/StyleValueParser.hpp"
 
@@ -87,7 +92,7 @@ namespace FlexLayout::Internal
 		{
 			if (not entry.removed())
 			{
-				tmp += U"{}: {};"_fmt(entry.name(), entry.value.join(U" ", U"", U""));
+				tmp += U"{}: {};"_fmt(entry.definition().name(), entry.value().join(U" ", U"", U""));
 			}
 		}
 
@@ -98,7 +103,7 @@ namespace FlexLayout::Internal
 	{
 		if (auto entry = m_styles.find(group, styleName))
 		{
-			return entry->value;
+			return entry->value();
 		}
 
 		return { };
@@ -118,7 +123,7 @@ namespace FlexLayout::Internal
 			return false;
 		}
 
-		const auto& patterns = entry->patterns();
+		const auto& patterns = entry->definition().patterns();
 
 		// いずれかのパターンに合致するか検証
 		auto patternItr = patterns.begin();
@@ -154,8 +159,7 @@ namespace FlexLayout::Internal
 		}
 
 		// スタイルを更新
-		entry->value = Array<Style::StyleValue>(values.begin(), values.end());
-
+		entry->setValue({ values.begin(), values.end() });
 		scheduleStyleApplication();
 
 		return true;
@@ -174,7 +178,7 @@ namespace FlexLayout::Internal
 			return false;
 		}
 
-		const auto& definition = entry->definition();
+		const auto definition = entry->definition();
 
 		// 引数が文字列1つの場合、配列として処理して参照を切り替える
 		Array<Style::ValueInputVariant> tmpInputs;
@@ -206,8 +210,8 @@ namespace FlexLayout::Internal
 
 		// 入力の各要素をStyleValueへ読み込み
 		Array<Style::StyleValue> parsedValues(Arg::reserve = inputs.size());
-		auto patternItr = definition.patterns.begin();
-		for (; patternItr != definition.patterns.end(); patternItr++)
+		auto patternItr = definition.patterns().begin();
+		for (; patternItr != definition.patterns().end(); patternItr++)
 		{
 			auto& pattern = *patternItr;
 			parsedValues.clear();
@@ -238,13 +242,13 @@ namespace FlexLayout::Internal
 		}
 
 		// 読み込みに失敗した場合
-		if (patternItr == definition.patterns.end())
+		if (patternItr == definition.patterns().end())
 		{
 			return false;
 		}
 
 		// スタイルを作成 or 更新
-		entry->value = std::move(parsedValues);
+		entry->setValue(std::move(parsedValues));
 		scheduleStyleApplication();
 
 		return true;
@@ -259,7 +263,7 @@ namespace FlexLayout::Internal
 			return false;
 		}
 
-		entry->clear();
+		entry->unsetValue();
 
 		scheduleStyleApplication();
 
@@ -276,7 +280,7 @@ namespace FlexLayout::Internal
 			{
 				if (not entry.removed())
 				{
-					entry.clear();
+					entry.unsetValue();
 					modified = true;
 				}
 			}
@@ -341,23 +345,6 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::applyStylesImpl()
 	{
-		const static auto ApplyProperty = [](FlexBoxImpl& self, const StyleProperty* prop)
-			{
-				if (not prop)
-				{
-					return;
-				}
-
-				if (prop->removed())
-				{
-					prop->reset(self);
-				}
-				else
-				{
-					prop->install(self);
-				}
-			};
-
 		m_isStyleApplicationScheduled = false;
 
 		// font,font-size,line-height,text-alignを事前に計算
@@ -367,45 +354,126 @@ namespace FlexLayout::Internal
 		const static size_t fontSizeHash = StyleProperty::Hash(U"font-size");
 		const static size_t textAlignHash = StyleProperty::Hash(U"text-align");
 
+		constexpr static auto installTextProperty = [](FlexBoxImpl* self, StyleProperty* prop) -> void
+			{
+				if (not prop)
+				{
+					return;
+				}
+
+				prop->clearEvent();
+
+				if (prop->removed())
+				{
+					prop->execReset(*self);
+				}
+				else
+				{
+					prop->execInstall(*self);
+				}
+			};
+
+		ComputedTextStyle prevStyle = m_computedTextStyle;
+
 		m_computedTextStyle.font = m_font.font
 			? m_font.font // 設定値
 			: m_parent ? m_parent->m_computedTextStyle.font : m_context->defaultTextStyle().font; // デフォルト値
 
 		auto lineHeightProp = m_styles.find(lineHeightHash);
-		ApplyProperty(*this, lineHeightProp);
+		installTextProperty(this, lineHeightProp);
 
 		auto fontSizeProp = m_styles.find(fontSizeHash);
-		ApplyProperty(*this, fontSizeProp);
+		installTextProperty(this, fontSizeProp);
 
 		auto textAlignProp = m_styles.find(textAlignHash);
-		ApplyProperty(*this, textAlignProp);
+		installTextProperty(this, textAlignProp);
+
+		const bool isTextStyleChanged = prevStyle != m_computedTextStyle;
 
 		// その他のスタイル
-		
-		// TODO: 優先順位の昇順に適用
-		//for (const auto& group : m_styles)
-		//{
-		//	for (auto& prop : group)
-		//	{
-		//		if (prop.keyHash() == lineHeightHash ||
-		//			prop.keyHash() == fontSizeHash ||
-		//			prop.keyHash() == textAlignHash)
-		//		{
-		//			continue;
-		//		}
 
-		//		if (not prop.removed())
-		//		{
-		//			prop.install(*this);
-		//		}
-		//	}
-		//}
-
-		// 子要素にも再帰
-
-		for (const auto& child : m_children)
+		static struct _PropertyState
 		{
-			child->applyStylesImpl();
+			StylePropertyDefinitionRef definition;
+
+			StyleProperty* installedProperty = nullptr;
+			size_t installationPriority;
+		};
+
+		phmap::btree_map<size_t, _PropertyState> propertyStates;
+		size_t priority = 0;
+		for (auto& group : m_styles)
+		{
+			for (auto& prop : group)
+			{
+				if (&prop == lineHeightProp || &prop == fontSizeProp || &prop == textAlignProp)
+				{
+					continue;
+				}
+
+				auto& state = propertyStates.try_emplace(
+					prop.keyHash(),
+					_PropertyState{ prop.definition() }
+				).first->second;
+
+				if (not prop.removed())
+				{
+					prop.execInstall(*this);
+
+					state.installedProperty = &prop;
+					state.installationPriority = priority++;
+				}
+				else if (prop.event() == StyleProperty::Event::Removed)
+				{
+					prop.execReset(*this);
+
+					// リセットで影響を受ける、インストール済みのプロパティを再インストール
+					auto& affectedKeys = state.definition.maybeAffectTo();
+					if (not affectedKeys.empty())
+					{
+						std::vector<std::pair<size_t, StyleProperty*>> affectedProperties;
+
+						// 大体2~4個程度なので計算コストは無視できる
+						for (const auto& key : affectedKeys)
+						{
+							const auto hash = StyleProperty::Hash(key);
+							if (auto itr = propertyStates.find(hash);
+								itr != propertyStates.end() &&
+								itr->second.installedProperty)
+							{
+								affectedProperties.push_back({
+									itr->second.installationPriority,
+									itr->second.installedProperty
+								});
+							}
+						}
+
+						std::sort(
+							affectedProperties.begin(),
+							affectedProperties.end(),
+							[](const auto& a, const auto& b) {
+								return a.first < b.first;
+							}
+						);
+
+						for (auto [_, prop] : affectedProperties)
+						{
+							prop->execInstall(*this);
+						}
+					}
+				}
+
+				prop.clearEvent();
+			}
+		}
+
+		if (isTextStyleChanged)
+		{
+			// 子要素にも再帰
+			for (const auto& child : m_children)
+			{
+				child->applyStylesImpl();
+			}
 		}
 	}
 }

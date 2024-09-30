@@ -337,10 +337,10 @@ namespace FlexLayout::Internal
 	const static Style::detail::StyleValueMultiMatchRule FlexShrinkPattern{ ValueType::Number };
 	const static Style::detail::StyleValueMultiMatchRule FlexBasisPattern{ ValueType::Length, ValueType::Percentage, ValueType::Auto };
 
-	const HashTable<StringView, StylePropertyDefinition> StylePropertyDefinitionList = {
+	const StylePropertyDefinitionContainer StylePropertyDefinitionList = {
 		{
 			U"align-content",
-			StylePropertyDefinition {
+			StylePropertyDefinitionDetails {
 				.patterns = PatternSingle({ PatternEnum<AlignContent>() }),
 				.installCallback = InstallCallback_YogaEnum<AlignContent>(YGNodeStyleSetAlignContent),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetAlignContent, YGNodeStyleSetAlignContent)
@@ -348,7 +348,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"align-items",
-			StylePropertyDefinition {
+			StylePropertyDefinitionDetails {
 				.patterns = PatternSingle({ PatternEnum<AlignItems>() }),
 				.installCallback = InstallCallback_YogaEnum<AlignItems>(YGNodeStyleSetAlignItems),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetAlignItems, YGNodeStyleSetAlignItems)
@@ -356,7 +356,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"align-self",
-			StylePropertyDefinition {
+			StylePropertyDefinitionDetails {
 				.patterns = PatternSingle({ PatternEnum<AlignSelf>() }),
 				.installCallback = InstallCallback_YogaEnum<AlignSelf>(YGNodeStyleSetAlignSelf),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetAlignSelf, YGNodeStyleSetAlignSelf)
@@ -365,7 +365,7 @@ namespace FlexLayout::Internal
 
 		{
 			U"aspect-ratio",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ Style::StyleValue::Type::Ratio }),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{
@@ -377,7 +377,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"display",
-			StylePropertyDefinition {
+			StylePropertyDefinitionDetails {
 				.patterns = PatternSingle({ PatternEnum<Display>() }),
 				.installCallback = InstallCallback_YogaEnum<Display>(YGNodeStyleSetDisplay),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetDisplay, YGNodeStyleSetDisplay)
@@ -386,7 +386,7 @@ namespace FlexLayout::Internal
 		{
 			// https://developer.mozilla.org/ja/docs/Web/CSS/flex
 			U"flex",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails {
 				.patterns = {
 					{ FlexGrowPattern | FlexBasisPattern },
 					{ FlexGrowPattern, FlexShrinkPattern | FlexBasisPattern },
@@ -471,12 +471,13 @@ namespace FlexLayout::Internal
 					YGNodeStyleSetFlexGrow(impl.yogaNode(), YGUndefined);
 					YGNodeStyleSetFlexShrink(impl.yogaNode(), YGUndefined);
 					YGNodeStyleSetFlexBasis(impl.yogaNode(), YGUndefined);
-				}
+				},
+				.maybeAffectTo = { U"flex-grow", U"flex-shrink", U"flex-basis" }
 			}
 		},
 		{
 			U"flex-basis",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle(FlexBasisPattern),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetFlexBasis, YGNodeStyleSetFlexBasisPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetFlexBasis)
@@ -484,7 +485,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-grow",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle(FlexGrowPattern),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{
@@ -496,7 +497,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-shrink",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle(FlexShrinkPattern),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{
@@ -508,7 +509,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-direction",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<FlexDirection>() }),
 				.installCallback = InstallCallback_YogaEnum<FlexDirection>(YGNodeStyleSetFlexDirection),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetFlexDirection, YGNodeStyleSetFlexDirection)
@@ -516,7 +517,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"flex-flow",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = {
 					{ { PatternEnum<FlexDirection>(), PatternEnum<FlexWrap>() } },
 					{ { PatternEnum<FlexDirection>() }, { PatternEnum<FlexWrap>() } }
@@ -556,12 +557,13 @@ namespace FlexLayout::Internal
 					auto dummyNode = impl.context()->dummyNode();
 					YGNodeStyleSetFlexDirection(impl.yogaNode(), YGNodeStyleGetFlexDirection(dummyNode));
 					YGNodeStyleSetFlexWrap(impl.yogaNode(), YGNodeStyleGetFlexWrap(dummyNode));
-				}
+				},
+				.maybeAffectTo = { U"flex-direction", U"flex-wrap" }
 			}
 		},
 		{
 			U"flex-wrap",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<FlexWrap>() }),
 				.installCallback = InstallCallback_YogaEnum<FlexWrap>(YGNodeStyleSetFlexWrap),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetFlexWrap, YGNodeStyleSetFlexWrap)
@@ -569,7 +571,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"gap",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = {
 					{ { ValueType::Length, ValueType::Percentage } },
 					{ { ValueType::Length, ValueType::Percentage }, { ValueType::Length, ValueType::Percentage } }
@@ -615,12 +617,13 @@ namespace FlexLayout::Internal
 				{
 					YGNodeStyleSetGap(impl.yogaNode(), YGGutterRow, YGUndefined);
 					YGNodeStyleSetGap(impl.yogaNode(), YGGutterColumn, YGUndefined);
-				}
+				},
+				.maybeAffectTo = { U"row-gap", U"column-gap" }
 			}
 		},
 		{
 			U"row-gap",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGGutterRow, YGNodeStyleSetGap, YGNodeStyleSetGapPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGGutterRow, YGNodeStyleSetGap)
@@ -628,7 +631,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"column-gap",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGGutterColumn, YGNodeStyleSetGap, YGNodeStyleSetGapPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGGutterColumn, YGNodeStyleSetGap)
@@ -636,7 +639,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"position",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<Position>() }),
 				.installCallback = InstallCallback_YogaEnum<Position>(YGNodeStyleSetPositionType),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetPositionType, YGNodeStyleSetPositionType)
@@ -644,7 +647,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"top",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeTop, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeTop, YGNodeStyleSetPosition)
@@ -652,7 +655,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"right",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeRight, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeRight, YGNodeStyleSetPosition)
@@ -660,7 +663,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"bottom",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeBottom, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeBottom, YGNodeStyleSetPosition)
@@ -668,7 +671,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"left",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeLeft, YGNodeStyleSetPosition, YGNodeStyleSetPositionPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeLeft, YGNodeStyleSetPosition)
@@ -676,7 +679,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"justify-content",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<JustifyContent>() }),
 				.installCallback = InstallCallback_YogaEnum<JustifyContent>(YGNodeStyleSetJustifyContent),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetJustifyContent, YGNodeStyleSetJustifyContent)
@@ -684,7 +687,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"direction",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<Direction>() }),
 				.installCallback = InstallCallback_YogaEnum<Direction>(YGNodeStyleSetDirection),
 				.resetCallback = ResetCallback_YogaDefaultValue(YGNodeStyleGetDirection, YGNodeStyleSetDirection)
@@ -692,15 +695,16 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"margin",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternEdge({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YogaEdge(YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto),
-				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetMargin)
+				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetMargin),
+				.maybeAffectTo = { U"margin-top", U"margin-right", U"margin-bottom", U"margin-left" }
 			}
 		},
 		{
 			U"margin-top",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGEdgeTop, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeTop, YGNodeStyleSetMargin)
@@ -708,7 +712,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"margin-right",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGEdgeRight, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeRight, YGNodeStyleSetMargin)
@@ -716,7 +720,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"margin-bottom",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGEdgeBottom, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeBottom, YGNodeStyleSetMargin)
@@ -724,7 +728,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"margin-left",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGEdgeLeft, YGNodeStyleSetMargin, YGNodeStyleSetMarginPercent, YGNodeStyleSetMarginAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeLeft, YGNodeStyleSetMargin)
@@ -732,15 +736,16 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"padding",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternEdge({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YogaEdge(YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent),
-				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetPadding)
+				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetPadding),
+				.maybeAffectTo = { U"padding-top", U"padding-right", U"padding-bottom", U"padding-left" }
 			}
 		},
 		{
 			U"padding-top",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage}),
 				.installCallback = InstallCallback_YGValue(YGEdgeTop, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeTop, YGNodeStyleSetPadding)
@@ -748,7 +753,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"padding-right",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeRight, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeRight, YGNodeStyleSetPadding)
@@ -756,7 +761,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"padding-bottom",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeBottom, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeBottom, YGNodeStyleSetPadding)
@@ -764,7 +769,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"padding-left",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGEdgeLeft, YGNodeStyleSetPadding, YGNodeStyleSetPaddingPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeLeft, YGNodeStyleSetPadding)
@@ -772,15 +777,16 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"border-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternEdge({ ValueType::Length }),
 				.installCallback = InstallCallback_YogaEdge(YGNodeStyleSetBorder),
-				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetBorder)
+				.resetCallback = ResetCallback_YogaEdge(YGNodeStyleSetBorder),
+				.maybeAffectTo = { U"border-top-width", U"border-right-width", U"border-bottom-width", U"border-left-width" }
 			}
 		},
 		{
 			U"border-top-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length }),
 				.installCallback = InstallCallback_YGValue(YGEdgeTop, YGNodeStyleSetBorder),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeTop, YGNodeStyleSetBorder)
@@ -788,7 +794,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"border-right-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length }),
 				.installCallback = InstallCallback_YGValue(YGEdgeRight, YGNodeStyleSetBorder),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeRight, YGNodeStyleSetBorder)
@@ -796,7 +802,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"border-bottom-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length }),
 				.installCallback = InstallCallback_YGValue(YGEdgeBottom, YGNodeStyleSetBorder),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeBottom, YGNodeStyleSetBorder)
@@ -804,7 +810,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"border-left-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length }),
 				.installCallback = InstallCallback_YGValue(YGEdgeLeft, YGNodeStyleSetBorder),
 				.resetCallback = ResetCallback_YogaOptional(YGEdgeLeft, YGNodeStyleSetBorder)
@@ -812,7 +818,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetWidth, YGNodeStyleSetWidthPercent, YGNodeStyleSetWidthAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetWidth)
@@ -820,7 +826,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"height",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage, ValueType::Auto }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetHeight, YGNodeStyleSetHeightPercent, YGNodeStyleSetHeightAuto),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetHeight)
@@ -828,7 +834,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"min-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetMinWidth, YGNodeStyleSetMinWidthPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetMinWidth)
@@ -836,7 +842,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"min-height",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetMinHeight, YGNodeStyleSetMinHeightPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetMinHeight)
@@ -844,7 +850,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"max-width",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetMaxWidth, YGNodeStyleSetMaxWidthPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetMaxWidth)
@@ -852,7 +858,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"max-height",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = InstallCallback_YGValue(YGNodeStyleSetMaxHeight, YGNodeStyleSetMaxHeightPercent),
 				.resetCallback = ResetCallback_YogaOptional(YGNodeStyleSetMaxHeight)
@@ -860,7 +866,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"font-size",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{
@@ -907,7 +913,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"line-height",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Number }),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{
@@ -930,7 +936,7 @@ namespace FlexLayout::Internal
 		},
 		{
 			U"text-align",
-			StylePropertyDefinition{
+			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<TextAlign>() }),
 				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
 				{

@@ -59,6 +59,25 @@ namespace FlexLayout::Internal
 		return const_cast<value_type*>(self.find(group, hash));
 	}
 
+	StylePropertyTable::value_type* StylePropertyTable::find(size_t hash)
+	{
+		for (auto containerItr = m_table.rbegin(); containerItr != m_table.rend(); containerItr++)
+		{
+			auto itr = std::find_if(
+				containerItr->begin(),
+				containerItr->end(),
+				[hash](const StyleProperty& item) { return item.keyHash() == hash; }
+			);
+
+			if (itr != containerItr->end())
+			{
+				return &(*itr);
+			}
+		}
+
+		return nullptr;
+	}
+
 	const StylePropertyTable::value_type* StylePropertyTable::find(size_t hash) const
 	{
 		for (auto containerItr = m_table.rbegin(); containerItr != m_table.rend(); containerItr++)

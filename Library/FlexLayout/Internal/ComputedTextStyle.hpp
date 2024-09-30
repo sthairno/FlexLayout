@@ -42,4 +42,19 @@ namespace FlexLayout::Internal
 			return fontSizePx * lineHeightMul;
 		}
 	};
+
+	[[nodiscard]]
+	inline bool operator==(const ComputedTextStyle& lhs, const ComputedTextStyle& rhs)
+	{
+		return lhs.font == rhs.font &&
+			lhs.fontSizePx == rhs.fontSizePx &&
+			lhs.lineHeightMul == rhs.lineHeightMul &&
+			lhs.textAlign == rhs.textAlign;
+	}
+
+	[[nodiscard]]
+	inline bool operator!=(const ComputedTextStyle& lhs, const ComputedTextStyle& rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

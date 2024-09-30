@@ -226,27 +226,205 @@ void Main()
 		);
 	}
 
+	// プロパティを追加すればYGNodeに反映されるか
 	{
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
 		auto context = std::make_shared<TreeContext>();
-		auto root = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
 
-		root->setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		root->setInlineCssText(U"margin-top: 20px;");
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
 		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
 
-		assert((YGNodeStyleGetMargin(root->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10, YGUnitPoint }));
+	}
 
-		root->setInlineCssText(U"margin: 30px;");
+	// プロパティを変更すればYGNodeに反映されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
 		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
 
-		assert((YGNodeStyleGetMargin(root->yogaNode(), YGEdgeTop) == YGValue{ 30, YGUnitPoint }));
-		
-		root->setInlineCssText(U"margin-top: 40px;");
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(20, LengthUnit::Pixel) });
 		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
 
-		assert((YGNodeStyleGetMargin(root->yogaNode(), YGEdgeTop) == YGValue{ 40, YGUnitPoint }));
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
+	}
+
+	// プロパティの設定が次のApplyでも継続されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10, YGUnitPoint }));
+	}
+
+	// プロパティを削除すればYGNodeから削除されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
+
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
+	}
+
+	// プロパティの削除が次のApplyでも継続されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
+
+		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
+	}
+
+	// 上位のグループに設定されたプロパティが優先されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->setInlineCssText(U"margin-top: 20px;");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
+	}
+
+	// 同一グループで後に設定されたプロパティが優先されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 30, YGUnitPoint }));
+	}
+
+	// 優先順位が高いプロパティを削除しても、優先順位が低いプロパティが残るか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		dummy->removeStyle(StylePropertyGroup::Inline, U"margin");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
+	}
+
+	// フォントの設定が<length>を使用したプロパティに反映されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10 * 2, YGUnitPoint }));
+	}
+
+	// フォントの削除が<length>を使用したプロパティに反映されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		auto context = std::make_shared<TreeContext>();
+		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+
+		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		dummy->removeStyle(StylePropertyGroup::Inline, U"font-size");
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ ComputedTextStyle{}.fontSizePx * 2, YGUnitPoint }));
+	}
+
+	// スタイル名のハッシュ値が一意であるか
+	{
+		using namespace FlexLayout::Internal;
+
+		std::set<size_t> hashList;
+		for (const auto& def : StylePropertyDefinitionList)
+		{
+			auto [itr, success] = hashList.insert(StyleProperty::Hash(def.first));
+
+			assert(success);
+		}
+	}
+
+	// スタイル定義のmaybeAffectToで指定されたプロパティが存在するか
+	{
+		using namespace FlexLayout::Internal;
+
+		for (const auto& def : StylePropertyDefinitionList)
+		{
+			for (const auto& prop : def.second.maybeAffectTo)
+			{
+				assert(StylePropertyDefinitionList.find(prop) != StylePropertyDefinitionList.end());
+			}
+		}
+	}
+
+	// スタイル定義のmaybeAffectToで指定されたプロパティのmaybeAffectToが空であるか
+	// (スタイルが複雑な依存関係を持っていないか)
+	{
+		using namespace FlexLayout::Internal;
+
+		for (const auto& def : StylePropertyDefinitionList)
+		{
+			for (const auto& prop : def.second.maybeAffectTo)
+			{
+				assert(StylePropertyDefinitionList.at(prop).maybeAffectTo.empty());
+			}
+		}
 	}
 }

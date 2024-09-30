@@ -7,6 +7,14 @@ namespace FlexLayout::Internal
 	{
 	public:
 
+		enum class Event
+		{
+			None,
+			Created,
+			Updated,
+			Removed
+		};
+
 		StyleProperty(StyleProperty&&) = default;
 
 		StyleProperty& operator =(StyleProperty&&) = default;
@@ -15,23 +23,58 @@ namespace FlexLayout::Internal
 
 		StyleProperty& operator =(const StyleProperty&) = delete;
 
-		Array<Style::StyleValue> value;
-
-		inline const StringView name() const { return m_definition->first; }
-
 		inline size_t keyHash() const { return m_keyHash; }
 
-		inline const StylePropertyDefinition& definition() const { return m_definition->second; }
+		inline const StylePropertyDefinitionRef& definition() const { return m_definition; }
 
-		inline auto& patterns() const { return m_definition->second.patterns; }
+		inline bool execInstall(FlexBoxImpl& impl) const { return m_definition.installCallback(impl, m_value); }
 
-		inline bool install(FlexBoxImpl& impl) const { return m_definition->second.installCallback(impl, value); }
+		inline void execReset(FlexBoxImpl& impl) const { m_definition.resetCallback(impl); }
 
-		inline void reset(FlexBoxImpl& impl) const { m_definition->second.resetCallback(impl); }
+		inline bool removed() const { return m_value.empty(); }
 
-		inline bool removed() const { return value.empty(); }
+		inline const Array<Style::StyleValue>& value() const { return m_value; }
 
-		inline void clear() { value.clear(); }
+		inline void setValue(Array<Style::StyleValue>&& newValue)
+		{
+			assert(newValue);
+
+			if (m_value == newValue)
+			{
+				return;
+			}
+
+			switch (m_event)
+			{
+			case Event::None: m_event = m_value ? Event::Updated : Event::Created; break;
+			case Event::Created: break;
+			case Event::Updated: break;
+			case Event::Removed: m_event = Event::Updated; break;
+			}
+
+			m_value = std::move(newValue);
+		}
+
+		inline void unsetValue()
+		{
+			if (m_value.empty())
+			{
+				return;
+			}
+
+			switch (m_event)
+			{
+			case Event::None: m_event = Event::Removed; break;
+			case Event::Created: m_event = Event::None; break;
+			case Event::Updated: m_event = Event::Removed; break;
+			}
+
+			m_value.clear();
+		}
+
+		inline Event event() const { return m_event; }
+
+		inline void clearEvent() { m_event = Event::None; }
 
 		inline static size_t Hash(StringView key) { return StylePropertyDefinitionList.hash(key); }
 
@@ -42,13 +85,18 @@ namespace FlexLayout::Internal
 		StyleProperty(size_t keyHash, decltype(StylePropertyDefinitionList)::const_pointer definition)
 			: m_keyHash(keyHash)
 			, m_definition(definition)
-			, value() { }
+			, m_value()
+			, m_event(Event::None) { }
 
 	private:
 
 		size_t m_keyHash;
 
-		decltype(StylePropertyDefinitionList)::const_pointer m_definition;
+		StylePropertyDefinitionRef m_definition;
+
+		Array<Style::StyleValue> m_value;
+
+		Event m_event;
 	};
 
 	/// @brief スタイルのグループ
@@ -111,6 +159,14 @@ namespace FlexLayout::Internal
 			return find(group, StyleProperty::Hash(key));
 		}
 
+		value_type* find(size_t hash);
+
+		template<class Key>
+		inline value_type* find(const Key& key)
+		{
+			return find(StyleProperty::Hash(key));
+		}
+
 		const value_type* find(size_t hash) const;
 
 		template<class Key>
@@ -118,6 +174,8 @@ namespace FlexLayout::Internal
 		{
 			return find(StyleProperty::Hash(key));
 		}
+
+		constexpr size_t size() const noexcept { return m_table.size(); }
 
 		constexpr container_type::iterator begin() noexcept { return m_table.begin(); }
 
