@@ -52,9 +52,15 @@ namespace FlexLayout::Internal
 			return result;
 		}
 
-		static float BaselineLabelCallback(YGNodeConstRef node, float, float)
+		static float BaselineLabelCallback(YGNodeConstRef node, float width, float)
 		{
 			auto& impl = *reinterpret_cast<LabelImpl*>(YGNodeGetContext(node));
+
+			if (not impl.m_layoutIsValid)
+			{
+				impl.updateConstraints(width);
+			}
+
 			return static_cast<float>(impl.computeBaseline());
 		}
 	};
@@ -71,7 +77,11 @@ namespace FlexLayout::Internal
 	void LabelImpl::setText(const StringView text)
 	{
 		m_text = text;
-		YGNodeMarkDirty(yogaNode());
+		if (m_text != text)
+		{
+			m_layoutIsValid = false;
+			YGNodeMarkDirty(yogaNode());
+		}
 	}
 
 	void LabelImpl::draw(const TextStyle& textStyle, const ColorF& color)
@@ -85,6 +95,13 @@ namespace FlexLayout::Internal
 
 		auto& style = computedTextStyle();
 		auto scale = style.fontRenderingScale();
+
+		// MeasureFuncを呼び出す必要がない場合(width: 100%など)、updateConstraintsが呼び出されないためここで計算
+		// https://github.com/facebook/yoga/issues/959
+		if (not m_layoutIsValid)
+		{
+			updateConstraints(rect->w);
+		}
 
 		// 描画位置を計算
 		bool ltr = YGNodeLayoutGetDirection(yogaNode()) != YGDirectionRTL;
@@ -147,6 +164,8 @@ namespace FlexLayout::Internal
 
 	void LabelImpl::updateConstraints(double width)
 	{
+		m_layoutIsValid = true;
+
 		auto& style = computedTextStyle();
 		auto scale = style.fontRenderingScale();
 

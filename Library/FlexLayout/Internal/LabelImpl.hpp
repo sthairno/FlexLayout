@@ -37,6 +37,8 @@ namespace FlexLayout::Internal
 
 		Array<double> m_lineWidths;
 
+		bool m_layoutIsValid = false;
+
 		size_t lineCount() const { return m_lineWidths.size(); }
 
 		void updateConstraints(double width);
