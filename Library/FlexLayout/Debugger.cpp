@@ -6,6 +6,12 @@ using namespace s3d;
 
 namespace FlexLayout
 {
+	static constexpr double InspectorColorAlpha = 0.7;
+	static constexpr ColorF InspectorMarginColor = ColorF{ Palette::Darkorange, InspectorColorAlpha };
+	static constexpr ColorF InspectorBorderColor = ColorF{ Palette::Gold, InspectorColorAlpha };
+	static constexpr ColorF InspectorPaddingColor = ColorF{ Palette::Yellowgreen, InspectorColorAlpha };
+	static constexpr ColorF InspectorContentColor = ColorF{ Palette::Skyblue, InspectorColorAlpha };
+
 	static void DumpTreeRecursive(const std::shared_ptr<Internal::FlexBoxImpl>& node, String& output, std::vector<std::int8_t>& indentPattern)
 	{
 		// インデント
@@ -81,7 +87,35 @@ namespace FlexLayout
 		indentPattern.pop_back();
 	}
 
-	String Debugger::DumpTree(Box& root)
+	static std::shared_ptr<Internal::FlexBoxImpl> GetHoveredNode(const std::shared_ptr<Internal::FlexBoxImpl>& node, const Vec2& cursorPos)
+	{
+		if (not node->layoutOffset())
+		{
+			return nullptr;
+		}
+
+		std::shared_ptr<Internal::FlexBoxImpl> result;
+
+		if (node->contentAreaRect()->contains(cursorPos))
+		{
+			result = node;
+		}
+
+		if (node->propergateOffset())
+		{
+			for (const auto& child : node->children())
+			{
+				if (const auto hoveredNode = GetHoveredNode(child, cursorPos))
+				{
+					result = hoveredNode;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	String Debugger::DumpTree(const Box& root)
 	{
 		const auto rootImpl = Internal::BoxAccessor::GetImpl(root);
 
@@ -93,5 +127,50 @@ namespace FlexLayout
 		output.pop_back(); // 最後の行の改行を削除
 
 		return output;
+	}
+
+	s3d::Optional<Box> Debugger::GetHoveredBox(const Box& root, const s3d::Vec2& cursorPos)
+	{
+		const auto rootImpl = Internal::BoxAccessor::GetImpl(root);
+
+		if (const auto hoveredNode = GetHoveredNode(rootImpl, cursorPos))
+		{
+			return Box{ hoveredNode };
+		}
+
+		return none;
+	}
+
+	bool Debugger::DrawLayout(const Box& box)
+	{
+		const auto rootImpl = Internal::BoxAccessor::GetImpl(box);
+
+		if (not rootImpl->layoutOffset())
+		{
+			return false;
+		}
+
+		auto marginAreaRect = *rootImpl->marginAreaRect();
+		rootImpl->margin().drawPadding(marginAreaRect, InspectorMarginColor);
+
+		auto borderAreaRect = *rootImpl->borderAreaRect();
+		rootImpl->border().drawPadding(borderAreaRect, InspectorBorderColor);
+
+		auto paddingAreaRect = *rootImpl->paddingAreaRect();
+		rootImpl->padding().drawPadding(paddingAreaRect, InspectorPaddingColor);
+
+		auto contentAreaRect = *rootImpl->contentAreaRect();
+		contentAreaRect.draw(InspectorContentColor);
+
+		return true;
+	}
+
+	bool Debugger::DrawHoveredBoxLayout(const Box& root, const s3d::Vec2& cursorPos)
+	{
+		if (const auto hoveredBox = GetHoveredBox(root, cursorPos))
+		{
+			return DrawLayout(*hoveredBox);
+		}
+		return true;
 	}
 }
