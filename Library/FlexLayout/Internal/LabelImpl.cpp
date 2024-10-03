@@ -179,7 +179,7 @@ namespace FlexLayout::Internal
 			return;
 		}
 
-		m_glyphs = style.font.getGlyphs(m_text);
+		m_glyphs = style.font.getGlyphs(m_text, Ligature::Yes);
 		m_lineWidths.push_back(0.0);
 
 		for (auto [i, glyph] : Indexed(m_glyphs))
