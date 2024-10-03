@@ -1,0 +1,8 @@
+box [id: test1, class: abc def]
+├─ box [id: test2]
+│  ├─ box [class: abc def]
+│  ├─ box
+│  └─ label
+└─ box
+   ├─ box
+   └─ label

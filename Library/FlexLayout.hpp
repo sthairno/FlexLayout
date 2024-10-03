@@ -5,3 +5,4 @@
 #include "FlexLayout/Util/StyleValueHelper.hpp"
 #include "FlexLayout/Libraries.hpp"
 #include "FlexLayout/SimpleGUIWrapper.hpp"
+#include "FlexLayout/Debugger.hpp"

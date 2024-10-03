@@ -9,6 +9,7 @@ namespace FlexLayout
 	{
 		class TreeContext;
 		class FlexBoxImpl;
+		struct BoxAccessor;
 	}
 	class Label;
 
@@ -148,6 +149,8 @@ namespace FlexLayout
 		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
 
 	protected:
+
+		friend Internal::BoxAccessor;
 
 		std::shared_ptr<Internal::FlexBoxImpl> m_impl;
 

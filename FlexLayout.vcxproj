@@ -122,6 +122,7 @@
   <ItemGroup>
     <ClInclude Include="Library\FlexLayout.hpp" />
     <ClInclude Include="Library\FlexLayout\Box.hpp" />
+    <ClInclude Include="Library\FlexLayout\Debugger.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\AlignContent.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\AlignItems.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\AlignSelf.hpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Library\FlexLayout\Enum\NodeType.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\Position.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\TextAlign.hpp" />
+    <ClInclude Include="Library\FlexLayout\Internal\BoxAccessor.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\FlexBoxImpl.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\LabelImpl.hpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="Library\FlexLayout\Label.cpp" />
     <ClCompile Include="Library\FlexLayout\Layout.cpp" />
     <ClCompile Include="Library\FlexLayout\SimpleGUIWrapper.cpp" />
+    <ClCompile Include="Library\FlexLayout\Debugger.cpp" />
     <ClCompile Include="Library\FlexLayout\Style\StyleEnums.cpp" />
     <ClCompile Include="Library\FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="Library\FlexLayout\Style\StyleValueParser.cpp" />

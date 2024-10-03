@@ -5,7 +5,7 @@
 #include <FlexLayout/Internal/TreeContext.hpp>
 #include <FlexLayout/Internal/XMLLoader.hpp>
 #include <FlexLayout/Internal/StyleProperty.hpp>
-#include <FlexLayout/Layout.hpp>
+#include <FlexLayout.hpp>
 
 SIV3D_SET(s3d::EngineOption::Renderer::Headless)
 
@@ -427,4 +427,36 @@ void Main()
 			}
 		}
 	}
+
+	// デバッガーのDumpTreeの出力が正しいか
+	{
+		using namespace FlexLayout;
+
+		Layout layout{ Arg::code = UR"(
+			<Layout>
+				<Box id="test1" class="abc def">
+					<Box id="test2">
+						<Box class="abc def"/>
+						<Box/>
+						<Label/>
+					</Box>
+					<Box>
+						<Box/>
+						<Label/>
+					</Box>
+				</Box>
+			</Layout>
+		)" };
+
+		const String expected = TextReader{ U"Debugger_output.txt" }.readAll();
+
+		auto root = *layout.document();
+		String output = FlexLayout::Debugger::DumpTree(root);
+
+		Console << output;
+
+		assert(output == expected);
+	}
+
+	Console.readLine<String>();
 }
