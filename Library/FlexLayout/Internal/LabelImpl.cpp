@@ -117,8 +117,10 @@ namespace FlexLayout::Internal
 
 		// テキストを描画
 		{
-			// シェーダー関連
 			HasColor fontHasColor{ style.font.hasColor() };
+			ColorF renderColor = fontHasColor ? Linear::Palette::White : color;
+
+			// シェーダー関連
 			if (textStyle.type != TextStyle::Type::Default && (not fontHasColor))
 			{
 				if (style.font.method() == FontMethod::SDF)
@@ -152,7 +154,7 @@ namespace FlexLayout::Internal
 					if (not IsControl(glyph.codePoint))
 					{
 						const Vec2 glyphPos = penPos + glyph.getBase(scale);
-						glyph.texture.scaled(scale, scale).draw(glyphPos, color);
+						glyph.texture.scaled(scale, scale).draw(glyphPos, renderColor);
 						penPos.x += glyph.xAdvance * scale;
 					}
 				}
