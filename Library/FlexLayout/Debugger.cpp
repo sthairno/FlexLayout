@@ -1,5 +1,7 @@
 ﻿#include "Debugger.hpp"
 #include "Internal/BoxAccessor.hpp"
+#include <Siv3D/Window.hpp>
+#include <Siv3D/WindowState.hpp>
 #include <vector>
 
 using namespace s3d;
@@ -132,6 +134,12 @@ namespace FlexLayout
 	s3d::Optional<Box> Debugger::GetHoveredBox(const Box& root, const s3d::Vec2& cursorPos)
 	{
 		const auto rootImpl = Internal::BoxAccessor::GetImpl(root);
+		auto& windowStat = Window::GetState();
+
+		if (windowStat.sizeMove || not windowStat.focused)
+		{
+			return none;
+		}
 
 		if (const auto hoveredNode = GetHoveredNode(rootImpl, cursorPos))
 		{
