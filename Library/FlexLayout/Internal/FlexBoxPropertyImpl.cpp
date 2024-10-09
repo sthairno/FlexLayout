@@ -100,6 +100,23 @@ namespace FlexLayout::Internal
 		m_additonalProperties.clear();
 	}
 
+	void FlexBoxImpl::copyProperties(const FlexBoxImpl& source, bool includeStyles, bool includeFont)
+	{
+		m_id = source.m_id;
+		m_classes = source.m_classes;
+		m_additonalProperties = source.m_additonalProperties;
+
+		if (includeStyles)
+		{
+			copyStyles(StylePropertyGroup::Inline, source);
+		}
+
+		if (includeFont)
+		{
+			copyFont(source);
+		}
+	}
+
 	bool FlexBoxImpl::addClass(const StringView className)
 	{
 		String str{ className };

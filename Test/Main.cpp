@@ -5,6 +5,7 @@
 #include <FlexLayout/Internal/TreeContext.hpp>
 #include <FlexLayout/Internal/XMLLoader.hpp>
 #include <FlexLayout/Internal/StyleProperty.hpp>
+#include <FlexLayout/Internal/LabelImpl.hpp>
 #include <FlexLayout.hpp>
 
 SIV3D_SET(s3d::EngineOption::Renderer::Headless)
@@ -456,6 +457,41 @@ void Main()
 		Console << output;
 
 		assert(output == expected);
+	}
+
+	// 複製元のノードのプロパティが全て複製先のノードに反映されるか
+	{
+		using namespace FlexLayout;
+		using namespace FlexLayout::Internal;
+
+		std::shared_ptr<FlexBoxImpl> root;
+
+		tinyxml2::XMLDocument document;
+		document.Parse(R"(
+			<Layout>
+				<Box id="test1" class="abc def" siv3d-font="fontasset" style="width: 100px" hoge="fuga">
+					<Label id="test2">foobar</Label>
+				</Box>
+			</Layout>
+		)");
+
+		XMLLoader{
+			std::make_shared<TreeContext>()
+		}.load(root, document);
+
+		auto clone = root->deepClone();
+
+		assert(clone->id() == root->id());
+		assert(clone->classes() == root->classes());
+		assert(clone->getProperty(U"hoge") == root->getProperty(U"hoge"));
+		assert(clone->fontId() == root->fontId());
+		assert(clone->font() == root->font());
+		assert(clone->getInlineCssText() == root->getInlineCssText());
+
+		assert(clone->children().size() == root->children().size());
+		assert(clone->children()[0]->id() == root->children()[0]->id());
+		assert(clone->children()[0]->type() == NodeType::Label);
+		assert(reinterpret_cast<LabelImpl*>(clone->children()[0].get())->text() == U"foobar");
 	}
 
 	Console.readLine<String>();

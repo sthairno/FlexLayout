@@ -15,6 +15,8 @@ namespace FlexLayout::Internal
 
 		LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName);
 
+		LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> newContext);
+
 	public:
 
 		NodeType type() const noexcept override { return NodeType::Label; }

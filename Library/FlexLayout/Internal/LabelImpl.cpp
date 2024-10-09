@@ -63,15 +63,27 @@ namespace FlexLayout::Internal
 
 			return static_cast<float>(impl.computeBaseline());
 		}
+
+		static void SetupYGNode(YGNodeRef node)
+		{
+			YGNodeSetMeasureFunc(node, Impl::MeasureLabelCallback);
+			YGNodeSetBaselineFunc(node, Impl::BaselineLabelCallback);
+			YGNodeSetNodeType(node, YGNodeTypeText);
+		}
 	};
 	
-
 	LabelImpl::LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
 		: FlexBoxImpl{ context, tagName }
 	{
-		YGNodeSetMeasureFunc(yogaNode(), Impl::MeasureLabelCallback);
-		YGNodeSetBaselineFunc(yogaNode(), Impl::BaselineLabelCallback);
-		YGNodeSetNodeType(yogaNode(), YGNodeTypeText);
+		Impl::SetupYGNode(yogaNode());
+	}
+
+	LabelImpl::LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> newContext)
+		: FlexBoxImpl{ source, newContext }
+		, m_text(source.m_text)
+	{
+		assert(source.type() == NodeType::Label);
+		Impl::SetupYGNode(yogaNode());
 	}
 
 	void LabelImpl::setText(const StringView text)

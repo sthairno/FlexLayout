@@ -1,5 +1,6 @@
 ﻿#include "FlexBoxImpl.hpp"
 #include "TreeContext.hpp"
+#include "LabelImpl.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -9,6 +10,15 @@ namespace FlexLayout::Internal
 		, m_context{ context }
 	{
 		YGNodeSetContext(m_node, this);
+	}
+
+	FlexBoxImpl::FlexBoxImpl(const FlexBoxImpl& source, std::shared_ptr<TreeContext> newContext)
+		: FlexBoxImpl(newContext ? newContext : source.m_context, source.m_tagName)
+	{
+		m_propergateOffsetToChildren = source.m_propergateOffsetToChildren;
+
+		copyProperties(source, false, true);
+		copyStyles(source);
 	}
 
 	FlexBoxImpl::~FlexBoxImpl()
@@ -71,5 +81,39 @@ namespace FlexLayout::Internal
 			ptr = ptr->parent();
 		}
 		return *ptr;
+	}
+
+	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::clone(std::shared_ptr<TreeContext> newContext) const
+	{
+		std::shared_ptr<FlexBoxImpl> newInstance;
+
+		switch (type())
+		{
+		case NodeType::Box:
+			newInstance = std::shared_ptr<FlexBoxImpl>(new FlexBoxImpl(*this, newContext));
+			break;
+		case NodeType::Label:
+			newInstance = std::make_shared<LabelImpl>(static_cast<const LabelImpl&>(*this), newContext);
+			break;
+		default:
+			assert(false && "Unknown NodeType");
+			break;
+		}
+
+		return newInstance;
+	}
+
+	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::deepClone(std::shared_ptr<TreeContext> newContext) const
+	{
+		auto newInstance = clone(newContext);
+
+		Array<std::shared_ptr<FlexBoxImpl>> children(Arg::reserve = m_children.size());
+		for (const auto& child : m_children)
+		{
+			children.push_back(child->deepClone(newContext));
+		}
+		newInstance->setChildren(children);
+
+		return newInstance;
 	}
 }

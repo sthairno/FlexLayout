@@ -55,6 +55,14 @@ namespace FlexLayout::Internal
 		/// @remark 親要素が存在しない場合、自身を返します
 		FlexBoxImpl& getRoot();
 
+		/// @brief この要素のみを複製する
+		[[nodiscard]]
+		std::shared_ptr<FlexBoxImpl> clone(std::shared_ptr<TreeContext> newContext = nullptr) const;
+
+		/// @brief 子要素を含めて複製する
+		[[nodiscard]]
+		std::shared_ptr<FlexBoxImpl> deepClone(std::shared_ptr<TreeContext> newContext = nullptr) const;
+
 		// --プロパティ(FlexBoxPropertyImpl.cpp)--
 
 		Optional<String> getProperty(const StringView key) const;
@@ -64,6 +72,8 @@ namespace FlexLayout::Internal
 		void removeProperty(const StringView key);
 
 		void clearProperties();
+
+		void copyProperties(const FlexBoxImpl& source, bool includeStyles = true, bool includeFont = true);
 
 		Optional<String> id() const { return m_id; }
 
@@ -95,6 +105,10 @@ namespace FlexLayout::Internal
 
 		void clearStyles(Optional<StylePropertyGroup> group);
 
+		void copyStyles(StylePropertyGroup group, const FlexBoxImpl& source);
+
+		void copyStyles(const FlexBoxImpl& source);
+
 		bool isStyleApplicationScheduled() const { return m_isStyleApplicationScheduled; }
 
 		/// @brief `applyStyleRecursive()`の呼び出しを予約する
@@ -108,6 +122,8 @@ namespace FlexLayout::Internal
 		void setFont(const Font& font, const StringView fontId = U"");
 
 		void setFont(const StringView fontId);
+
+		void copyFont(const FlexBoxImpl& source);
 
 		// --検索(FlexBoxLookupImpl.cpp)--
 
@@ -179,6 +195,10 @@ namespace FlexLayout::Internal
 				? localContentAreaRect().movedBy(*m_layoutOffset)
 				: Optional<RectF>{};
 		}
+
+	protected:
+
+		FlexBoxImpl(const FlexBoxImpl& other, std::shared_ptr<TreeContext> newContext = nullptr);
 
 	private:
 

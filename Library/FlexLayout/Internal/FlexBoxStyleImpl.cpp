@@ -304,6 +304,30 @@ namespace FlexLayout::Internal
 		}
 	}
 
+	void FlexBoxImpl::copyStyles(StylePropertyGroup group, const FlexBoxImpl& source)
+	{
+		clearStyles(group);
+		for (const auto& prop : source.m_styles.group(group))
+		{
+			if (prop.removed())
+			{
+				continue;
+			}
+
+			setStyle(group, prop.definition().name(), prop.value());
+		}
+	}
+
+	void FlexBoxImpl::copyStyles(const FlexBoxImpl& source)
+	{
+		for (std::underlying_type_t<StylePropertyGroup> groupId = 0; groupId < source.m_styles.size(); groupId++)
+		{
+			auto group = static_cast<StylePropertyGroup>(groupId);
+
+			copyStyles(group, source);
+		}
+	}
+
 	void FlexBoxImpl::scheduleStyleApplication()
 	{
 		if (m_isStyleApplicationScheduled)
@@ -341,6 +365,11 @@ namespace FlexLayout::Internal
 		{
 			setFont(m_context->loadFont(fontId), fontId);
 		}
+	}
+
+	void FlexBoxImpl::copyFont(const FlexBoxImpl& source)
+	{
+		setFont(source.m_font.font, source.m_font.id);
 	}
 
 	void FlexBoxImpl::applyStylesImpl()
