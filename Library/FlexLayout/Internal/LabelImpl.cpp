@@ -78,8 +78,8 @@ namespace FlexLayout::Internal
 		Impl::SetupYGNode(yogaNode());
 	}
 
-	LabelImpl::LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> context)
-		: FlexBoxImpl{ source, context }
+	LabelImpl::LabelImpl(const LabelImpl& source)
+		: FlexBoxImpl{ source }
 		, m_text(source.m_text)
 	{
 		assert(source.type() == NodeType::Label);

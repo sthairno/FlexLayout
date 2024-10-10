@@ -23,11 +23,9 @@ namespace FlexLayout::Internal
 	{
 	public:
 
-		FlexBoxImpl(const StringView tagName, std::shared_ptr<TreeContext> context = nullptr);
+		FlexBoxImpl(const StringView tagName);
 
 	public:
-
-		std::shared_ptr<TreeContext> context() const { return m_context; }
 
 		YGNodeRef yogaNode() { return m_node; }
 
@@ -47,6 +45,12 @@ namespace FlexLayout::Internal
 
 		void removeChildren();
 
+		TreeContext& context();
+
+		const TreeContext* context() const { return m_context.get(); }
+
+		void setContext(std::shared_ptr<TreeContext> context);
+
 		/// @brief ルート要素からの深さを取得する
 		/// @return ルート要素の場合は0、それ以外は1以上
 		size_t getDepth() const;
@@ -55,13 +59,19 @@ namespace FlexLayout::Internal
 		/// @remark 親要素が存在しない場合、自身を返します
 		FlexBoxImpl& getRoot();
 
+		/// @brief ルート要素を取得する
+		/// @remark 親要素が存在しない場合、自身を返します
+		const FlexBoxImpl& getRoot() const;
+
 		/// @brief この要素のみを複製する
 		[[nodiscard]]
-		std::shared_ptr<FlexBoxImpl> clone(std::shared_ptr<TreeContext> context = nullptr) const;
+		std::shared_ptr<FlexBoxImpl> clone() const;
 
 		/// @brief 子要素を含めて複製する
 		[[nodiscard]]
-		std::shared_ptr<FlexBoxImpl> deepClone(std::shared_ptr<TreeContext> context = nullptr) const;
+		std::shared_ptr<FlexBoxImpl> deepClone() const;
+
+		static bool BelongsToSameTree(const FlexBoxImpl& a, const FlexBoxImpl& b);
 
 		// --プロパティ(FlexBoxPropertyImpl.cpp)--
 
@@ -199,7 +209,7 @@ namespace FlexLayout::Internal
 	protected:
 
 		/// @remark コピーは`clone()`または`deepClone()`を使用する
-		FlexBoxImpl(const FlexBoxImpl& source, std::shared_ptr<TreeContext> context = nullptr);
+		FlexBoxImpl(const FlexBoxImpl& source);
 
 	private:
 
@@ -209,13 +219,15 @@ namespace FlexLayout::Internal
 
 		const String m_tagName;
 
-		std::shared_ptr<TreeContext> m_context;
-
 		// ツリー関連
 
 		FlexBoxImpl* m_parent = nullptr;
 
 		Array<std::shared_ptr<FlexBoxImpl>> m_children;
+
+		std::shared_ptr<TreeContext> m_context;
+
+		void setContextImpl(std::shared_ptr<TreeContext> context);
 
 		// プロパティ
 

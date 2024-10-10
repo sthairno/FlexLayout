@@ -11,6 +11,6 @@ namespace FlexLayout::Internal
 	struct TreeContext
 	{
 		/// @brief `FlexBoxImpl::scheduleStyleApplication()`でスケジュールされた要素の待機リスト
-		s3d::Array<std::weak_ptr<FlexBoxImpl>> m_styleApplicationWaitlist;
+		s3d::Array<std::weak_ptr<FlexBoxImpl>> styleApplicationWaitinglist;
 	};
 }

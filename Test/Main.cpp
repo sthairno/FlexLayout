@@ -368,7 +368,7 @@ void Main()
 		dummy->removeStyle(StylePropertyGroup::Inline, U"font-size");
 		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
-		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ ComputedTextStyle{}.fontSizePx * 2, YGUnitPoint }));
+		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ GetConfig().defaultTextStyle().fontSizePx * 2, YGUnitPoint}));
 	}
 
 	// スタイル名のハッシュ値が一意であるか

@@ -15,9 +15,9 @@ namespace FlexLayout::Internal
 {
 	void FlexBoxImpl::ApplyStyles(FlexBoxImpl& root)
 	{
-		auto& context = *root.context();
+		auto& context = root.context();
 
-		if (context.m_styleApplicationWaitlist.empty())
+		if (context.styleApplicationWaitinglist.empty())
 		{
 			return;
 		}
@@ -27,14 +27,15 @@ namespace FlexLayout::Internal
 		using _QueueComp = decltype([](const _QueueValue& a, const _QueueValue& b) { return a.first > b.first; });
 		using _QueueType = std::priority_queue<_QueueValue, Array<_QueueValue>, _QueueComp>;
 		_QueueType queue;
-		for (const auto& weakptr : context.m_styleApplicationWaitlist)
+		for (const auto& weakptr : context.styleApplicationWaitinglist)
 		{
-			if (auto item = weakptr.lock())
+			if (auto item = weakptr.lock();
+				item && BelongsToSameTree(root, *item))
 			{
 				queue.push({ item->getDepth(), item });
 			}
 		}
-		context.m_styleApplicationWaitlist.clear();
+		context.styleApplicationWaitinglist.clear();
 
 		// 適用
 		while (not queue.empty())
@@ -339,7 +340,7 @@ namespace FlexLayout::Internal
 		}
 
 		// 待機リストに追加
-		m_context->m_styleApplicationWaitlist.push_back(weak_from_this());
+		context().styleApplicationWaitinglist.push_back(weak_from_this());
 		m_isStyleApplicationScheduled = true;
 	}
 

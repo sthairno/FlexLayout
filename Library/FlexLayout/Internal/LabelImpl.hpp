@@ -30,7 +30,7 @@ namespace FlexLayout::Internal
 		friend FlexBoxImpl;
 
 		/// @remark コピーは`clone()`または`deepClone()`を使用する
-		LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> context = nullptr);
+		LabelImpl(const LabelImpl& source);
 
 	private:
 
