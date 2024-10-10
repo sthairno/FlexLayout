@@ -7,7 +7,6 @@ namespace FlexLayout
 {
 	namespace Internal
 	{
-		class TreeContext;
 		class FlexBoxImpl;
 		struct BoxAccessor;
 	}

@@ -65,12 +65,6 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	XMLLoader::XMLLoader(std::shared_ptr<TreeContext> context)
-		: m_context(context)
-	{
-		assert(m_context);
-	}
-
 	bool XMLLoader::load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document)
 	{
 		if (document.Error())
@@ -88,12 +82,6 @@ namespace FlexLayout::Internal
 		if (rootName == "layout")
 		{
 			// 独自フォーマットのXMLとして読み込み
-
-			bool useWebDefaults = false;
-			if (rootElement->QueryBoolAttribute("useWebDefaults", &useWebDefaults) == tinyxml2::XML_SUCCESS)
-			{
-				m_context->setUseWebDefaults(useWebDefaults);
-			}
 
 			if (auto childElement = rootElement->FirstChildElement())
 			{
@@ -148,7 +136,7 @@ namespace FlexLayout::Internal
 		}, true);
 		if (!node)
 		{
-			node = std::make_shared<FlexBoxImpl>(m_context, U"body");
+			node = std::make_shared<FlexBoxImpl>(U"body");
 		}
 
 		// 属性の読み込み
@@ -246,12 +234,12 @@ namespace FlexLayout::Internal
 	{
 		if (tagName == U"label")
 		{
-			return std::make_shared<LabelImpl>(m_context, tagName);
+			return std::make_shared<LabelImpl>(tagName);
 		}
 
 		if (tagName == U"box")
 		{
-			return std::make_shared<FlexBoxImpl>(m_context, tagName);
+			return std::make_shared<FlexBoxImpl>(tagName);
 		}
 
 		return nullptr;

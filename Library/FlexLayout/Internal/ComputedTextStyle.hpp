@@ -9,13 +9,13 @@ namespace FlexLayout::Internal
 {
 	struct ComputedTextStyle
 	{
-		Font font = SimpleGUI::GetFont();
+		Font font;
 
-		float fontSizePx = 16.0F;
+		float fontSizePx;
 
-		float lineHeightMul = 1.2F;
+		float lineHeightMul;
 
-		TextAlign textAlign = TextAlign::Start;
+		TextAlign textAlign;
 
 		float fontRenderingScale() const
 		{

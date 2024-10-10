@@ -13,9 +13,7 @@ namespace FlexLayout::Internal
 	{
 	public:
 
-		LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName);
-
-		LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> newContext);
+		LabelImpl(const StringView tagName);
 
 	public:
 
@@ -26,6 +24,13 @@ namespace FlexLayout::Internal
 		void setText(const StringView text);
 
 		void draw(const TextStyle& textStyle, const ColorF& color);
+
+	protected:
+
+		friend FlexBoxImpl;
+
+		/// @remark コピーは`clone()`または`deepClone()`を使用する
+		LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> context = nullptr);
 
 	private:
 

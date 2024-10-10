@@ -2,10 +2,10 @@
 
 #include <Siv3D.hpp>
 #include <yoga/Yoga.h>
-#include <FlexLayout/Internal/TreeContext.hpp>
 #include <FlexLayout/Internal/XMLLoader.hpp>
 #include <FlexLayout/Internal/StyleProperty.hpp>
 #include <FlexLayout/Internal/LabelImpl.hpp>
+#include <FlexLayout/Internal/Config.hpp>
 #include <FlexLayout.hpp>
 
 SIV3D_SET(s3d::EngineOption::Renderer::Headless)
@@ -47,11 +47,9 @@ void Main()
 			</Layout>
 		)");
 
-		FlexLayout::Internal::XMLLoader{
-			std::make_shared<FlexLayout::Internal::TreeContext>()
-		}.load(root, document);
+		FlexLayout::Internal::XMLLoader{}.load(root, document);
 
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root->context());
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root);
 		FlexLayout::Internal::FlexBoxImpl::CalculateLayout(*root, s3d::none, s3d::none);
 
 		auto child = root->children()[0];
@@ -75,11 +73,9 @@ void Main()
 			</Layout>
 		)");
 
-		FlexLayout::Internal::XMLLoader{
-			std::make_shared<FlexLayout::Internal::TreeContext>()
-		}.load(root, document);
+		FlexLayout::Internal::XMLLoader{}.load(root, document);
 
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root->context());
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root);
 
 		auto child = root->children()[0];
 
@@ -88,7 +84,6 @@ void Main()
 	}
 
 	{
-		auto context = std::make_shared<FlexLayout::Internal::TreeContext>();
 		std::shared_ptr<FlexLayout::Internal::FlexBoxImpl> root;
 
 		tinyxml2::XMLDocument document;
@@ -98,12 +93,12 @@ void Main()
 			</Layout>
 		)");
 
-		FlexLayout::Internal::XMLLoader{ context }.load(root, document);
+		FlexLayout::Internal::XMLLoader{}.load(root, document);
 
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*root);
 
 		assert((root->font().isEmpty()));
-		assert((root->computedTextStyle().font == context->defaultTextStyle().font));
+		assert((root->computedTextStyle().font == FlexLayout::Internal::GetConfig().defaultTextStyle().font));
 	}
 
 	{
@@ -185,8 +180,7 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto root = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		root->setInlineCssText(U"top: 10px; left: 20px;");
 
@@ -202,8 +196,7 @@ void Main()
 	{
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto root = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		root->setInlineCssText(U"top: 10px;");
 
@@ -213,9 +206,8 @@ void Main()
 	{
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto a = std::make_shared<FlexBoxImpl>(context, U"dummy");
-		auto b = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto a = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto b = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		a->setInlineCssText(U"top: 10px; margin: 10px");
 		b->setInlineCssText(a->getInlineCssText());
@@ -232,11 +224,10 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10, YGUnitPoint }));
 	}
@@ -246,14 +237,13 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(20, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
 	}
@@ -263,12 +253,11 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10, YGUnitPoint }));
 	}
@@ -278,16 +267,15 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
 	}
@@ -297,17 +285,16 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
 
 		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValueUndefined));
 	}
@@ -317,12 +304,11 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
 		dummy->setInlineCssText(U"margin-top: 20px;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
 	}
@@ -332,11 +318,10 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 30, YGUnitPoint }));
 	}
@@ -346,14 +331,13 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		dummy->removeStyle(StylePropertyGroup::Inline, U"margin");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 20, YGUnitPoint }));
 	}
@@ -363,11 +347,10 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ 10 * 2, YGUnitPoint }));
 	}
@@ -377,14 +360,13 @@ void Main()
 		using namespace FlexLayout;
 		using namespace FlexLayout::Internal;
 
-		auto context = std::make_shared<TreeContext>();
-		auto dummy = std::make_shared<FlexBoxImpl>(context, U"dummy");
+		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
 
 		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		dummy->removeStyle(StylePropertyGroup::Inline, U"font-size");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*context);
+		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
 
 		assert((YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop) == YGValue{ ComputedTextStyle{}.fontSizePx * 2, YGUnitPoint }));
 	}
@@ -475,9 +457,7 @@ void Main()
 			</Layout>
 		)");
 
-		XMLLoader{
-			std::make_shared<TreeContext>()
-		}.load(root, document);
+		XMLLoader{}.load(root, document);
 
 		auto clone = root->deepClone();
 

@@ -2,6 +2,7 @@
 #include "StylePropertyDefinition.hpp"
 #include "TreeContext.hpp"
 #include "FlexBoxImpl.hpp"
+#include "Config.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -297,7 +298,7 @@ namespace FlexLayout::Internal
 	{
 		return [getter, setter](FlexBoxImpl& impl) -> void
 			{
-				ValueT value = getter(impl.context()->dummyNode());
+				ValueT value = getter(GetConfig().dummyNode());
 				setter(impl.yogaNode(), value);
 			};
 	}
@@ -554,7 +555,7 @@ namespace FlexLayout::Internal
 				},
 				.resetCallback = [](FlexBoxImpl& impl) -> void
 				{
-					auto dummyNode = impl.context()->dummyNode();
+					auto dummyNode = GetConfig().dummyNode();
 					YGNodeStyleSetFlexDirection(impl.yogaNode(), YGNodeStyleGetFlexDirection(dummyNode));
 					YGNodeStyleSetFlexWrap(impl.yogaNode(), YGNodeStyleGetFlexWrap(dummyNode));
 				},
@@ -880,7 +881,7 @@ namespace FlexLayout::Internal
 					}
 					else
 					{
-						textStyle.fontSizePx = impl.context()->defaultTextStyle().fontSizePx;
+						textStyle.fontSizePx = GetConfig().defaultTextStyle().fontSizePx;
 					}
 
 					// サイズ計算
@@ -906,7 +907,7 @@ namespace FlexLayout::Internal
 					}
 					else
 					{
-						impl.computedTextStyle().fontSizePx = impl.context()->defaultTextStyle().fontSizePx;
+						impl.computedTextStyle().fontSizePx = GetConfig().defaultTextStyle().fontSizePx;
 					}
 				}
 			}
@@ -929,7 +930,7 @@ namespace FlexLayout::Internal
 					}
 					else
 					{
-						impl.computedTextStyle().lineHeightMul = impl.context()->defaultTextStyle().lineHeightMul;
+						impl.computedTextStyle().lineHeightMul = GetConfig().defaultTextStyle().lineHeightMul;
 					}
 				}
 			}
@@ -952,7 +953,7 @@ namespace FlexLayout::Internal
 					}
 					else
 					{
-						impl.computedTextStyle().textAlign = impl.context()->defaultTextStyle().textAlign;
+						impl.computedTextStyle().textAlign = GetConfig().defaultTextStyle().textAlign;
 					}
 				}
 			}

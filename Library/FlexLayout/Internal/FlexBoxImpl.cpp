@@ -1,19 +1,20 @@
 ﻿#include "FlexBoxImpl.hpp"
 #include "TreeContext.hpp"
 #include "LabelImpl.hpp"
+#include "Config.hpp"
 
 namespace FlexLayout::Internal
 {
-	FlexBoxImpl::FlexBoxImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
-		: m_node{ context->createNode() }
+	FlexBoxImpl::FlexBoxImpl(const StringView tagName, std::shared_ptr<TreeContext> context)
+		: m_node{ GetConfig().createNode() }
 		, m_tagName{ tagName }
-		, m_context{ context }
+		, m_context{ context ? context : std::make_shared<TreeContext>() }
 	{
 		YGNodeSetContext(m_node, this);
 	}
 
-	FlexBoxImpl::FlexBoxImpl(const FlexBoxImpl& source, std::shared_ptr<TreeContext> newContext)
-		: FlexBoxImpl(newContext ? newContext : source.m_context, source.m_tagName)
+	FlexBoxImpl::FlexBoxImpl(const FlexBoxImpl& source, std::shared_ptr<TreeContext> context)
+		: FlexBoxImpl(source.m_tagName, context)
 	{
 		m_propergateOffsetToChildren = source.m_propergateOffsetToChildren;
 
@@ -33,6 +34,8 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::setChildren(Array<std::shared_ptr<FlexBoxImpl>>& children)
 	{
+		// TODO: ツリーの変更に応じてTreeContextを更新する
+
 		for (auto& child : m_children)
 		{
 			child->m_parent = nullptr;
@@ -42,7 +45,6 @@ namespace FlexLayout::Internal
 		Array<YGNodeRef> nodes(Arg::reserve = children.size());
 		for (const auto& child : children)
 		{
-			assert(m_context == child->m_context);
 			child->m_parent = this;
 			nodes.push_back(child->yogaNode());
 		}
@@ -53,6 +55,8 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::removeChildren()
 	{
+		// TODO: ツリーの変更に応じてTreeContextを更新する
+
 		for (auto itr = m_children.rbegin(); itr != m_children.rend(); itr++)
 		{
 			auto& child = *itr;
@@ -83,34 +87,39 @@ namespace FlexLayout::Internal
 		return *ptr;
 	}
 
-	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::clone(std::shared_ptr<TreeContext> newContext) const
+	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::clone(std::shared_ptr<TreeContext> context) const
 	{
-		std::shared_ptr<FlexBoxImpl> newInstance;
-
 		switch (type())
 		{
 		case NodeType::Box:
-			newInstance = std::shared_ptr<FlexBoxImpl>(new FlexBoxImpl(*this, newContext));
-			break;
+			return std::shared_ptr<FlexBoxImpl>(new FlexBoxImpl(
+				*this,
+				context
+			));
 		case NodeType::Label:
-			newInstance = std::make_shared<LabelImpl>(static_cast<const LabelImpl&>(*this), newContext);
-			break;
-		default:
-			assert(false && "Unknown NodeType");
-			break;
+			return std::shared_ptr<LabelImpl>(new LabelImpl(
+				reinterpret_cast<const LabelImpl&>(*this),
+				context
+			));
 		}
 
-		return newInstance;
+		assert(false && "Unknown NodeType");
+		return nullptr;
 	}
 
-	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::deepClone(std::shared_ptr<TreeContext> newContext) const
+	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::deepClone(std::shared_ptr<TreeContext> context) const
 	{
-		auto newInstance = clone(newContext);
+		if (not context)
+		{
+			context = std::make_shared<TreeContext>();
+		}
+
+		auto newInstance = clone(context);
 
 		Array<std::shared_ptr<FlexBoxImpl>> children(Arg::reserve = m_children.size());
 		for (const auto& child : m_children)
 		{
-			children.push_back(child->deepClone(newContext));
+			children.push_back(child->deepClone(context));
 		}
 		newInstance->setChildren(children);
 

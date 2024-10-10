@@ -6,14 +6,17 @@
 #include <Siv3D/Console.hpp>
 #include <ThirdParty/parallel_hashmap/btree.h>
 #include "TreeContext.hpp"
+#include "Config.hpp"
 #include "../Style/StyleValueParser.hpp"
 
 // FlexBoxImplのスタイルに関する実装
 
 namespace FlexLayout::Internal
 {
-	void FlexBoxImpl::ApplyStyles(TreeContext& context)
+	void FlexBoxImpl::ApplyStyles(FlexBoxImpl& root)
 	{
+		auto& context = *root.context();
+
 		if (context.m_styleApplicationWaitlist.empty())
 		{
 			return;
@@ -363,7 +366,7 @@ namespace FlexLayout::Internal
 		}
 		else
 		{
-			setFont(m_context->loadFont(fontId), fontId);
+			setFont(GetConfig().loadFont(fontId), fontId);
 		}
 	}
 
@@ -406,7 +409,7 @@ namespace FlexLayout::Internal
 
 		m_computedTextStyle.font = m_font.font
 			? m_font.font // 設定値
-			: m_parent ? m_parent->m_computedTextStyle.font : m_context->defaultTextStyle().font; // デフォルト値
+			: m_parent ? m_parent->m_computedTextStyle.font : GetConfig().defaultTextStyle().font; // デフォルト値
 
 		auto lineHeightProp = m_styles.find(lineHeightHash);
 		installTextProperty(this, lineHeightProp);

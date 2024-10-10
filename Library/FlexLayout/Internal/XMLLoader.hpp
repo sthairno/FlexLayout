@@ -10,10 +10,6 @@ namespace FlexLayout::Internal
 	{
 	public:
 
-		XMLLoader(std::shared_ptr<TreeContext> context);
-
-	public:
-
 		bool load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document);
 
 		void clearCache();
@@ -26,8 +22,6 @@ namespace FlexLayout::Internal
 			Optional<NodeType> type = unspecified;
 			const StringView tagName = U"";
 		};
-
-		const std::shared_ptr<TreeContext> m_context;
 
 		std::shared_ptr<FlexBoxImpl> m_rootCache;
 

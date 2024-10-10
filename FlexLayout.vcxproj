@@ -140,6 +140,7 @@
     <ClInclude Include="Library\FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\FlexBoxImpl.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\LabelImpl.hpp" />
+    <ClInclude Include="Library\FlexLayout\Internal\Config.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\StylePropertyDefinition.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\StyleProperty.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\TreeContext.hpp" />
@@ -164,9 +165,9 @@
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxPropertyImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxStyleImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\LabelImpl.cpp" />
+    <ClCompile Include="Library\FlexLayout\Internal\Config.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\StyleProperty.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\StylePropertyDefinition.cpp" />
-    <ClCompile Include="Library\FlexLayout\Internal\TreeContext.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="Library\FlexLayout\Label.cpp" />
     <ClCompile Include="Library\FlexLayout\Layout.cpp" />

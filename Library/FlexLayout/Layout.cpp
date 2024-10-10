@@ -8,8 +8,7 @@ namespace FlexLayout
 {
 	Layout::Layout(OnLoadCallback onLoad)
 		: onLoad(onLoad)
-		, m_context(std::make_shared<Internal::TreeContext>())
-		, m_loader(std::make_unique<Internal::XMLLoader>(m_context))
+		, m_loader(std::make_unique<Internal::XMLLoader>())
 	{ }
 
 	bool Layout::load(const char32_t* path, EnableHotReload enableHotReload)
@@ -116,7 +115,7 @@ namespace FlexLayout
 		}
 
 		// スタイルを適用
-		Internal::FlexBoxImpl::ApplyStyles(*m_context);
+		Internal::FlexBoxImpl::ApplyStyles(*m_root);
 
 		if (m_root)
 		{

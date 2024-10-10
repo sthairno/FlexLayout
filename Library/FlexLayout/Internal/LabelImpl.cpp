@@ -72,14 +72,14 @@ namespace FlexLayout::Internal
 		}
 	};
 	
-	LabelImpl::LabelImpl(std::shared_ptr<TreeContext> context, const StringView tagName)
-		: FlexBoxImpl{ context, tagName }
+	LabelImpl::LabelImpl(const StringView tagName)
+		: FlexBoxImpl{ tagName }
 	{
 		Impl::SetupYGNode(yogaNode());
 	}
 
-	LabelImpl::LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> newContext)
-		: FlexBoxImpl{ source, newContext }
+	LabelImpl::LabelImpl(const LabelImpl& source, std::shared_ptr<TreeContext> context)
+		: FlexBoxImpl{ source, context }
 		, m_text(source.m_text)
 	{
 		assert(source.type() == NodeType::Label);

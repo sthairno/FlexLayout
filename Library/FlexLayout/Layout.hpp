@@ -140,8 +140,6 @@ namespace FlexLayout
 
 		s3d::Stopwatch m_reloadTimer;
 
-		std::shared_ptr<Internal::TreeContext> m_context;
-
 		std::shared_ptr<Internal::FlexBoxImpl> m_root;
 
 		std::unique_ptr<Internal::XMLLoader> m_loader;

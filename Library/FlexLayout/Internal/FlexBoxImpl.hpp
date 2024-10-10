@@ -23,7 +23,7 @@ namespace FlexLayout::Internal
 	{
 	public:
 
-		FlexBoxImpl(std::shared_ptr<TreeContext> context, const StringView tagName);
+		FlexBoxImpl(const StringView tagName, std::shared_ptr<TreeContext> context = nullptr);
 
 	public:
 
@@ -57,11 +57,11 @@ namespace FlexLayout::Internal
 
 		/// @brief この要素のみを複製する
 		[[nodiscard]]
-		std::shared_ptr<FlexBoxImpl> clone(std::shared_ptr<TreeContext> newContext = nullptr) const;
+		std::shared_ptr<FlexBoxImpl> clone(std::shared_ptr<TreeContext> context = nullptr) const;
 
 		/// @brief 子要素を含めて複製する
 		[[nodiscard]]
-		std::shared_ptr<FlexBoxImpl> deepClone(std::shared_ptr<TreeContext> newContext = nullptr) const;
+		std::shared_ptr<FlexBoxImpl> deepClone(std::shared_ptr<TreeContext> context = nullptr) const;
 
 		// --プロパティ(FlexBoxPropertyImpl.cpp)--
 
@@ -85,7 +85,7 @@ namespace FlexLayout::Internal
 
 		// --スタイル(FlexBoxStyleImpl.cpp)--
 
-		static void ApplyStyles(TreeContext& context);
+		static void ApplyStyles(FlexBoxImpl& root);
 
 		ComputedTextStyle& computedTextStyle() { return m_computedTextStyle; }
 
@@ -198,7 +198,8 @@ namespace FlexLayout::Internal
 
 	protected:
 
-		FlexBoxImpl(const FlexBoxImpl& other, std::shared_ptr<TreeContext> newContext = nullptr);
+		/// @remark コピーは`clone()`または`deepClone()`を使用する
+		FlexBoxImpl(const FlexBoxImpl& source, std::shared_ptr<TreeContext> context = nullptr);
 
 	private:
 
