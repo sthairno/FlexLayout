@@ -489,9 +489,9 @@ namespace FlexLayout::Internal
 							}
 						);
 
-						for (auto [_, prop] : affectedProperties)
+						for (auto [_, p] : affectedProperties)
 						{
-							prop->execInstall(*this);
+							p->execInstall(*this);
 						}
 					}
 				}

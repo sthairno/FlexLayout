@@ -55,17 +55,18 @@ namespace FlexLayout::Internal
 		return Style::detail::style_enum_traits<Enum>::to_yoga[static_cast<std::underlying_type_t<Enum>>(src)];
 	}
 
-	static Style::StyleValue YGValueToStyleValue(YGValue src)
-	{
-		switch (src.unit) {
-		case YGUnitUndefined: return Style::StyleValue{ };
-		case YGUnitAuto: return Style::StyleValue::Auto();
-		case YGUnitPoint: return Style::StyleValue::Length(src.value);
-		case YGUnitPercent: return Style::StyleValue::Percentage(src.value);
-		}
+	// Unused
+	//static Style::StyleValue YGValueToStyleValue(YGValue src)
+	//{
+	//	switch (src.unit) {
+	//	case YGUnitUndefined: return Style::StyleValue{ };
+	//	case YGUnitAuto: return Style::StyleValue::Auto();
+	//	case YGUnitPoint: return Style::StyleValue::Length(src.value);
+	//	case YGUnitPercent: return Style::StyleValue::Percentage(src.value);
+	//	}
 
-		return { };
-	}
+	//	return { };
+	//}
 
 	static bool YogaSetStyleValue(
 		YGNodeRef node,
@@ -143,41 +144,42 @@ namespace FlexLayout::Internal
 		return false;
 	}
 
-	static bool YogaSetYGValue(
-		YGNodeRef node,
-		YGValue value,
-		void(*setter)(YGNodeRef, float),
-		void(*percentSetter)(YGNodeRef, float) = nullptr,
-		void(*autoSetter)(YGNodeRef) = nullptr)
-	{
-		assert(setter);
+	// Unused
+	//static bool YogaSetYGValue(
+	//	YGNodeRef node,
+	//	YGValue value,
+	//	void(*setter)(YGNodeRef, float),
+	//	void(*percentSetter)(YGNodeRef, float) = nullptr,
+	//	void(*autoSetter)(YGNodeRef) = nullptr)
+	//{
+	//	assert(setter);
 
-		switch (value.unit)
-		{
-		case YGUnitUndefined:
-			setter(node, YGUndefined);
-			return true;
-		case YGUnitAuto:
-			if (autoSetter)
-			{
-				autoSetter(node);
-				return true;
-			}
-			break;
-		case YGUnitPoint:
-			setter(node, value.value);
-			return true;
-		case YGUnitPercent:
-			if (percentSetter)
-			{
-				percentSetter(node, value.value);
-				return true;
-			}
-			break;
-		}
+	//	switch (value.unit)
+	//	{
+	//	case YGUnitUndefined:
+	//		setter(node, YGUndefined);
+	//		return true;
+	//	case YGUnitAuto:
+	//		if (autoSetter)
+	//		{
+	//			autoSetter(node);
+	//			return true;
+	//		}
+	//		break;
+	//	case YGUnitPoint:
+	//		setter(node, value.value);
+	//		return true;
+	//	case YGUnitPercent:
+	//		if (percentSetter)
+	//		{
+	//			percentSetter(node, value.value);
+	//			return true;
+	//		}
+	//		break;
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
 	// --- InstallCallbackの生成を簡略化する補助関数 ---
 
