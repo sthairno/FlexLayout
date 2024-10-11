@@ -22,7 +22,7 @@
 		<Box style="font-size: 1.5em; padding: 0.5em 1em; border-bottom-width: 2px;">
 			<Label>FlexLayout Showcase</Label>
 		</Box>
-		<Box style="padding: 10px; flex-direction: column; flex-wrap: wrap; gap: 4px">
+		<Box style="padding: 10px; flex-direction: column; gap: 4px">
 			<Box style="border-width: 1px; padding: 6px; flex-direction: column;">
 				<Label>&lt;Label style="font-size: 2em;"&gt;Hello, World!&lt;/Label&gt;</Label>
 				<Label style="font-size: 2em;">Hello, World!</Label>
@@ -43,6 +43,20 @@
 				<Label>&lt;Box id="slider"&gt;&lt;/Box&gt;</Label>
 				<Box id="button"></Box>
 				<Box id="slider"></Box>
+			</Box>
+			<Box style="border-width: 1px; padding: 6px; flex-direction: column;">
+				<Label style="line-height: 1.5;">
+					document->getElementById(U"clone-template")->cloneNode()
+				</Label>
+				<Box id="clone-template" style="display: none; border-width: 1px; width: 30px; height: 30px;">
+					<Label id="clone-label"></Label>
+				</Box>
+				<Box style="padding: 5px 14px; gap: 10px">
+					<Box id="clone-button"/>
+					<Box id="reset-button"/>
+				</Box>
+				<Box id="clone-target" style="flex-wrap: wrap; border-width: 1px; padding: 10px; margin: 5px;">
+				</Box>
 			</Box>
 		</Box>
 	</body>

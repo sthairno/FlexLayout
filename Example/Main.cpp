@@ -34,6 +34,8 @@ void Main()
 
 	double sliderValue = 0.5;
 
+	int cloneId = 0;
+
 	while (System::Update())
 	{
 		// レイアウトの更新
@@ -56,6 +58,33 @@ void Main()
 			if (slider)
 			{
 				FlexLayout::SimpleGUI::Slider(*slider, sliderValue);
+			}
+
+			auto cloneTarget = document->getElementById(U"clone-target");
+			auto cloneButton = document->getElementById(U"clone-button");
+			auto resetButton = document->getElementById(U"reset-button");
+
+			if (cloneButton &&
+				FlexLayout::SimpleGUI::Button(*cloneButton, U"Clone", cloneTarget.has_value()))
+			{
+				auto cloneTemplate = *document->getElementById(U"clone-template");
+				auto clone = cloneTemplate.cloneNode();
+
+				// 非表示のボックスを表示させる
+				clone.setStyle(U"display", U"flex");
+				clone.removeAttribute(U"id");
+
+				// IDのラベルを更新
+				clone.getElementById(U"clone-label")->asLabel()->setText(Format(cloneId++));
+
+				cloneTarget->appendChild(clone);
+			}
+
+			if (resetButton &&
+				FlexLayout::SimpleGUI::Button(*resetButton, U"Reset", cloneTarget.has_value() && cloneTarget->hasChildNodes()))
+			{
+				cloneId = 0;
+				cloneTarget->removeChildren();
 			}
 
 			FlexLayout::Debugger::DrawHoveredBoxLayout(*document);
