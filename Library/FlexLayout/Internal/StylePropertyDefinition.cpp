@@ -901,7 +901,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void {}
+				.resetCallback = [](FlexBoxImpl&) -> void {}
 			}
 		},
 		{
@@ -914,7 +914,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void {}
+				.resetCallback = [](FlexBoxImpl&) -> void {}
 			}
 		},
 		{
@@ -927,7 +927,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void { }
+				.resetCallback = [](FlexBoxImpl&) -> void { }
 			}
 		}
 	};
