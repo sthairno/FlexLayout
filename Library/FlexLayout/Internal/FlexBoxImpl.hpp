@@ -8,7 +8,7 @@
 #include <Siv3D/HashTable.hpp>
 #include <Siv3D/FontAsset.hpp>
 #include "../Style/StyleValue.hpp"
-#include "../Util/Thickness.hpp"
+#include "../Thickness.hpp"
 #include "../Enum/NodeType.hpp"
 #include "ComputedTextStyle.hpp"
 #include "StyleProperty.hpp"

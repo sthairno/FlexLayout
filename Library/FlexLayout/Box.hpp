@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <Siv3D/Font.hpp>
 #include "Style/StyleValue.hpp"
-#include "Util/Thickness.hpp"
+#include "Thickness.hpp"
 
 namespace FlexLayout
 {
