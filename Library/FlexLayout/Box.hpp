@@ -199,9 +199,6 @@ namespace FlexLayout
 		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttributes
 		bool hasAttributes() const;
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Element/removeAttribute
-		void removeAttribute(s3d::StringView name);
-
 		// Query
 
 		s3d::Array<Box> getElementsByClassName(s3d::StringView className) const;
