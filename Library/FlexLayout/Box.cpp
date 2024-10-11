@@ -148,6 +148,11 @@ namespace FlexLayout
 		return m_impl->setStyle(Internal::StylePropertyGroup::Inline, styleName, std::array{ v1, v2, v3, v4 });
 	}
 
+	bool Box::unsetStyle(const s3d::StringView styleName)
+	{
+		return m_impl->removeStyle(Internal::StylePropertyGroup::Inline, styleName);
+	}
+
 	s3d::Font Box::font() const
 	{
 		return m_impl->font();
@@ -216,6 +221,11 @@ namespace FlexLayout
 	Optional<String> Box::getAttribute(s3d::StringView name) const
 	{
 		return m_impl->getProperty(name);
+	}
+
+	void Box::setAttribute(s3d::StringView name, s3d::StringView value)
+	{
+		m_impl->setProperty(name, value);
 	}
 
 	bool Box::hasAttribute(s3d::StringView name) const

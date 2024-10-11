@@ -24,6 +24,8 @@ namespace FlexLayout
 
 	public:
 
+		// Layout
+
 		/// @brief ローカル座標からグローバル座標へのオフセットを取得する
 		s3d::Optional<s3d::Vec2> offset() const;
 
@@ -73,6 +75,8 @@ namespace FlexLayout
 
 		/// @brief 計算した矩形を取得する
 		inline s3d::Optional<s3d::RectF> rect() const { return borderAreaRect(); }
+
+		// Inline Styles
 
 		/// @brief 指定されたスタイルの値を取得する
 		/// @return 値が設定されていない場合は空の配列を返す
@@ -132,9 +136,17 @@ namespace FlexLayout
 			Style::ValueInputVariant v4
 		);
 
+		/// @brief 指定されたスタイルの値を削除する
+		/// @return 成功した場合はtrue, 失敗した場合はfalse
+		bool unsetStyle(const s3d::StringView styleName);
+
+		// Font
+
 		s3d::Font font() const;
 
 		void setFont(s3d::Font font);
+
+		// Tree
 
 		s3d::Optional<Box> parent() const;
 
@@ -170,8 +182,16 @@ namespace FlexLayout
 			replaceChildren({ newChildren... });
 		}
 
+		// Attributes
+
 		// https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
 		s3d::Optional<s3d::String> getAttribute(s3d::StringView name) const;
+
+		// https://developer.mozilla.org/ja/docs/Web/API/Element/setAttribute
+		void setAttribute(s3d::StringView name, s3d::StringView value);
+
+		// https://developer.mozilla.org/ja/docs/Web/API/Element/removeAttribute
+		void removeAttribute(s3d::StringView name);
 
 		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute
 		bool hasAttribute(s3d::StringView name) const;
@@ -182,9 +202,13 @@ namespace FlexLayout
 		// https://developer.mozilla.org/en-US/docs/Web/API/Element/removeAttribute
 		void removeAttribute(s3d::StringView name);
 
+		// Query
+
 		s3d::Array<Box> getElementsByClassName(s3d::StringView className) const;
 
 		s3d::Optional<Box> getElementById(s3d::StringView id) const;
+
+		// Others
 
 		/// @brief Labelのインスタンスに変換する
 		s3d::Optional<Label> asLabel() const;
