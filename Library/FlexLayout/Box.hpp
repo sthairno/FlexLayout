@@ -18,8 +18,9 @@ namespace FlexLayout
 	{
 	public:
 
-		Box(std::shared_ptr<Internal::FlexBoxImpl> impl)
-			: m_impl(std::move(impl)) { }
+		Box(std::shared_ptr<Internal::FlexBoxImpl> impl);
+
+		Box(Internal::FlexBoxImpl& impl);
 
 	public:
 
@@ -135,7 +136,51 @@ namespace FlexLayout
 
 		void setFont(s3d::Font font);
 
+		s3d::Optional<Box> parent() const;
+
 		s3d::Array<Box> children() const;
+
+		void removeChildren();
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
+		Box appendChild(Box child);
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode
+		[[nodiscard]]
+		Box cloneNode() const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/contains
+		bool contains(Box child) const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
+		Box getRootNode();
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/hasChildNodes
+		bool hasChildNodes() const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
+		Box removeChild(Box child);
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceChildren
+		void replaceChildren(s3d::Array<Box> newChildren);
+
+		template <class... Box>
+		void replaceChildren(Box... newChildren)
+		{
+			replaceChildren({ newChildren... });
+		}
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
+		s3d::Optional<s3d::String> getAttribute(s3d::StringView name) const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute
+		bool hasAttribute(s3d::StringView name) const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttributes
+		bool hasAttributes() const;
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/removeAttribute
+		void removeAttribute(s3d::StringView name);
 
 		s3d::Array<Box> getElementsByClassName(s3d::StringView className) const;
 

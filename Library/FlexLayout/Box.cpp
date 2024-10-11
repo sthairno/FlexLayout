@@ -4,6 +4,12 @@
 
 namespace FlexLayout
 {
+	Box::Box(std::shared_ptr<Internal::FlexBoxImpl> impl)
+		: m_impl(std::move(impl)) { }
+
+	Box::Box(Internal::FlexBoxImpl& impl)
+		: m_impl(impl.shared_from_this()) { }
+
 	Optional<Vec2> Box::offset() const
 	{
 		return m_impl->layoutOffset();
@@ -152,9 +158,79 @@ namespace FlexLayout
 		m_impl->setFont(font);
 	}
 
+	s3d::Optional<Box> Box::parent() const
+	{
+		return m_impl->parent()
+			? MakeOptional(Box{ *m_impl->parent() })
+			: none;
+	}
+
 	Array<Box> Box::children() const
 	{
 		return m_impl->children().map([](const auto& child) { return Box{ child }; });
+	}
+
+	void Box::removeChildren()
+	{
+		m_impl->removeChildren();
+	}
+
+	Box Box::appendChild(Box child)
+	{
+		m_impl->appendChild(child.m_impl);
+		return child;
+	}
+
+	Box Box::cloneNode() const
+	{
+		auto clone = m_impl->deepClone();
+		return Box{ clone };
+	}
+
+	bool Box::contains(Box child) const
+	{
+		return m_impl->children().contains(child.m_impl);
+	}
+
+	Box Box::getRootNode()
+	{
+		return Box{ m_impl->getRoot() };
+	}
+
+	bool Box::hasChildNodes() const
+	{
+		return !m_impl->children().isEmpty();
+	}
+
+	Box Box::removeChild(Box child)
+	{
+		m_impl->removeChild(child.m_impl);
+		return child;
+	}
+
+	void Box::replaceChildren(s3d::Array<Box> newChildren)
+	{
+		m_impl->setChildren(newChildren.map([](const auto& child) { return child.m_impl; }));
+	}
+
+	Optional<String> Box::getAttribute(s3d::StringView name) const
+	{
+		return m_impl->getProperty(name);
+	}
+
+	bool Box::hasAttribute(s3d::StringView name) const
+	{
+		return m_impl->getProperty(name).has_value();
+	}
+
+	bool Box::hasAttributes() const
+	{
+		return !m_impl->hasProperties();
+	}
+
+	void Box::removeAttribute(s3d::StringView name)
+	{
+		m_impl->removeProperty(name);
 	}
 
 	Array<Box> Box::getElementsByClassName(StringView className) const

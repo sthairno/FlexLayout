@@ -41,9 +41,15 @@ namespace FlexLayout::Internal
 
 		const Array<std::shared_ptr<FlexBoxImpl>> children() const { return m_children; }
 
-		void setChildren(Array<std::shared_ptr<FlexBoxImpl>>& children);
+		void setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children);
 
 		void removeChildren();
+
+		void insertChild(std::shared_ptr<FlexBoxImpl> child, size_t index);
+
+		void appendChild(std::shared_ptr<FlexBoxImpl> child);
+
+		void removeChild(std::shared_ptr<FlexBoxImpl> child);
 
 		TreeContext& context();
 
@@ -80,6 +86,8 @@ namespace FlexLayout::Internal
 		void setProperty(const StringView key, const StringView value);
 
 		void removeProperty(const StringView key);
+
+		bool hasProperties() const;
 
 		void clearProperties();
 

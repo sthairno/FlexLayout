@@ -91,6 +91,15 @@ namespace FlexLayout::Internal
 		}
 	}
 
+	bool FlexBoxImpl::hasProperties() const
+	{
+		return m_id.has_value() ||
+			not m_classes.empty() ||
+			not m_additonalProperties.empty() ||
+			m_styles.group(StylePropertyGroup::Inline) ||
+			m_font.font;
+	}
+
 	void FlexBoxImpl::clearProperties()
 	{
 		m_id.reset();
