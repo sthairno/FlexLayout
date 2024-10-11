@@ -901,17 +901,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
-				{
-					if (auto parent = impl.parent())
-					{
-						impl.computedTextStyle().fontSizePx = parent->computedTextStyle().fontSizePx;
-					}
-					else
-					{
-						impl.computedTextStyle().fontSizePx = GetConfig().defaultTextStyle().fontSizePx;
-					}
-				}
+				.resetCallback = [](FlexBoxImpl& impl) -> void {}
 			}
 		},
 		{
@@ -924,17 +914,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
-				{
-					if (auto parent = impl.parent())
-					{
-						impl.computedTextStyle().lineHeightMul = parent->computedTextStyle().lineHeightMul;
-					}
-					else
-					{
-						impl.computedTextStyle().lineHeightMul = GetConfig().defaultTextStyle().lineHeightMul;
-					}
-				}
+				.resetCallback = [](FlexBoxImpl& impl) -> void {}
 			}
 		},
 		{
@@ -947,17 +927,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
-				{
-					if (auto parent = impl.parent())
-					{
-						impl.computedTextStyle().textAlign = parent->computedTextStyle().textAlign;
-					}
-					else
-					{
-						impl.computedTextStyle().textAlign = GetConfig().defaultTextStyle().textAlign;
-					}
-				}
+				.resetCallback = [](FlexBoxImpl& impl) -> void { }
 			}
 		}
 	};

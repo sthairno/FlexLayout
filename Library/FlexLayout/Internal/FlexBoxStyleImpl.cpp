@@ -396,11 +396,7 @@ namespace FlexLayout::Internal
 
 				prop->clearEvent();
 
-				if (prop->removed())
-				{
-					prop->execReset(*self);
-				}
-				else
+				if (not prop->removed())
 				{
 					prop->execInstall(*self);
 				}
@@ -408,9 +404,12 @@ namespace FlexLayout::Internal
 
 		ComputedTextStyle prevStyle = m_computedTextStyle;
 
-		m_computedTextStyle.font = m_font.font
-			? m_font.font // 設定値
-			: m_parent ? m_parent->m_computedTextStyle.font : GetConfig().defaultTextStyle().font; // デフォルト値
+		m_computedTextStyle = m_parent ? m_parent->m_computedTextStyle : GetConfig().defaultTextStyle();
+
+		if (m_font.font)
+		{
+			m_computedTextStyle.font = m_font.font;
+		}
 
 		auto lineHeightProp = m_styles.find(lineHeightHash);
 		installTextProperty(this, lineHeightProp);
