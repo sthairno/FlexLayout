@@ -78,12 +78,16 @@ namespace FlexLayout::Internal
 		Impl::SetupYGNode(yogaNode());
 	}
 
-	LabelImpl::LabelImpl(const LabelImpl& source)
-		: FlexBoxImpl{ source }
-		, m_text(source.m_text)
+	std::shared_ptr<FlexBoxImpl> LabelImpl::clone() const
 	{
-		assert(source.type() == NodeType::Label);
-		Impl::SetupYGNode(yogaNode());
+		auto instance = std::make_shared<LabelImpl>(tagName());
+
+		instance->setPropergateOffset(propergateOffset());
+		instance->copyProperties(*this, false, true);
+		instance->copyStyles(*this);
+		instance->setText(m_text);
+
+		return instance;
 	}
 
 	void LabelImpl::setText(const StringView text)

@@ -13,15 +13,6 @@ namespace FlexLayout::Internal
 		YGNodeSetContext(m_node, this);
 	}
 
-	FlexBoxImpl::FlexBoxImpl(const FlexBoxImpl& source)
-		: FlexBoxImpl(source.m_tagName)
-	{
-		m_propergateOffsetToChildren = source.m_propergateOffsetToChildren;
-
-		copyProperties(source, false, true);
-		copyStyles(source);
-	}
-
 	FlexBoxImpl::~FlexBoxImpl()
 	{
 		// 先に子要素のデストラクタを呼び出させる
@@ -88,6 +79,12 @@ namespace FlexLayout::Internal
 	void FlexBoxImpl::setContextImpl(std::shared_ptr<TreeContext> context)
 	{
 		m_context = context;
+
+		if (m_context)
+		{
+			context->onNewNodeJoined(shared_from_this());
+		}
+
 		for (auto& child : m_children)
 		{
 			child->setContextImpl(context);
@@ -126,20 +123,13 @@ namespace FlexLayout::Internal
 
 	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::clone() const
 	{
-		switch (type())
-		{
-		case NodeType::Box:
-			return std::shared_ptr<FlexBoxImpl>(new FlexBoxImpl(
-				*this
-			));
-		case NodeType::Label:
-			return std::shared_ptr<LabelImpl>(new LabelImpl(
-				reinterpret_cast<const LabelImpl&>(*this)
-			));
-		}
+		auto instance = std::make_shared<FlexBoxImpl>(tagName());
 
-		assert(false && "Unknown NodeType");
-		return nullptr;
+		instance->setPropergateOffset(propergateOffset());
+		instance->copyProperties(*this, false, true);
+		instance->copyStyles(*this);
+
+		return instance;
 	}
 
 	std::shared_ptr<FlexBoxImpl> FlexBoxImpl::deepClone() const

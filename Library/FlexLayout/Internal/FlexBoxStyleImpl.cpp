@@ -17,7 +17,7 @@ namespace FlexLayout::Internal
 	{
 		auto& context = root.context();
 
-		if (context.styleApplicationWaitinglist.empty())
+		if (context.styleApplicationWaitinglist().empty())
 		{
 			return;
 		}
@@ -27,7 +27,7 @@ namespace FlexLayout::Internal
 		using _QueueComp = decltype([](const _QueueValue& a, const _QueueValue& b) { return a.first > b.first; });
 		using _QueueType = std::priority_queue<_QueueValue, Array<_QueueValue>, _QueueComp>;
 		_QueueType queue;
-		for (const auto& weakptr : context.styleApplicationWaitinglist)
+		for (const auto& weakptr : context.styleApplicationWaitinglist())
 		{
 			if (auto item = weakptr.lock();
 				item && BelongsToSameTree(root, *item))
@@ -35,7 +35,7 @@ namespace FlexLayout::Internal
 				queue.push({ item->getDepth(), item });
 			}
 		}
-		context.styleApplicationWaitinglist.clear();
+		context.clearStyleApplicationWaitinglist();
 
 		// 適用
 		while (not queue.empty())
@@ -116,7 +116,7 @@ namespace FlexLayout::Internal
 	bool FlexBoxImpl::setStyle(StylePropertyGroup group, const StringView styleName, const std::span<const Style::StyleValue> values)
 	{
 		if (values.empty() ||
-			std::all_of(values.begin(), values.end(), [](auto& v){ return v.type() == Style::StyleValue::Type::Unspecified; }))
+			std::all_of(values.begin(), values.end(), [](auto& v) { return v.type() == Style::StyleValue::Type::Unspecified; }))
 		{
 			return removeStyle(group, styleName);
 		}
@@ -208,7 +208,7 @@ namespace FlexLayout::Internal
 
 				endIdx++;
 			}
-			
+
 			inputs = std::span{ tmpInputs.begin(), tmpInputs.end() };
 		}
 
@@ -279,16 +279,16 @@ namespace FlexLayout::Internal
 		bool modified = false;
 
 		const auto removeAll = [&](StylePropertyTable::group_span_type g)
-		{
-			for (auto& entry : g)
 			{
-				if (not entry.removed())
+				for (auto& entry : g)
 				{
-					entry.unsetValue();
-					modified = true;
+					if (not entry.removed())
+					{
+						entry.unsetValue();
+						modified = true;
+					}
 				}
-			}
-		};
+			};
 
 		if (group)
 		{
@@ -340,7 +340,7 @@ namespace FlexLayout::Internal
 		}
 
 		// 待機リストに追加
-		context().styleApplicationWaitinglist.push_back(weak_from_this());
+		context().queueStyleApplication(shared_from_this());
 		m_isStyleApplicationScheduled = true;
 	}
 
@@ -485,7 +485,7 @@ namespace FlexLayout::Internal
 							affectedProperties.begin(),
 							affectedProperties.end(),
 							[](const auto& a, const auto& b) {
-								return a.first < b.first;
+							return a.first < b.first;
 							}
 						);
 

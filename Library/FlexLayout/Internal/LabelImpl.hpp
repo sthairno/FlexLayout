@@ -19,18 +19,14 @@ namespace FlexLayout::Internal
 
 		NodeType type() const noexcept override { return NodeType::Label; }
 
+		[[nodiscard]]
+		std::shared_ptr<FlexBoxImpl> clone() const override;
+
 		const StringView text() const { return m_text; }
 
 		void setText(const StringView text);
 
 		void draw(const TextStyle& textStyle, const ColorF& color);
-
-	protected:
-
-		friend FlexBoxImpl;
-
-		/// @remark コピーは`clone()`または`deepClone()`を使用する
-		LabelImpl(const LabelImpl& source);
 
 	private:
 

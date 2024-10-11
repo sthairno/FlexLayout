@@ -65,7 +65,7 @@ namespace FlexLayout::Internal
 
 		/// @brief この要素のみを複製する
 		[[nodiscard]]
-		std::shared_ptr<FlexBoxImpl> clone() const;
+		virtual std::shared_ptr<FlexBoxImpl> clone() const;
 
 		/// @brief 子要素を含めて複製する
 		[[nodiscard]]
@@ -205,11 +205,6 @@ namespace FlexLayout::Internal
 				? localContentAreaRect().movedBy(*m_layoutOffset)
 				: Optional<RectF>{};
 		}
-
-	protected:
-
-		/// @remark コピーは`clone()`または`deepClone()`を使用する
-		FlexBoxImpl(const FlexBoxImpl& source);
 
 	private:
 
