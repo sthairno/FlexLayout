@@ -43,11 +43,11 @@ namespace FlexLayout::Internal
 			ygnodes.push_back(child->yogaNode());
 		}
 
-		// m_childrenの更新
-		m_children = std::move(children);
-
 		// YGNodeの更新
 		YGNodeSetChildren(m_node, ygnodes.data(), ygnodes.size());
+
+		// m_childrenの更新
+		m_children = std::move(children);
 	}
 
 	void FlexBoxImpl::removeChildren()
@@ -60,11 +60,11 @@ namespace FlexLayout::Internal
 			child->clearLayoutOffsetRecursive();
 		}
 
-		// m_childrenの更新
-		m_children.clear();
-
 		// YGNodeの更新
 		YGNodeRemoveAllChildren(m_node);
+
+		// m_childrenの更新
+		m_children.clear();
 	}
 
 	void FlexBoxImpl::insertChild(std::shared_ptr<FlexBoxImpl> child, size_t index)
@@ -81,11 +81,11 @@ namespace FlexLayout::Internal
 		child->setContext(m_context);
 		child->m_parent = this;
 
-		// m_childrenの更新
-		m_children.insert(m_children.begin() + index, child);
-
 		// YGNodeの更新
 		YGNodeInsertChild(m_node, child->yogaNode(), index);
+
+		// m_childrenの更新
+		m_children.insert(m_children.begin() + index, child);
 	}
 
 	void FlexBoxImpl::appendChild(std::shared_ptr<FlexBoxImpl> child)
@@ -102,11 +102,11 @@ namespace FlexLayout::Internal
 		child->setContext(nullptr);
 		child->clearLayoutOffsetRecursive();
 
-		// m_childrenの更新
-		m_children.remove(child);
-
 		// YGNodeの更新
 		YGNodeRemoveChild(m_node, child->yogaNode());
+
+		// m_childrenの更新
+		m_children.remove(child);
 	}
 
 	TreeContext& FlexBoxImpl::context()
