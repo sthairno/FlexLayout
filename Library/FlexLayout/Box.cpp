@@ -200,7 +200,7 @@ namespace FlexLayout
 
 	bool Box::contains(Box child) const
 	{
-		return m_impl->children().contains(child.m_impl);
+		return m_impl->lookupNodeByInstance(*child.m_impl);
 	}
 
 	Box Box::getRootNode()
@@ -215,12 +215,14 @@ namespace FlexLayout
 
 	Box Box::removeChild(Box child)
 	{
+		// TODO: 見つからないときにNotFoundErrorを投げる
 		m_impl->removeChild(child.m_impl);
 		return child;
 	}
 
 	void Box::replaceChildren(s3d::Array<Box> newChildren)
 	{
+		// TODO: newChildrenに自分自身が含まれるときにHierarchyRequestErrorを投げる
 		m_impl->setChildren(newChildren.map([](const auto& child) { return child.m_impl; }));
 	}
 
@@ -246,6 +248,7 @@ namespace FlexLayout
 
 	void Box::removeAttribute(s3d::StringView name)
 	{
+		// TODO: 見つからなくても例外を発生させない
 		m_impl->removeProperty(name);
 	}
 

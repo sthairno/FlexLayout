@@ -4,6 +4,24 @@
 
 namespace FlexLayout::Internal
 {
+	bool FlexBoxImpl::lookupNodeByInstance(const FlexBoxImpl& node)
+	{
+		if (&node == this)
+		{
+			return true;
+		}
+
+		for (const auto& child : m_children)
+		{
+			if (child->lookupNodeByInstance(node))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void FlexBoxImpl::lookupNodesByClassName(Array<std::shared_ptr<FlexBoxImpl>>& list, const String& className, size_t limit)
 	{
 		if (list.size() >= limit)

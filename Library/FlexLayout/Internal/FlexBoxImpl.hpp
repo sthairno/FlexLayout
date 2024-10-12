@@ -145,6 +145,8 @@ namespace FlexLayout::Internal
 
 		// --検索(FlexBoxLookupImpl.cpp)--
 
+		bool lookupNodeByInstance(const FlexBoxImpl& node);
+
 		void lookupNodesByClassName(Array<std::shared_ptr<FlexBoxImpl>>& list, const String& className, size_t limit = Largest<size_t>);
 
 		std::shared_ptr<FlexBoxImpl> lookupNodeById(const StringView id);
