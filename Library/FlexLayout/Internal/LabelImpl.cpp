@@ -92,9 +92,9 @@ namespace FlexLayout::Internal
 
 	void LabelImpl::setText(const StringView text)
 	{
-		m_text = text;
 		if (m_text != text)
 		{
+			m_text = text;
 			m_layoutIsValid = false;
 			YGNodeMarkDirty(yogaNode());
 		}
