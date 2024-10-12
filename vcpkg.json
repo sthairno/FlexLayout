@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "siv3d-flexlayout",
-  "version-string": "0.3.0",
+  "version-string": "0.3.1",
   "supports": "windows & x64 & static",
   "dependencies": [
     "yoga",
