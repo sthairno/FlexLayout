@@ -159,7 +159,7 @@ namespace FlexLayout
 
 		// https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode
 		[[nodiscard]]
-		Box cloneNode() const;
+		Box cloneNode(bool deep = false) const;
 
 		// https://developer.mozilla.org/en-US/docs/Web/API/Node/contains
 		bool contains(Box child) const;

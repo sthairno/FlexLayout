@@ -186,10 +186,16 @@ namespace FlexLayout
 		return child;
 	}
 
-	Box Box::cloneNode() const
+	Box Box::cloneNode(bool deep) const
 	{
-		auto clone = m_impl->deepClone();
-		return Box{ clone };
+		if (deep)
+		{
+			return Box{ m_impl->deepClone() };
+		}
+		else
+		{
+			return Box{ m_impl->clone() };
+		}
 	}
 
 	bool Box::contains(Box child) const
