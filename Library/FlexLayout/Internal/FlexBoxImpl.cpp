@@ -2,9 +2,54 @@
 #include "TreeContext.hpp"
 #include "LabelImpl.hpp"
 #include "Config.hpp"
+#include "../Error.hpp"
 
 namespace FlexLayout::Internal
 {
+	namespace detail
+	{
+		void ValidateCircularReference(const FlexBoxImpl* parent, const FlexBoxImpl* child)
+		{
+			// 自身または祖先を子要素として追加しようとしていないか検証
+			for (auto node = parent; node; node = node->parent())
+			{
+				if (node == child)
+				{
+					throw InvalidTreeOperationError(U"This operation would create a circular reference\nこの操作によって循環参照が作成されます");
+				}
+			}
+		}
+
+		void ValidateSetChildrenOperation(const FlexBoxImpl* parent, const Array<std::shared_ptr<FlexBoxImpl>>& children)
+		{
+			for (const auto& child : children)
+			{
+				ValidateCircularReference(parent, child.get());
+			}
+
+			for (auto childItr = children.cbegin(); childItr != children.cend(); childItr++)
+			{
+				auto& child = *childItr;
+				for (auto siblingItr = childItr + 1; siblingItr != children.cend(); siblingItr++)
+				{
+					auto& sibling = *siblingItr;
+
+					// 重複チェック
+					if (child == sibling)
+					{
+						throw InvalidTreeOperationError(U"Cannot add the same node multiple times\n同じノードを複数回追加することはできません");
+					}
+
+					// サブツリー内に別の子要素が存在するかチェック
+					if (child->lookupNodeByInstance(*sibling))
+					{
+						throw InvalidTreeOperationError(U"Duplicated node found in the subtree\nサブツリー内に重複するノードが見つかりました");
+					}
+				}
+			}
+		}
+	}
+
 	FlexBoxImpl::FlexBoxImpl(const StringView tagName)
 		: m_node{ GetConfig().createNode() }
 		, m_tagName{ tagName }
@@ -25,7 +70,9 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children)
 	{
-		removeChildren();
+		detail::ValidateSetChildrenOperation(this, children);
+
+		// 適用
 
 		Array<YGNodeRef> ygnodes(Arg::reserve = children.size());
 		for (const auto& child : children)
@@ -47,7 +94,7 @@ namespace FlexLayout::Internal
 		YGNodeSetChildren(m_node, ygnodes.data(), ygnodes.size());
 
 		// m_childrenの更新
-		m_children = std::move(children);
+		m_children = children;
 	}
 
 	void FlexBoxImpl::removeChildren()
@@ -69,9 +116,10 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::insertChild(std::shared_ptr<FlexBoxImpl> child, size_t index)
 	{
+		detail::ValidateCircularReference(this, child.get());
 		assert(index <= m_children.size());
 
-		// すでにどこかに所属していた場合は削除する
+		// すでにどこかのツリーに所属していた場合は切り離す
 		if (child->m_parent)
 		{
 			child->m_parent->removeChild(child);
@@ -95,7 +143,11 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::removeChild(std::shared_ptr<FlexBoxImpl> child)
 	{
-		assert(m_children.contains(child));
+		auto itr = std::find(m_children.begin(), m_children.end(), child);
+		if (itr == m_children.end())
+		{
+			throw NotFoundError(U"Given node is not a child\n与えられたノードは子ノードではありません");
+		}
 
 		// 子要素の更新
 		child->m_parent = nullptr;
@@ -106,7 +158,7 @@ namespace FlexLayout::Internal
 		YGNodeRemoveChild(m_node, child->yogaNode());
 
 		// m_childrenの更新
-		m_children.remove(child);
+		m_children.erase(itr);
 	}
 
 	TreeContext& FlexBoxImpl::context()

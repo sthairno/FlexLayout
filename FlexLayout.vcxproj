@@ -136,6 +136,7 @@
     <ClInclude Include="Library\FlexLayout\Enum\NodeType.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\Position.hpp" />
     <ClInclude Include="Library\FlexLayout\Enum\TextAlign.hpp" />
+    <ClInclude Include="Library\FlexLayout\Error.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\BoxAccessor.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\ComputedTextStyle.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\FlexBoxImpl.hpp" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <ClCompile Include="Library\FlexLayout\Box.cpp" />
     <ClCompile Include="Library\FlexLayout\Enum\LengthUnit.cpp" />
+    <ClCompile Include="Library\FlexLayout\Error.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxLayoutImpl.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\FlexBoxLookupImpl.cpp" />
