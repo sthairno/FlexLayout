@@ -15,6 +15,13 @@ namespace FlexLayout
 
 		using Box::Box;
 
+		/// @brief 空のLabelを作成する
+		/// @remark appendChild()などでツリーに追加することでレイアウトに反映されます
+		/// @param text ラベルで表示する文字列
+		/// @return 作成したノード
+		[[nodiscard]]
+		static Label Create(const s3d::StringView text);
+
 	public:
 
 		/// @brief 描画する文字列を取得する
@@ -25,9 +32,11 @@ namespace FlexLayout
 		void setText(const s3d::StringView text);
 
 		/// @brief 文字列を描画する
+		/// @remark 色付きフォントの場合、colorの設定は無視されます
 		void draw(const s3d::ColorF& color = s3d::Palette::White) const;
 
 		/// @brief 文字列を描画する
+		/// @remark 色付きフォントの場合、colorの設定は無視されます
 		void draw(const s3d::TextStyle& textStyle, const s3d::ColorF& color = s3d::Palette::White) const;
 
 	private:

@@ -22,6 +22,12 @@ namespace FlexLayout
 
 		Box(Internal::FlexBoxImpl& impl);
 
+		/// @brief 空のBoxを作成する
+		/// @remark appendChild()などでツリーに追加することでレイアウトに反映されます
+		/// @return 作成したノード
+		[[nodiscard]]
+		static Box Create();
+
 	public:
 
 		// Layout
@@ -142,40 +148,69 @@ namespace FlexLayout
 
 		// Font
 
+		/// @brief フォントの設定値を取得する
 		s3d::Font font() const;
 
+		/// @brief 使用するフォントを設定する
+		/// @remark 無効なフォントの場合、親要素またはデフォルトのフォント設定を継承します
 		void setFont(s3d::Font font);
+
+		/// @brief フォントの設定を解除する
+		void unsetFont();
 
 		// Tree
 
+		/// @brief 親ノードを取得する
+		/// @return 親ノードが存在しない場合はnone
 		s3d::Optional<Box> parent() const;
 
+		/// @brief 子ノードを取得する
 		s3d::Array<Box> children() const;
 
+		/// @brief 子ノードをすべて削除する
 		void removeChildren();
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
+		/// @brief 子ノードを末尾に追加する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
+		/// @param child 追加する子ノード
+		/// @throw FlexLayout::InvalidTreeOperationError 不正なツリーを作成した場合
+		/// @return 追加した子ノード、childと同じインスタンスになります
 		Box appendChild(Box child);
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode
+		/// @brief ノードを複製する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode
+		/// @param deep trueの場合、子ノードも含めて複製します
+		/// @return 複製したノード
 		[[nodiscard]]
 		Box cloneNode(bool deep = false) const;
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/contains
-		bool contains(Box child) const;
+		/// @brief このノード内に指定されたノードが存在するかどうかを判定する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Node/contains
+		/// @param node 検索するノード
+		/// @return このノードと同一の場合、または子,孫ノードの場合はtrue
+		bool contains(Box node) const;
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
+		/// @brief ルート要素を取得する
+		/// @return ツリーのルート要素、親ノードが存在しない場合は自身を返します
 		Box getRootNode();
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/hasChildNodes
+		/// @brief 子ノードを持っているかを判定する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Node/hasChildNodes
 		bool hasChildNodes() const;
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
+		/// @brief 子ノードを削除する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
+		/// @param child 削除するノード
+		/// @throw FlexLayout::NotFoundError ノードが見つからない場合
+		/// @return 削除したノード、childと同じインスタンスになります
 		Box removeChild(Box child);
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceChildren
+		/// @brief 子ノードをすべて置き換える
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceChildren
 		void replaceChildren(s3d::Array<Box> newChildren);
 
+		/// @brief 子ノードをすべて置き換える
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceChildren
 		template <class... Box>
 		void replaceChildren(Box... newChildren)
 		{
@@ -184,19 +219,33 @@ namespace FlexLayout
 
 		// Attributes
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
+		/// @brief 属性の値を取得する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
+		/// @param name 属性名
+		/// @return 設定値、登録されていない場合はnone
 		s3d::Optional<s3d::String> getAttribute(s3d::StringView name) const;
 
-		// https://developer.mozilla.org/ja/docs/Web/API/Element/setAttribute
+		/// @brief 属性の値を設定する
+		/// @remark https://developer.mozilla.org/ja/docs/Web/API/Element/setAttribute
+		/// @param name 属性名
+		/// @param value 設定値
 		void setAttribute(s3d::StringView name, s3d::StringView value);
 
-		// https://developer.mozilla.org/ja/docs/Web/API/Element/removeAttribute
-		void removeAttribute(s3d::StringView name);
+		/// @brief 属性を削除する
+		/// @remark https://developer.mozilla.org/ja/docs/Web/API/Element/removeAttribute
+		/// @param name 属性名
+		/// @return 削除に成功した場合はtrue
+		bool removeAttribute(s3d::StringView name);
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute
+		/// @brief 属性が存在するかを判定する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute
+		/// @param name 属性名
+		/// @return 存在する場合はtrue
 		bool hasAttribute(s3d::StringView name) const;
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttributes
+		/// @brief 1つ以上の属性が存在するかを判定する
+		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttributes
+		/// @return 存在する場合はtrue
 		bool hasAttributes() const;
 
 		// Query
@@ -211,6 +260,7 @@ namespace FlexLayout
 		s3d::Optional<Label> asLabel() const;
 
 		/// @brief 枠線を描画する
+		/// @param color 枠線の色
 		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
 
 	protected:

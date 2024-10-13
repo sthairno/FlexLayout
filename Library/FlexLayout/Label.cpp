@@ -3,6 +3,13 @@
 
 namespace FlexLayout
 {
+	Label Label::Create(const StringView text)
+	{
+		auto impl = std::make_shared<Internal::LabelImpl>(U"label");
+		impl->setText(text);
+		return Label{ impl };
+	}
+
 	String Label::text() const
 	{
 		return String{ impl().text() };

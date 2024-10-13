@@ -85,7 +85,7 @@ namespace FlexLayout::Internal
 
 		void setProperty(const StringView key, const StringView value);
 
-		void removeProperty(const StringView key);
+		bool removeProperty(const StringView key);
 
 		bool hasProperties() const;
 

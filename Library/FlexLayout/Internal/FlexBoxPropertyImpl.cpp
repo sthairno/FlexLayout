@@ -67,7 +67,7 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	void FlexBoxImpl::removeProperty(const StringView key)
+	bool FlexBoxImpl::removeProperty(const StringView key)
 	{
 		if (key == U"id")
 		{
@@ -85,10 +85,8 @@ namespace FlexLayout::Internal
 		{
 			setFont({ }, U"");
 		}
-		else
-		{
-			m_additonalProperties.erase(key);
-		}
+
+		return m_additonalProperties.erase(key);
 	}
 
 	bool FlexBoxImpl::hasProperties() const

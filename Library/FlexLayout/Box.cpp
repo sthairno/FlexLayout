@@ -10,6 +10,11 @@ namespace FlexLayout
 	Box::Box(Internal::FlexBoxImpl& impl)
 		: m_impl(impl.shared_from_this()) { }
 
+	Box Box::Create()
+	{
+		return Box{ std::make_shared<Internal::FlexBoxImpl>(U"box")};
+	}
+
 	Optional<Vec2> Box::offset() const
 	{
 		return m_impl->layoutOffset();
@@ -163,6 +168,11 @@ namespace FlexLayout
 		m_impl->setFont(font);
 	}
 
+	void Box::unsetFont()
+	{
+		m_impl->setFont(Font{});
+	}
+
 	s3d::Optional<Box> Box::parent() const
 	{
 		return m_impl->parent()
@@ -198,9 +208,9 @@ namespace FlexLayout
 		}
 	}
 
-	bool Box::contains(Box child) const
+	bool Box::contains(Box node) const
 	{
-		return m_impl->lookupNodeByInstance(*child.m_impl);
+		return m_impl->lookupNodeByInstance(*node.m_impl);
 	}
 
 	Box Box::getRootNode()
@@ -215,14 +225,12 @@ namespace FlexLayout
 
 	Box Box::removeChild(Box child)
 	{
-		// TODO: 見つからないときにNotFoundErrorを投げる
 		m_impl->removeChild(child.m_impl);
 		return child;
 	}
 
 	void Box::replaceChildren(s3d::Array<Box> newChildren)
 	{
-		// TODO: newChildrenに自分自身が含まれるときにHierarchyRequestErrorを投げる
 		m_impl->setChildren(newChildren.map([](const auto& child) { return child.m_impl; }));
 	}
 
@@ -246,10 +254,9 @@ namespace FlexLayout
 		return !m_impl->hasProperties();
 	}
 
-	void Box::removeAttribute(s3d::StringView name)
+	bool Box::removeAttribute(s3d::StringView name)
 	{
-		// TODO: 見つからなくても例外を発生させない
-		m_impl->removeProperty(name);
+		return m_impl->removeProperty(name);
 	}
 
 	Array<Box> Box::getElementsByClassName(StringView className) const
