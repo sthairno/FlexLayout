@@ -3,6 +3,7 @@
 #include "Internal/FlexBoxImpl.hpp"
 #include "Internal/XMLLoader.hpp"
 #include "Internal/TreeContext.hpp"
+#include "Internal/BoxAccessor.hpp"
 
 namespace FlexLayout
 {
@@ -114,11 +115,11 @@ namespace FlexLayout
 			reload();
 		}
 
-		// スタイルを適用
-		Internal::FlexBoxImpl::ApplyStyles(*m_root);
-
 		if (m_root)
 		{
+			// スタイルを適用
+			Internal::FlexBoxImpl::ApplyStyles(*m_root);
+
 			// レイアウト計算
 			Internal::FlexBoxImpl::CalculateLayout(*m_root, width, height);
 
@@ -135,6 +136,11 @@ namespace FlexLayout
 		}
 
 		return none;
+	}
+
+	void Layout::setDocument(Box root)
+	{
+		m_root = Internal::BoxAccessor::GetImpl(root);
 	}
 
 	Layout::~Layout()
