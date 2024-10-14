@@ -79,9 +79,18 @@ namespace FlexLayout::Internal
 			return false;
 		}
 
+		// キャッシュ
+		if (rootRef)
+		{
+			m_rootCache = rootRef;
+			cacheNodesById(rootRef);
+		}
+
+		// 読み込み
+		bool result = false;
 		if (rootName == "layout")
 		{
-			// 独自フォーマットのXMLとして読み込み
+			// 独自フォーマットのXMLとして
 
 			if (auto childElement = rootElement->FirstChildElement())
 			{
@@ -91,10 +100,12 @@ namespace FlexLayout::Internal
 			{
 				rootRef.reset();
 			}
+
+			result = true;
 		}
 		else if (rootName == "html")
 		{
-			// 簡易的なHTMLとして読み込み
+			// 簡易的なHTMLとして
 
 			if (auto bodyElement = detail::FirstChildElement(rootElement, "body"))
 			{
@@ -104,23 +115,14 @@ namespace FlexLayout::Internal
 			{
 				rootRef.reset();
 			}
-		}
-		else
-		{
-			return false;
+
+			result = true;
 		}
 
-		m_id2NodeDic = std::move(m_id2NodeDicNext);
-		m_id2NodeDicNext.clear();
-
-		return true;
-	}
-
-	void XMLLoader::clearCache()
-	{
-		m_id2NodeDic.clear();
-		m_id2NodeDicNext.clear();
 		m_rootCache.reset();
+		m_id2NodeDic.clear();
+
+		return result;
 	}
 
 	std::shared_ptr<FlexBoxImpl> XMLLoader::loadBodyNode(const tinyxml2::XMLElement& element)
@@ -129,7 +131,7 @@ namespace FlexLayout::Internal
 		String id = idOrNull ? Unicode::FromUTF8(idOrNull) : U"";
 
 		// キャッシュまたは新規ノード
-		auto node = getCachedNode({
+		auto node = popCachedNode({
 			.id = id,
 			.type = NodeType::Box,
 			.tagName = U"body",
@@ -141,13 +143,6 @@ namespace FlexLayout::Internal
 
 		// 属性の読み込み
 		detail::LoadAttributes(*node, element);
-
-		// キャッシュ
-		if (node->id())
-		{
-			cacheNodeById(node);
-		}
-		m_rootCache = node;
 
 		// 子要素の読み込み
 		auto newChildren = loadChildren(element);
@@ -167,7 +162,7 @@ namespace FlexLayout::Internal
 		String id = idOrNull ? Unicode::FromUTF8(idOrNull) : U"";
 
 		// キャッシュからnodeへ取得、見つからない場合は新規作成、失敗したらnullptr
-		if (auto cachedNode = getCachedNode({
+		if (auto cachedNode = popCachedNode({
 			.id = id,
 			.type = isRoot ? MakeOptional(NodeType::Box) : none
 		}, isRoot))
@@ -185,16 +180,6 @@ namespace FlexLayout::Internal
 
 		// 属性の読み込み
 		detail::LoadAttributes(*node, element);
-
-		// 次回読み込みのためにキャッシュに保存
-		if (node->id())
-		{
-			cacheNodeById(node);
-		}
-		if (isRoot)
-		{
-			m_rootCache = node;
-		}
 
 		// 型ごとに読み込み処理を分岐
 		switch (node->type())
@@ -245,22 +230,24 @@ namespace FlexLayout::Internal
 		return nullptr;
 	}
 
-	bool XMLLoader::cacheNodeById(std::shared_ptr<FlexBoxImpl> node)
+	void XMLLoader::cacheNodesById(std::shared_ptr<FlexBoxImpl> node)
 	{
-		auto id = node->id();
-		assert(id);
-
-		auto itr = m_id2NodeDicNext.find(*id);
-		if (itr == m_id2NodeDicNext.end())
+		if (auto id = node->id())
 		{
-			m_id2NodeDicNext.emplace(*id, std::move(node));
-			return true;
+			auto itr = m_id2NodeDic.find(*id);
+			if (itr == m_id2NodeDic.end())
+			{
+				m_id2NodeDic.emplace(*id, std::move(node));
+			}
 		}
 
-		return false;
+		for (auto& child : node->children())
+		{
+			cacheNodesById(child);
+		}
 	}
 
-	std::shared_ptr<FlexBoxImpl> XMLLoader::getCachedNode(_CacheFilters filters, bool useRootCache)
+	std::shared_ptr<FlexBoxImpl> XMLLoader::popCachedNode(_CacheFilters filters, bool useRootCache)
 	{
 		std::shared_ptr<FlexBoxImpl> node;
 

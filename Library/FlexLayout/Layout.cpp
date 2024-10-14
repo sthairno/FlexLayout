@@ -9,7 +9,6 @@ namespace FlexLayout
 {
 	Layout::Layout(OnLoadCallback onLoad)
 		: onLoad(onLoad)
-		, m_loader(std::make_unique<Internal::XMLLoader>())
 	{ }
 
 	bool Layout::load(const char32_t* path, EnableHotReload enableHotReload)
@@ -60,12 +59,12 @@ namespace FlexLayout
 
 	bool Layout::load(const tinyxml2::XMLDocument& document)
 	{
-		if (m_loader->load(m_root, document))
+		if (Internal::XMLLoader{ }.load(m_root, document))
 		{
 			if (onLoad)
 			{
 				Box root{ m_root };
-				onLoad(root);
+				onLoad(*this, root);
 			}
 			return true;
 		}

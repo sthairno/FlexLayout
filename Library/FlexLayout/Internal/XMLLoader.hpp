@@ -12,8 +12,6 @@ namespace FlexLayout::Internal
 
 		bool load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document);
 
-		void clearCache();
-
 	private:
 
 		struct _CacheFilters
@@ -27,8 +25,6 @@ namespace FlexLayout::Internal
 
 		HashTable<String, std::shared_ptr<FlexBoxImpl>> m_id2NodeDic;
 
-		HashTable<String, std::shared_ptr<FlexBoxImpl>> m_id2NodeDicNext;
-
 		std::shared_ptr<FlexBoxImpl> loadBodyNode(const tinyxml2::XMLElement& element);
 
 		std::shared_ptr<FlexBoxImpl> loadNode(const tinyxml2::XMLElement& element, bool isRoot);
@@ -37,8 +33,8 @@ namespace FlexLayout::Internal
 
 		std::shared_ptr<FlexBoxImpl> createNodeFromTagName(const StringView tagName);
 
-		bool cacheNodeById(std::shared_ptr<FlexBoxImpl> node);
+		void cacheNodesById(std::shared_ptr<FlexBoxImpl> node);
 
-		std::shared_ptr<FlexBoxImpl> getCachedNode(_CacheFilters filters, bool useRootCache = true);
+		std::shared_ptr<FlexBoxImpl> popCachedNode(_CacheFilters filters, bool useRootCache = true);
 	};
 }

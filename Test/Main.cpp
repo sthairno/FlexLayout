@@ -22,7 +22,7 @@ void Main()
 
 	{
 		bool called = false;
-		auto callback = [&](FlexLayout::Box& box) -> void
+		auto callback = [&](FlexLayout::Layout&, FlexLayout::Box&) -> void
 			{
 				called = true;
 			};

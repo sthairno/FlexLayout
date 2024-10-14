@@ -180,8 +180,6 @@ namespace FlexLayout
 
 		std::shared_ptr<Internal::FlexBoxImpl> m_root;
 
-		std::unique_ptr<Internal::XMLLoader> m_loader;
-
 	public:
 
 		~Layout();
