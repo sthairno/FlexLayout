@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "yoga",
+    "tinyxml2",
+    "gtest"
+  ],
+  "overrides": [
+    {
+      "name": "tinyxml2",
+      "version": "8.0.0"
+    }
+  ],
+  "builtin-baseline": "576379156e82da642f8d1834220876759f13534d"
+}
