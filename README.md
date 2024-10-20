@@ -39,9 +39,14 @@ OpenSiv3Dで[フレックスボックス](https://developer.mozilla.org/ja/docs/
      ...
    ```
 
-## 使い方
+## サンプル集
 
-実装例は[サンプルコード](Example/)もご覧ください
+| **アクションゲーム風UI**                                     | **FlexLayout Showcase**                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![375939330-abb0b746-88aa-4a49-b140-95e4668762a6](https://github.com/user-attachments/assets/44806b76-5557-4cb9-b785-6b5f694d2088) | ![image](https://github.com/user-attachments/assets/4d811914-30a9-43ab-96b4-77227dd715f5) |
+| [ソースコード (Gist)](https://gist.github.com/sthairno/0719d46db2c5ee9af13841e0904cdd7a) | [サンプルプロジェクト](Example/)                             |
+
+## 使い方
 
 ### レイアウトファイル (XML)
 
