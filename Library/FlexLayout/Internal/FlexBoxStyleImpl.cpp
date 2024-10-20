@@ -424,7 +424,7 @@ namespace FlexLayout::Internal
 
 		// その他のスタイル
 
-		static struct _PropertyState
+		struct _PropertyState
 		{
 			StylePropertyDefinitionRef definition;
 

@@ -237,7 +237,7 @@ namespace FlexLayout::Internal
 			auto itr = m_id2NodeDic.find(*id);
 			if (itr == m_id2NodeDic.end())
 			{
-				m_id2NodeDic.emplace(*id, std::move(node));
+				m_id2NodeDic.emplace(*id, node);
 			}
 		}
 
