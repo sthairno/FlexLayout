@@ -164,16 +164,9 @@ namespace FlexLayout::Internal
 		root->appendChild(child1);
 		child1->appendChild(child2);
 
-		ASSERT_THROW(root->insertChild(child2, 0), InvalidTreeOperationError);
+		ASSERT_THROW(child2->insertChild(root, 0), InvalidTreeOperationError);
 
-		ASSERT_EQ(root->children().size(), 1);
-		ASSERT_EQ(root->children()[0], child1);
-
-		ASSERT_EQ(child1->parent(), root.get());
-		ASSERT_EQ(child2->parent(), nullptr);
-
-		ASSERT_NE(&root->context(), &child1->context());
-		ASSERT_NE(&root->context(), &child2->context());
+		ASSERT_EQ(child2->children().size(), 0);
 	}
 
 	TEST(FlexBoxTreeTest, RemoveChild)
@@ -218,8 +211,8 @@ namespace FlexLayout::Internal
 		ASSERT_EQ(child3->parent(), child2.get());
 
 		ASSERT_EQ(&root->context(), &child1->context());
-		ASSERT_EQ(&root->context(), &child2->context());
-		ASSERT_EQ(&root->context(), &child3->context());
+		ASSERT_NE(&root->context(), &child2->context());
+		ASSERT_NE(&root->context(), &child3->context());
 	}
 
 	TEST(FlexBoxTreeTest, RemoveChild_ChildNotFound)

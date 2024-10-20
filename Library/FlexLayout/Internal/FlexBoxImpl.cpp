@@ -22,11 +22,13 @@ namespace FlexLayout::Internal
 
 		void ValidateSetChildrenOperation(const FlexBoxImpl* parent, const Array<std::shared_ptr<FlexBoxImpl>>& children)
 		{
+			// 既存ツリーとの重複チェック
 			for (const auto& child : children)
 			{
 				ValidateCircularReference(parent, child.get());
 			}
 
+			// children内の重複チェック
 			for (auto childItr = children.cbegin(); childItr != children.cend(); childItr++)
 			{
 				auto& child = *childItr;
@@ -70,6 +72,7 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::setChildren(const Array<std::shared_ptr<FlexBoxImpl>>& children)
 	{
+		assert(children.all([](const auto& child) { return !!child; }));
 		detail::ValidateSetChildrenOperation(this, children);
 
 		// 適用
@@ -116,6 +119,7 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::insertChild(std::shared_ptr<FlexBoxImpl> child, size_t index)
 	{
+		assert(child);
 		detail::ValidateCircularReference(this, child.get());
 		assert(index <= m_children.size());
 
@@ -143,6 +147,8 @@ namespace FlexLayout::Internal
 
 	void FlexBoxImpl::removeChild(std::shared_ptr<FlexBoxImpl> child)
 	{
+		assert(child);
+
 		auto itr = std::find(m_children.begin(), m_children.end(), child);
 		if (itr == m_children.end())
 		{

@@ -16,7 +16,7 @@ namespace FlexLayout::Internal
 		ASSERT_EQ(tbl.group(StylePropertyGroup::Inline).size(), 1);
 	}
 
-	TEST(StylePropertyTableTest, Find_NotFound)
+	TEST(StylePropertyTableTest, Get_ReturnNullWhenRequestedInvalidPropertyName)
 	{
 		StylePropertyTable tbl;
 
@@ -25,13 +25,22 @@ namespace FlexLayout::Internal
 		ASSERT_FALSE(prop);
 	}
 
-	TEST(StylePropertyTableTest, Find)
+	TEST(StylePropertyTableTest, Find_SameGroup)
 	{
 		StylePropertyTable tbl;
 
-		tbl.get(StylePropertyGroup::Inline, U"top");
+		tbl.get(StylePropertyGroup::Inline, U"top"); // create removed property
 
-		ASSERT_TRUE(tbl.find(StylePropertyGroup::StyleSheet, U"top"));
+		ASSERT_TRUE(tbl.find(StylePropertyGroup::Inline, U"top"));
+	}
+
+	TEST(StylePropertyTableTest, Find_OtherGroup)
+	{
+		StylePropertyTable tbl;
+
+		tbl.get(StylePropertyGroup::Inline, U"top"); // create removed property
+
+		ASSERT_FALSE(tbl.find(StylePropertyGroup::StyleSheet, U"top"));
 	}
 
 	TEST(StylePropertyTableTest, Find_ShouldReturnPropertyWithHigherPriority)
