@@ -68,10 +68,10 @@ void Main()
 				FlexLayout::SimpleGUI::Button(*cloneButton, U"Clone", cloneTarget.has_value()))
 			{
 				auto cloneTemplate = *document->getElementById(U"clone-template");
-				auto clone = cloneTemplate.cloneNode();
+				auto clone = cloneTemplate.cloneNode(true);
 
 				// 非表示のボックスを表示させる
-				clone.setStyle(U"display", U"flex");
+				clone.unsetStyle(U"display");
 				clone.removeAttribute(U"id");
 
 				// IDのラベルを更新
