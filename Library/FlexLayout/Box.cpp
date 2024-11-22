@@ -7,9 +7,6 @@ namespace FlexLayout
 	Box::Box(std::shared_ptr<Internal::FlexBoxImpl> impl)
 		: m_impl(std::move(impl)) { }
 
-	Box::Box(Internal::FlexBoxImpl& impl)
-		: m_impl(impl.shared_from_this()) { }
-
 	Box Box::Create()
 	{
 		return Box{ std::make_shared<Internal::FlexBoxImpl>(U"box")};

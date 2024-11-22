@@ -4,11 +4,6 @@
 
 namespace FlexLayout
 {
-	namespace Internal
-	{
-		class LabelImpl;
-	}
-
 	class Label : public Box
 	{
 	public:
@@ -38,9 +33,5 @@ namespace FlexLayout
 		/// @brief 文字列を描画する
 		/// @remark 色付きフォントの場合、colorの設定は無視されます
 		void draw(const s3d::TextStyle& textStyle, const s3d::ColorF& color = s3d::Palette::White) const;
-
-	private:
-
-		Internal::LabelImpl& impl() const;
 	};
 }

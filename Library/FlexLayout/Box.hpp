@@ -20,8 +20,6 @@ namespace FlexLayout
 
 		Box(std::shared_ptr<Internal::FlexBoxImpl> impl);
 
-		Box(Internal::FlexBoxImpl& impl);
-
 		/// @brief 空のBoxを作成する
 		/// @remark appendChild()などでツリーに追加することでレイアウトに反映されます
 		/// @return 作成したノード
@@ -263,7 +261,7 @@ namespace FlexLayout
 		/// @param color 枠線の色
 		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
 
-	protected:
+	private:
 
 		friend Internal::BoxAccessor;
 

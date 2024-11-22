@@ -1,5 +1,6 @@
 ﻿#include "Label.hpp"
 #include "Internal/LabelImpl.hpp"
+#include "Internal/BoxAccessor.hpp"
 
 namespace FlexLayout
 {
@@ -12,26 +13,21 @@ namespace FlexLayout
 
 	String Label::text() const
 	{
-		return String{ impl().text() };
+		return String{ Internal::BoxAccessor::GetLabelImpl(*this)->text()};
 	}
 
 	void Label::setText(const StringView text)
 	{
-		impl().setText(text);
+		Internal::BoxAccessor::GetLabelImpl(*this)->setText(text);
 	}
 
 	void Label::draw(const ColorF& color) const
 	{
-		impl().draw(TextStyle::Default(), color);
+		Internal::BoxAccessor::GetLabelImpl(*this)->draw(TextStyle::Default(), color);
 	}
 
 	void Label::draw(const TextStyle& textStyle, const ColorF& color) const
 	{
-		impl().draw(textStyle, color);
-	}
-
-	Internal::LabelImpl& Label::impl() const
-	{
-		return *static_cast<Internal::LabelImpl*>(m_impl.get());
+		Internal::BoxAccessor::GetLabelImpl(*this)->draw(textStyle, color);
 	}
 }

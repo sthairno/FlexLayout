@@ -7,139 +7,183 @@
 
 namespace FlexLayout
 {
-	Layout::Layout(OnLoadCallback onLoad)
-		: onLoad(onLoad)
-	{ }
-
-	bool Layout::load(const char32_t* path, EnableHotReload enableHotReload)
+	struct Layout::Impl
 	{
-		FilePath fullPath = FileSystem::FullPath(path);
-		if (fullPath.isEmpty())
+		Layout* intf;
+
+		Layout::OnLoadCallback onLoad;
+
+		s3d::FilePath fileFullPath{ };
+
+		std::unique_ptr<s3d::DirectoryWatcher> dirWatcher{ };
+
+		bool pendingReload = false;
+
+		s3d::Stopwatch reloadTimer;
+
+		std::shared_ptr<Internal::FlexBoxImpl> root;
+
+		bool loadDocument(const tinyxml2::XMLDocument& document)
 		{
+			if (Internal::XMLLoader{ }.load(root, document))
+			{
+				if (onLoad)
+				{
+					Box root{ root };
+					onLoad(*intf, root);
+				}
+				return true;
+			}
 			return false;
 		}
 
-		// ホットリロードの設定
-		if (enableHotReload)
+		bool loadFileContent(s3d::StringView content)
 		{
-			if (m_fileFullPath != fullPath)
+			auto utf8Content = content.toUTF8();
+
+			tinyxml2::XMLDocument document(true, tinyxml2::COLLAPSE_WHITESPACE);
+
+			if (document.Parse(utf8Content.data()) != tinyxml2::XML_SUCCESS)
 			{
-				FilePath watchDirectory = FileSystem::ParentPath(fullPath);
-				m_dirWatcher = std::make_unique<DirectoryWatcher>(watchDirectory);
+				return false;
+			}
+
+			return loadDocument(document);
+		}
+
+		bool loadFile(s3d::FilePathView path, bool enableHotReload)
+		{
+			FilePath fullPath = FileSystem::FullPath(path);
+			if (fullPath.isEmpty())
+			{
+				return false;
+			}
+
+			// ホットリロードの設定
+			if (enableHotReload)
+			{
+				if (fileFullPath != fullPath)
+				{
+					FilePath watchDirectory = FileSystem::ParentPath(fullPath);
+					dirWatcher = std::make_unique<DirectoryWatcher>(watchDirectory);
+				}
+			}
+			else
+			{
+				dirWatcher.reset();
+			}
+
+			// ファイル内容読み込み
+			String fileContent;
+
+			if (not TextReader(fullPath).readAll(fileContent))
+			{
+				return false;
+			}
+
+			fileFullPath = fullPath;
+
+			return loadFileContent(fileContent);
+		}
+
+		bool reload()
+		{
+			pendingReload = false;
+			if (fileFullPath.isEmpty())
+			{
+				return false;
+			}
+
+			return loadFile(fileFullPath, dirWatcher.get());
+		}
+
+		void update(Optional<float> width, Optional<float> height, Vec2 offset)
+		{
+			// ファイルの更新検知、再読み込み予約
+			if (dirWatcher)
+			{
+				for (auto&& [path, action] : dirWatcher->retrieveChanges())
+				{
+					if ((path == fileFullPath) &&
+						(action == FileAction::Added || action == FileAction::Modified))
+					{
+						pendingReload = true;
+						reloadTimer.restart();
+						break;
+					}
+				}
+				dirWatcher->clearChanges();
+			}
+
+			// ファイルの更新を反映 (ホットリロード)
+			if (pendingReload && reloadTimer.elapsed() > SecondsF{ 0.5 })
+			{
+				reload();
+			}
+
+			if (root)
+			{
+				// スタイルを適用
+				Internal::FlexBoxImpl::ApplyStyles(*root);
+
+				// レイアウト計算
+				Internal::FlexBoxImpl::CalculateLayout(*root, width, height);
+
+				// グローバル座標の更新
+				root->setLayoutOffsetRecursive(offset);
 			}
 		}
-		else
-		{
-			m_dirWatcher.reset();
-		}
+	};
 
-		// ファイル内容読み込み
-		String fileContent;
+	Layout::Layout(OnLoadCallback onLoad)
+		: m_impl(new Impl{
+			.intf = this,
+			.onLoad = onLoad
+		})
+	{ }
 
-		if (not TextReader(fullPath).readAll(fileContent))
-		{
-			return false;
-		}
-
-		m_fileFullPath = fullPath;
-		return load(Arg::code = fileContent);
+	bool Layout::load(s3d::FilePathView path, EnableHotReload enableHotReload)
+	{
+		return m_impl->loadFile(path, enableHotReload.getBool());
 	}
 
 	bool Layout::load(s3d::Arg::code_<s3d::String> code)
 	{
-		tinyxml2::XMLDocument document(true, tinyxml2::COLLAPSE_WHITESPACE);
-		
-		if (document.Parse(code->toUTF8().data()) != tinyxml2::XML_SUCCESS)
-		{
-			return false;
-		}
-
-		return load(document);
+		return m_impl->loadFileContent(code.value());
 	}
 
 	bool Layout::load(const tinyxml2::XMLDocument& document)
 	{
-		if (Internal::XMLLoader{ }.load(m_root, document))
-		{
-			if (onLoad)
-			{
-				Box root{ m_root };
-				onLoad(*this, root);
-			}
-			return true;
-		}
-		return false;
+		return m_impl->loadDocument(document);
 	}
 
 	bool Layout::reload()
 	{
-		if (m_pendingReload)
-		{
-			m_pendingReload = false;
-		}
-		if (m_fileFullPath.isEmpty())
-		{
-			return false;
-		}
-
-		return load(m_fileFullPath, EnableHotReload{ isHotReloadEnabled() });
+		return m_impl->reload();
 	}
 
 	bool Layout::isHotReloadEnabled() const
 	{
-		return m_dirWatcher && m_dirWatcher->isOpen();
+		return m_impl->dirWatcher && m_impl->dirWatcher->isOpen();
 	}
 
 	void Layout::update(Optional<float> width, Optional<float> height, Vec2 offset)
 	{
-		// ファイルの更新検知、再読み込み予約
-		if (m_dirWatcher)
-		{
-			for (auto&& [path, action] : m_dirWatcher->retrieveChanges())
-			{
-				if ((path == m_fileFullPath) &&
-					(action == FileAction::Added || action == FileAction::Modified))
-				{
-					m_pendingReload = true;
-					m_reloadTimer.restart();
-					break;
-				}
-			}
-			m_dirWatcher->clearChanges();
-		}
-
-		// ファイルの更新を反映 (ホットリロード)
-		if (m_pendingReload && m_reloadTimer.elapsed() > SecondsF{ 0.5 })
-		{
-			reload();
-		}
-
-		if (m_root)
-		{
-			// スタイルを適用
-			Internal::FlexBoxImpl::ApplyStyles(*m_root);
-
-			// レイアウト計算
-			Internal::FlexBoxImpl::CalculateLayout(*m_root, width, height);
-
-			// グローバル座標の更新
-			m_root->setLayoutOffsetRecursive(offset);
-		}
+		m_impl->update(width, height, offset);
 	}
 
 	Optional<Box> Layout::document()
 	{
-		if (m_root)
+		if (m_impl->root)
 		{
-			return Box{ m_root };
+			return Box{ m_impl->root };
 		}
-
 		return none;
 	}
 
 	void Layout::setDocument(Box root)
 	{
-		m_root = Internal::BoxAccessor::GetImpl(root);
+		m_impl->root = Internal::BoxAccessor::GetImpl(root);
 	}
 
 	Layout::~Layout()

@@ -15,11 +15,6 @@ namespace tinyxml2
 
 namespace FlexLayout
 {
-	namespace Internal
-	{
-		class XMLLoader;
-	}
-
 	using EnableHotReload = s3d::YesNo<struct EnableHotReload_tag>;
 
 	class Layout
@@ -29,7 +24,7 @@ namespace FlexLayout
 		/// @brief XML読み込み直後に呼び出されるコールバック関数
 		using OnLoadCallback = std::function<void(Layout&, Box&)>;
 
-		Layout(OnLoadCallback onLoad = nullptr);
+		explicit Layout(OnLoadCallback onLoad = nullptr);
 
 		inline explicit Layout(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No, OnLoadCallback onLoad = nullptr)
 			: Layout(onLoad)
@@ -70,21 +65,19 @@ namespace FlexLayout
 
 	public:
 
-		OnLoadCallback onLoad;
+		/// @brief XMLファイルをファイルパスから読み込む
+		/// @param path XMLファイルのパス
+		/// @param enableHotReload ホットリロードを有効にするか
+		/// @return 成功した場合はtrue、失敗した場合はfalse
+		bool load(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No);
 
 		/// @brief XMLファイルをファイルパスから読み込む
 		/// @param path XMLファイルのパス
 		/// @param enableHotReload ホットリロードを有効にするか
 		/// @return 成功した場合はtrue、失敗した場合はfalse
-		bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No);
-
-		/// @brief XMLファイルをファイルパスから読み込む
-		/// @param path XMLファイルのパス
-		/// @param enableHotReload ホットリロードを有効にするか
-		/// @return 成功した場合はtrue、失敗した場合はfalse
-		inline bool load(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No)
+		inline bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
 		{
-			return load(path.data(), enableHotReload);
+			return load(s3d::FilePath{ path }, enableHotReload);
 		}
 
 		/// @brief XMLファイルをファイルパスから読み込む
@@ -93,7 +86,7 @@ namespace FlexLayout
 		/// @return 成功した場合はtrue、失敗した場合はfalse
 		inline bool load(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
 		{
-			return load(path.data(), enableHotReload);
+			return load(path, enableHotReload);
 		}
 
 		/// @brief XMLを読み込む
@@ -125,7 +118,7 @@ namespace FlexLayout
 		bool reload();
 
 		/// @brief ファイルのフルパスを取得する
-		inline const s3d::FilePathView fileFullPath() const { return m_fileFullPath; }
+		const s3d::FilePathView fileFullPath() const;
 
 		/// @brief ホットリロードが有効か
 		bool isHotReloadEnabled() const;
@@ -170,15 +163,9 @@ namespace FlexLayout
 
 	private:
 
-		s3d::FilePath m_fileFullPath{ };
+		struct Impl;
 
-		std::unique_ptr<s3d::DirectoryWatcher> m_dirWatcher;
-
-		bool m_pendingReload = false;
-
-		s3d::Stopwatch m_reloadTimer;
-
-		std::shared_ptr<Internal::FlexBoxImpl> m_root;
+		std::unique_ptr<Impl> m_impl;
 
 	public:
 
