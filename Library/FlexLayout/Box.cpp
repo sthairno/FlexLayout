@@ -173,7 +173,7 @@ namespace FlexLayout
 	s3d::Optional<Box> Box::parent() const
 	{
 		return m_impl->parent()
-			? MakeOptional(Box{ *m_impl->parent() })
+			? MakeOptional(Box{ m_impl->parent()->shared_from_this() })
 			: none;
 	}
 
@@ -212,7 +212,7 @@ namespace FlexLayout
 
 	Box Box::getRootNode()
 	{
-		return Box{ m_impl->getRoot() };
+		return Box{ m_impl->getRoot().shared_from_this() };
 	}
 
 	bool Box::hasChildNodes() const
