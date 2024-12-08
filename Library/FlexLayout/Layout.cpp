@@ -19,9 +19,15 @@ namespace FlexLayout
 
 		bool pendingReload = false;
 
-		s3d::Stopwatch reloadTimer;
+		s3d::Stopwatch reloadTimer{ };
 
 		std::shared_ptr<Internal::FlexBoxImpl> root;
+
+		s3d::Optional<float> width = none;
+
+		s3d::Optional<float> height = none;
+
+		s3d::Vec2 offset = { 0, 0 };
 
 		bool loadDocument(const tinyxml2::XMLDocument& document)
 		{
@@ -86,7 +92,7 @@ namespace FlexLayout
 			return loadFileContent(fileContent);
 		}
 
-		bool reload()
+		bool reloadFile()
 		{
 			pendingReload = false;
 			if (fileFullPath.isEmpty())
@@ -97,8 +103,10 @@ namespace FlexLayout
 			return loadFile(fileFullPath, dirWatcher.get());
 		}
 
-		void update(Optional<float> width, Optional<float> height, Vec2 offset)
+		bool handleHotReload()
 		{
+			bool reloaded = false;
+
 			// ファイルの更新検知、再読み込み予約
 			if (dirWatcher)
 			{
@@ -118,18 +126,23 @@ namespace FlexLayout
 			// ファイルの更新を反映 (ホットリロード)
 			if (pendingReload && reloadTimer.elapsed() > SecondsF{ 0.5 })
 			{
-				reload();
+				reloaded = reloadFile();
 			}
 
+			return reloaded;
+		}
+
+		void calculateLayout()
+		{
 			if (root)
 			{
-				// スタイルを適用
+				// Yogaノードへスタイルを適用
 				Internal::FlexBoxImpl::ApplyStyles(*root);
 
-				// レイアウト計算
+				// Yogaのレイアウト計算
 				Internal::FlexBoxImpl::CalculateLayout(*root, width, height);
 
-				// グローバル座標の更新
+				// ローカル座標からグローバル座標の計算
 				root->setLayoutOffsetRecursive(offset);
 			}
 		}
@@ -159,7 +172,7 @@ namespace FlexLayout
 
 	bool Layout::reload()
 	{
-		return m_impl->reload();
+		return m_impl->reloadFile();
 	}
 
 	bool Layout::isHotReloadEnabled() const
@@ -167,9 +180,21 @@ namespace FlexLayout
 		return m_impl->dirWatcher && m_impl->dirWatcher->isOpen();
 	}
 
-	void Layout::update(Optional<float> width, Optional<float> height, Vec2 offset)
+	bool Layout::handleHotReload()
 	{
-		m_impl->update(width, height, offset);
+		return m_impl->handleHotReload();
+	}
+
+	void Layout::setConstraints(s3d::Vec2 offset, s3d::Optional<double> width, s3d::Optional<double> height)
+	{
+		m_impl->offset = offset;
+		m_impl->width = width.map([](double d) { return static_cast<float>(d); });
+		m_impl->height = height.map([](double d) { return static_cast<float>(d); });
+	}
+
+	void Layout::calculateLayout()
+	{
+		m_impl->calculateLayout();
 	}
 
 	Optional<Box> Layout::document()

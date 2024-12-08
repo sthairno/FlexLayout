@@ -113,7 +113,7 @@ namespace FlexLayout
 		bool load(const tinyxml2::XMLDocument& element);
 
 		/// @brief XMLファイルを再読み込みする
-		/// @remark XMLを直接読み込んだ場合は無効です
+		/// @remark ファイルパス以外からXMLデータを読み込んだ場合は常に失敗します
 		/// @return 成功した場合はtrue、失敗した場合はfalse
 		bool reload();
 
@@ -123,36 +123,52 @@ namespace FlexLayout
 		/// @brief ホットリロードが有効か
 		bool isHotReloadEnabled() const;
 
-		/// @brief ツリーの更新とレイアウトの計算を行う
-		/// @param width 表示幅
-		/// @param height 表示高さ
-		/// @param offset レイアウト計算の基準位置
-		void update(s3d::Optional<float> width, s3d::Optional<float> height, s3d::Vec2 offset = { 0, 0 });
+		/// @brief ホットリロードの処理を行う
+		/// @return 再読み込みが行われた場合はtrue,それ以外はfalse
+		bool handleHotReload();
 
-		/// @brief ツリーの更新とレイアウトの計算を行う
-		inline void update()
-		{
-			update(s3d::none, s3d::none);
-		}
+		/// @brief レイアウト制約を設定
+		/// @param offset 座標の基準位置
+		/// @param width 横幅の限界
+		/// @param height 縦幅の限界
+		void setConstraints(
+			s3d::Vec2 offset = s3d::Vec2::Zero(),
+			s3d::Optional<double> width = s3d::none,
+			s3d::Optional<double> height = s3d::none
+		);
 
-		/// @brief ツリーの更新とレイアウトの計算を行う
-		inline void update(s3d::SizeF size)
+		/// @brief レイアウト制約を設定
+		inline void setConstraints(s3d::SizeF size)
 		{
-			update(
-				static_cast<float>(size.x),
-				static_cast<float>(size.y)
+			setConstraints(
+				s3d::Vec2::Zero(),
+				size.x,
+				size.y
 			);
 		}
 
-		/// @brief ツリーの更新とレイアウトの計算を行う
-		inline void update(s3d::RectF rect)
+		/// @brief レイアウト制約を設定
+		inline void setConstraints(s3d::RectF rect)
 		{
-			update(
-				static_cast<float>(rect.w),
-				static_cast<float>(rect.h),
-				rect.pos
+			setConstraints(
+				rect.pos,
+				rect.w,
+				rect.h
 			);
 		}
+
+		/// @brief レイアウト制約を設定
+		inline void setConstraints(s3d::Vec2 offset, s3d::SizeF size)
+		{
+			setConstraints(
+				offset,
+				size.x,
+				size.y
+			);
+		}
+
+		/// @brief レイアウトを再計算する
+		void calculateLayout();
 
 		/// @brief ルート要素を取得する
 		s3d::Optional<Box> document();
