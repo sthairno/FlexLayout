@@ -39,7 +39,9 @@ void Main()
 	while (System::Update())
 	{
 		// レイアウトの更新
-		layout.update(Scene::Rect());
+		layout.handleHotReload();
+		layout.setConstraints(Scene::Rect());
+		layout.calculateLayout();
 
 		if (auto document = layout.document())
 		{
