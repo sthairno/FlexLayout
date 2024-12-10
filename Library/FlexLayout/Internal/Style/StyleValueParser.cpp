@@ -4,19 +4,19 @@
 
 using namespace s3d;
 
-namespace FlexLayout::Style
+namespace FlexLayout::Internal
 {
-	using Type = StyleValue::Type;
+	using Type = Style::StyleValue::Type;
 
-	struct detail::StyleValueParser
+	struct StyleValueParser
 	{
-		static StyleValue ParseEnum(const String& str, EnumTypeId enumId)
+		static Style::StyleValue ParseEnum(const String& str, Style::EnumTypeId enumId)
 		{
-			for (auto [idx, name] : Indexed(detail::GetValueNameList(enumId)))
+			for (auto [idx, name] : Indexed(Style::detail::GetValueNameList(enumId)))
 			{
 				if (str == name)
 				{
-					return StyleValue{
+					return Style::StyleValue{
 						Type::Enum,
 						static_cast<std::int32_t>(idx),
 						enumId
@@ -26,7 +26,7 @@ namespace FlexLayout::Style
 			return { };
 		}
 
-		static StyleValue ParseRatio(const String& str)
+		static Style::StyleValue ParseRatio(const String& str)
 		{
 			std::basic_istringstream<char32> stream{ str.data() };
 			stream >> std::noskipws;
@@ -41,8 +41,8 @@ namespace FlexLayout::Style
 			if (stream.eof())
 			{
 				return width >= 0.0f
-					? StyleValue{ Type::Ratio, width }
-					: StyleValue{ };
+					? Style::StyleValue{ Type::Ratio, width }
+					: Style::StyleValue{ };
 			}
 			
 			char32 maybeSlash;
@@ -59,8 +59,8 @@ namespace FlexLayout::Style
 			}
 
 			return width >= 0.0F && height >= 0.0F
-				? StyleValue{ Type::Ratio, width / height }
-				: StyleValue{ };
+				? Style::StyleValue{ Type::Ratio, width / height }
+				: Style::StyleValue{ };
 		}
 
 		static std::tuple<bool, float, String> ParseFloatSuffix(const String& str)
@@ -140,7 +140,7 @@ namespace FlexLayout::Style
 			return false;
 		}
 
-		static StyleValue Parse(const String& str, detail::StyleValueMatchRule rule)
+		static Style::StyleValue Parse(const String& str, StyleValueMatchRule rule)
 		{
 			switch (rule.type)
 			{
@@ -148,7 +148,7 @@ namespace FlexLayout::Style
 			{
 				if (str == U"none")
 				{
-					return StyleValue{ Type::None };
+					return Style::StyleValue{ Type::None };
 				}
 				break;
 			}
@@ -156,7 +156,7 @@ namespace FlexLayout::Style
 			{
 				if (str == U"auto")
 				{
-					return StyleValue{ Type::Auto };
+					return Style::StyleValue{ Type::Auto };
 				}
 				break;
 			}
@@ -164,7 +164,7 @@ namespace FlexLayout::Style
 			{
 				if (auto value = ParseOpt<int32_t>(str))
 				{
-					return StyleValue{ Type::Integer, *value };
+					return Style::StyleValue{ Type::Integer, *value };
 				}
 				break;
 			}
@@ -189,7 +189,7 @@ namespace FlexLayout::Style
 				auto [success, value, suffix] = ParseFloatSuffix(str);
 				if (success && suffix == U"%")
 				{
-					return StyleValue{ Type::Percentage, value };
+					return Style::StyleValue{ Type::Percentage, value };
 				}
 				break;
 			}
@@ -197,7 +197,7 @@ namespace FlexLayout::Style
 			{
 				if (auto value = ParseOpt<float>(str))
 				{
-					return StyleValue{ Type::Number, *value };
+					return Style::StyleValue{ Type::Number, *value };
 				}
 				break;
 			}
@@ -209,7 +209,7 @@ namespace FlexLayout::Style
 					LengthUnit unit;
 					if (ParseLengthUnit(suffix, unit))
 					{
-						return StyleValue{ Type::Length, value, unit };
+						return Style::StyleValue{ Type::Length, value, unit };
 					}
 				}
 				break;
@@ -219,34 +219,34 @@ namespace FlexLayout::Style
 			return { };
 		}
 
-		static StyleValue Parse(std::int32_t value, detail::StyleValueMatchRule rule)
+		static Style::StyleValue Parse(std::int32_t value, StyleValueMatchRule rule)
 		{
 			switch (rule.type)
 			{
 			case Type::Integer:
-				return StyleValue{ Type::Integer, value };
+				return Style::StyleValue{ Type::Integer, value };
 			case Type::Ratio:
 				if (value < 0)
 				{
 					break;
 				}
-				return StyleValue{ Type::Ratio, static_cast<float>(value) };
+				return Style::StyleValue{ Type::Ratio, static_cast<float>(value) };
 			case Type::Percentage:
-				return StyleValue{ Type::Percentage, static_cast<float>(value) };
+				return Style::StyleValue{ Type::Percentage, static_cast<float>(value) };
 			case Type::Number:
-				return StyleValue{ Type::Number, static_cast<float>(value) };
+				return Style::StyleValue{ Type::Number, static_cast<float>(value) };
 			case Type::Length:
 				if (value < 0)
 				{
 					break;
 				}
-				return StyleValue{ Type::Length, static_cast<float>(value) };
+				return Style::StyleValue{ Type::Length, static_cast<float>(value) };
 			}
 
 			return { };
 		}
 		
-		static StyleValue Parse(float value, detail::StyleValueMatchRule rule)
+		static Style::StyleValue Parse(float value, StyleValueMatchRule rule)
 		{
 			switch (rule.type)
 			{
@@ -255,25 +255,25 @@ namespace FlexLayout::Style
 				{
 					break;
 				}
-				return StyleValue{ Type::Ratio, value };
+				return Style::StyleValue{ Type::Ratio, value };
 			case Type::Percentage:
 				if (not std::isfinite(value))
 				{
 					break;
 				}
-				return StyleValue{ Type::Percentage, value };
+				return Style::StyleValue{ Type::Percentage, value };
 			case Type::Number:
 				if (not std::isfinite(value))
 				{
 					break;
 				}
-				return StyleValue{ Type::Number, value };
+				return Style::StyleValue{ Type::Number, value };
 			case Type::Length:
 				if (not std::isfinite(value) || value < 0.0F)
 				{
 					break;
 				}
-				return StyleValue{ Type::Length, value };
+				return Style::StyleValue{ Type::Length, value };
 			}
 
 			return { };
@@ -281,11 +281,11 @@ namespace FlexLayout::Style
 	};
 	
 
-	StyleValue ParseValue(std::int32_t src, detail::StyleValueMultiMatchRule rules)
+	Style::StyleValue ParseValue(std::int32_t src, StyleValueMultiMatchRule rules)
 	{
 		for (auto& rule : rules.rules)
 		{
-			if (auto value = detail::StyleValueParser::Parse(src, rule))
+			if (auto value = StyleValueParser::Parse(src, rule))
 			{
 				return value;
 			}
@@ -294,11 +294,11 @@ namespace FlexLayout::Style
 		return { };
 	}
 
-	StyleValue ParseValue(float src, detail::StyleValueMultiMatchRule rules)
+	Style::StyleValue ParseValue(float src, StyleValueMultiMatchRule rules)
 	{
 		for (auto& rule : rules.rules)
 		{
-			if (auto value = detail::StyleValueParser::Parse(src, rule))
+			if (auto value = StyleValueParser::Parse(src, rule))
 			{
 				return value;
 			}
@@ -307,14 +307,14 @@ namespace FlexLayout::Style
 		return { };
 	}
 
-	StyleValue ParseValue(const StringView str, detail::StyleValueMultiMatchRule rules)
+	Style::StyleValue ParseValue(const StringView str, StyleValueMultiMatchRule rules)
 	{
 		String trimmedStr{ str };
 		trimmedStr.trim();
 
 		for (auto& rule : rules.rules)
 		{
-			if (auto value = detail::StyleValueParser::Parse(trimmedStr, rule))
+			if (auto value = StyleValueParser::Parse(trimmedStr, rule))
 			{
 				return value;
 			}
@@ -325,39 +325,39 @@ namespace FlexLayout::Style
 
 	struct parser_visitor
 	{
-		detail::StyleValueMultiMatchRule rules;
+		StyleValueMultiMatchRule rules;
 
-		StyleValue operator()(const StyleValue& value)
+		Style::StyleValue operator()(const Style::StyleValue& value)
 		{
 			return rules.match(value)
 				? value
-				: StyleValue{ };
+				: Style::StyleValue{ };
 		}
 
-		StyleValue operator()(std::int32_t value)
+		Style::StyleValue operator()(std::int32_t value)
 		{
 			return ParseValue(value, rules);
 		}
 
-		StyleValue operator()(float value)
+		Style::StyleValue operator()(float value)
 		{
 			return ParseValue(value, rules);
 		}
 
-		StyleValue operator()(const StringView value)
+		Style::StyleValue operator()(const StringView value)
 		{
 			return ParseValue(value, rules);
 		}
 
 		template<class Enum>
-		StyleValue operator()(Enum value)
+		Style::StyleValue operator()(Enum value)
 		{
 			for (auto& rule : rules.rules)
 			{
-				if (rule.type == StyleValue::Type::Enum &&
-					rule.enumTypeId == detail::style_enum_id_from_type<Enum>::value)
+				if (rule.type == Style::StyleValue::Type::Enum &&
+					rule.enumTypeId == Style::detail::style_enum_id_from_type<Enum>::value)
 				{
-					return StyleValue::Enum(value);
+					return Style::StyleValue::Enum(value);
 				}
 			}
 
@@ -365,7 +365,7 @@ namespace FlexLayout::Style
 		}
 	};
 
-	StyleValue ParseValue(Style::ValueInputVariant value, detail::StyleValueMultiMatchRule rule)
+	Style::StyleValue ParseValue(Style::ValueInputVariant value, StyleValueMultiMatchRule rule)
 	{
 		return std::visit(parser_visitor{ rule }, value);
 	}

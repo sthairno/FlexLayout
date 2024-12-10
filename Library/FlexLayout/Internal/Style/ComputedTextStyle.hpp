@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <Siv3D/Font.hpp>
-#include <Siv3D/SimpleGUI.hpp>
-#include "../Enum/TextAlign.hpp"
+#include "../../Enum/TextAlign.hpp"
 
 using namespace s3d;
 

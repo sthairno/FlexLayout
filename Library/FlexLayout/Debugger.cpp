@@ -1,8 +1,10 @@
 ﻿#include "Debugger.hpp"
-#include "Internal/BoxAccessor.hpp"
+#include "Internal/Accessor.hpp"
 #include <Siv3D/Window.hpp>
 #include <Siv3D/WindowState.hpp>
 #include <vector>
+#include "Internal/NodeComponent/XmlAttributeComponent.hpp"
+#include "Internal/NodeComponent/LayoutComponent.hpp"
 
 using namespace s3d;
 
@@ -14,7 +16,7 @@ namespace FlexLayout
 	static constexpr ColorF InspectorPaddingColor = ColorF{ Palette::Yellowgreen, InspectorColorAlpha };
 	static constexpr ColorF InspectorContentColor = ColorF{ Palette::Skyblue, InspectorColorAlpha };
 
-	static void DumpTreeRecursive(const std::shared_ptr<Internal::FlexBoxImpl>& node, String& output, std::vector<std::int8_t>& indentPattern)
+	static void DumpTreeRecursive(const std::shared_ptr<Internal::FlexBoxNode>& node, String& output, std::vector<std::int8_t>& indentPattern)
 	{
 		// インデント
 
@@ -39,25 +41,23 @@ namespace FlexLayout
 
 		// ノード情報
 
-		const auto tagName = node->tagName();
-		const auto id = node->id();
-		const auto classes = node->classes();
+		const auto& xmlComponent = node->getComponent<Internal::Component::XmlAttributeComponent>();
 
-		output += tagName;
-		if (id || classes)
+		output += xmlComponent.tagName();
+		if (xmlComponent.id() || xmlComponent.classes())
 		{
 			output += U" [";
-			if (id)
+			if (xmlComponent.id())
 			{
-				output += U"id: " + id.value();
+				output += U"id: " + xmlComponent.id().value();
 			}
-			if (classes)
+			if (xmlComponent.classes())
 			{
-				if (id)
+				if (xmlComponent.id())
 				{
 					output += U", ";
 				}
-				output += U"class: " + classes.join(U" ", U"", U"");
+				output += U"class: " + xmlComponent.getClassText();
 			}
 			output += U"]";
 		}
@@ -89,21 +89,23 @@ namespace FlexLayout
 		indentPattern.pop_back();
 	}
 
-	static std::shared_ptr<Internal::FlexBoxImpl> GetHoveredNode(const std::shared_ptr<Internal::FlexBoxImpl>& node, const Vec2& cursorPos)
+	static std::shared_ptr<Internal::FlexBoxNode> GetHoveredNode(const std::shared_ptr<Internal::FlexBoxNode>& node, const Vec2& cursorPos)
 	{
-		if (not node->layoutOffset())
+		auto& layout = node->getComponent<Internal::Component::LayoutComponent>();
+
+		if (not layout.layoutOffset())
 		{
 			return nullptr;
 		}
 
-		std::shared_ptr<Internal::FlexBoxImpl> result;
+		std::shared_ptr<Internal::FlexBoxNode> result;
 
-		if (node->contentAreaRect()->contains(cursorPos))
+		if (layout.contentAreaRect()->contains(cursorPos))
 		{
 			result = node;
 		}
 
-		if (node->propergateOffset())
+		if (layout.propergateOffset())
 		{
 			for (const auto& child : node->children())
 			{
@@ -119,7 +121,7 @@ namespace FlexLayout
 
 	String Debugger::DumpTree(const Box& root)
 	{
-		const auto rootImpl = Internal::BoxAccessor::GetImpl(root);
+		const auto rootImpl = Internal::Accessor::GetNode(root);
 
 		String output;
 
@@ -133,7 +135,7 @@ namespace FlexLayout
 
 	s3d::Optional<Box> Debugger::GetHoveredBox(const Box& root, const s3d::Vec2& cursorPos)
 	{
-		const auto rootImpl = Internal::BoxAccessor::GetImpl(root);
+		const auto rootImpl = Internal::Accessor::GetNode(root);
 		auto& windowStat = Window::GetState();
 
 		if (windowStat.sizeMove || not windowStat.focused)
@@ -151,23 +153,24 @@ namespace FlexLayout
 
 	bool Debugger::DrawLayout(const Box& box)
 	{
-		const auto rootImpl = Internal::BoxAccessor::GetImpl(box);
+		const auto rootImpl = Internal::Accessor::GetNode(box);
+		auto& layout = rootImpl->getComponent<Internal::Component::LayoutComponent>();
 
-		if (not rootImpl->layoutOffset())
+		if (not layout.layoutOffset())
 		{
 			return false;
 		}
 
-		auto marginAreaRect = *rootImpl->marginAreaRect();
-		rootImpl->margin().drawPadding(marginAreaRect, InspectorMarginColor);
+		auto marginAreaRect = *layout.marginAreaRect();
+		layout.margin().drawPadding(marginAreaRect, InspectorMarginColor);
 
-		auto borderAreaRect = *rootImpl->borderAreaRect();
-		rootImpl->border().drawPadding(borderAreaRect, InspectorBorderColor);
+		auto borderAreaRect = *layout.borderAreaRect();
+		layout.border().drawPadding(borderAreaRect, InspectorBorderColor);
 
-		auto paddingAreaRect = *rootImpl->paddingAreaRect();
-		rootImpl->padding().drawPadding(paddingAreaRect, InspectorPaddingColor);
+		auto paddingAreaRect = *layout.paddingAreaRect();
+		layout.padding().drawPadding(paddingAreaRect, InspectorPaddingColor);
 
-		auto contentAreaRect = *rootImpl->contentAreaRect();
+		auto contentAreaRect = *layout.contentAreaRect();
 		contentAreaRect.draw(InspectorContentColor);
 
 		return true;

@@ -1,8 +1,10 @@
 ﻿#include <Siv3D/Unicode.hpp>
 #include "XMLLoader.hpp"
-#include "LabelImpl.hpp"
 #include "TreeContext.hpp"
 #include "../Util/StyleValueHelper.hpp"
+
+#include "NodeComponent/XmlAttributeComponent.hpp"
+#include "NodeComponent/TextComponent.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -55,7 +57,7 @@ namespace FlexLayout::Internal
 			return Unicode::FromUTF8(innerText);
 		}
 
-		static void LoadAttributes(FlexBoxImpl& node, const tinyxml2::XMLElement& element)
+		static void LoadAttributes(FlexBoxNode& node, const tinyxml2::XMLElement& element)
 		{
 			node.clearProperties();
 			for (auto attr = element.FirstAttribute(); attr; attr = attr->Next())
@@ -65,7 +67,7 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	bool XMLLoader::load(std::shared_ptr<FlexBoxImpl>& rootRef, const tinyxml2::XMLDocument& document)
+	bool XMLLoader::load(std::shared_ptr<FlexBoxNode>& rootRef, const tinyxml2::XMLDocument& document)
 	{
 		if (document.Error())
 		{
@@ -88,6 +90,7 @@ namespace FlexLayout::Internal
 
 		// 読み込み
 		bool result = false;
+
 		if (rootName == "layout")
 		{
 			// 独自フォーマットのXMLとして
@@ -103,21 +106,6 @@ namespace FlexLayout::Internal
 
 			result = true;
 		}
-		else if (rootName == "html")
-		{
-			// 簡易的なHTMLとして
-
-			if (auto bodyElement = detail::FirstChildElement(rootElement, "body"))
-			{
-				rootRef = loadBodyNode(*bodyElement);
-			}
-			else
-			{
-				rootRef.reset();
-			}
-
-			result = true;
-		}
 
 		m_rootCache.reset();
 		m_id2NodeDic.clear();
@@ -125,35 +113,9 @@ namespace FlexLayout::Internal
 		return result;
 	}
 
-	std::shared_ptr<FlexBoxImpl> XMLLoader::loadBodyNode(const tinyxml2::XMLElement& element)
+	std::shared_ptr<FlexBoxNode> XMLLoader::loadNode(const tinyxml2::XMLElement& element, bool isRoot)
 	{
-		auto idOrNull = element.Attribute("id");
-		String id = idOrNull ? Unicode::FromUTF8(idOrNull) : U"";
-
-		// キャッシュまたは新規ノード
-		auto node = popCachedNode({
-			.id = id,
-			.type = NodeType::Box,
-			.tagName = U"body",
-		}, true);
-		if (!node)
-		{
-			node = std::make_shared<FlexBoxImpl>(U"body");
-		}
-
-		// 属性の読み込み
-		detail::LoadAttributes(*node, element);
-
-		// 子要素の読み込み
-		auto newChildren = loadChildren(element);
-		node->setChildren(newChildren);
-
-		return node;
-	}
-
-	std::shared_ptr<FlexBoxImpl> XMLLoader::loadNode(const tinyxml2::XMLElement& element, bool isRoot)
-	{
-		std::shared_ptr<FlexBoxImpl> node;
+		std::shared_ptr<FlexBoxNode> node;
 
 		String tagName = Unicode::FromUTF8(element.Name());
 		tagName.lowercase();
@@ -163,9 +125,10 @@ namespace FlexLayout::Internal
 
 		// キャッシュからnodeへ取得、見つからない場合は新規作成、失敗したらnullptr
 		if (auto cachedNode = popCachedNode({
+			.root = isRoot,
 			.id = id,
-			.type = isRoot ? MakeOptional(NodeType::Box) : none
-		}, isRoot))
+			.tagName = tagName,
+		}))
 		{
 			node = cachedNode;
 		}
@@ -182,28 +145,23 @@ namespace FlexLayout::Internal
 		detail::LoadAttributes(*node, element);
 
 		// 型ごとに読み込み処理を分岐
-		switch (node->type())
+		if (node->isTextNode())
 		{
-		case NodeType::Box:
+			node->getComponent<Component::TextComponent>()
+				.setText(detail::LoadInnerText(element));
+		}
+		else
 		{
 			auto newChildren = loadChildren(element);
 			node->setChildren(newChildren);
-		}
-		break;
-		case NodeType::Label:
-		{
-			reinterpret_cast<LabelImpl&>(*node)
-				.setText(detail::LoadInnerText(element));
-		}
-		break;
 		}
 		
 		return node;
 	}
 
-	Array<std::shared_ptr<FlexBoxImpl>> XMLLoader::loadChildren(const tinyxml2::XMLElement& element)
+	Array<std::shared_ptr<FlexBoxNode>> XMLLoader::loadChildren(const tinyxml2::XMLElement& element)
 	{
-		Array<std::shared_ptr<FlexBoxImpl>> children;
+		Array<std::shared_ptr<FlexBoxNode>> children;
 
 		for (auto childElement = element.FirstChildElement();
 			childElement;
@@ -215,24 +173,32 @@ namespace FlexLayout::Internal
 		return children;
 	}
 
-	std::shared_ptr<FlexBoxImpl> XMLLoader::createNodeFromTagName(const StringView tagName)
+	std::shared_ptr<FlexBoxNode> XMLLoader::createNodeFromTagName(const StringView tagName)
 	{
 		if (tagName == U"label")
 		{
-			return std::make_shared<LabelImpl>(tagName);
+			auto node = std::make_shared<FlexBoxNode>(true);
+			node->getComponent<Component::XmlAttributeComponent>()
+				.setTagName(tagName);
+			node->getComponent<Component::TextComponent>()
+				.setText(U"");
+			return node;
 		}
 
 		if (tagName == U"box")
 		{
-			return std::make_shared<FlexBoxImpl>(tagName);
+			auto node = std::make_shared<FlexBoxNode>(false);
+			node->getComponent<Component::XmlAttributeComponent>()
+				.setTagName(tagName);
+			return node;
 		}
 
 		return nullptr;
 	}
 
-	void XMLLoader::cacheNodesById(std::shared_ptr<FlexBoxImpl> node)
+	void XMLLoader::cacheNodesById(std::shared_ptr<FlexBoxNode> node)
 	{
-		if (auto id = node->id())
+		if (auto id = node->getComponent<Component::XmlAttributeComponent>().id())
 		{
 			auto itr = m_id2NodeDic.find(*id);
 			if (itr == m_id2NodeDic.end())
@@ -247,9 +213,9 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	std::shared_ptr<FlexBoxImpl> XMLLoader::popCachedNode(_CacheFilters filters, bool useRootCache)
+	std::shared_ptr<FlexBoxNode> XMLLoader::popCachedNode(_CacheFilters filters)
 	{
-		std::shared_ptr<FlexBoxImpl> node;
+		std::shared_ptr<FlexBoxNode> node;
 
 		if (auto itr = m_id2NodeDic.find(filters.id);
 			itr != m_id2NodeDic.end())
@@ -258,7 +224,7 @@ namespace FlexLayout::Internal
 			node = std::move(itr->second);
 			m_id2NodeDic.erase(itr);
 		}
-		else if (useRootCache && m_rootCache)
+		else if (filters.root && m_rootCache)
 		{
 			// ルート要素のキャッシュを利用
 			node = m_rootCache;
@@ -271,17 +237,14 @@ namespace FlexLayout::Internal
 
 		// フィルターに合致しない場合はnullptr
 
-		if (filters.id && node->id() != filters.id)
+		auto& component = node->getComponent<Component::XmlAttributeComponent>();
+
+		if (filters.id && component.id() != filters.id)
 		{
 			return nullptr;
 		}
 
-		if (filters.type && node->type() != *filters.type)
-		{
-			return nullptr;
-		}
-
-		if (filters.tagName && node->tagName() != filters.tagName)
+		if (filters.tagName && component.tagName() != filters.tagName)
 		{
 			return nullptr;
 		}

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <yoga/Yoga.h>
 #include <functional>
-#include "ComputedTextStyle.hpp"
+#include "Style/ComputedTextStyle.hpp"
 
 namespace FlexLayout::Internal
 {

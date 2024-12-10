@@ -1,28 +1,33 @@
 ﻿#pragma once
-#include <Siv3D/Array.hpp>
-
-using namespace s3d;
+#include <tuple>
+#include <memory>
+#include "TreeContext/StyleContext.hpp"
 
 namespace FlexLayout::Internal
 {
-	class FlexBoxImpl;
+	class FlexBoxNode;
 
-	/// @brief FlexBoxImplの同一ツリー内で共有されるデータ
+	/// @brief FlexBoxNodeの同一ツリー内で共有されるデータ
 	class TreeContext
 	{
 	public:
 
-		/// @brief `FlexBoxImpl::scheduleStyleApplication()`でスケジュールされた要素の待機リスト
-		const auto& styleApplicationWaitinglist() const { return m_styleApplicationWaitinglist; }
+		template <class Type>
+		Type& getContext()
+		{
+			return std::get<Context::StyleContext>(m_contexts);
+		}
 
-		void queueStyleApplication(std::shared_ptr<FlexBoxImpl> node);
+		template <class Type>
+		const Type& getContext() const
+		{
+			return std::get<Context::StyleContext>(m_contexts);
+		}
 
-		void clearStyleApplicationWaitinglist() { m_styleApplicationWaitinglist.clear(); }
-
-		void onNewNodeJoined(std::shared_ptr<FlexBoxImpl> node);
+		void onNewNodeJoin(const std::shared_ptr<FlexBoxNode>& node);
 
 	private:
 
-		Array<std::weak_ptr<FlexBoxImpl>> m_styleApplicationWaitinglist;
+		std::tuple<Context::StyleContext> m_contexts;
 	};
 }

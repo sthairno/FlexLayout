@@ -4,6 +4,11 @@
 #include "../Enum/LengthUnit.hpp"
 #include "StyleEnums.hpp"
 
+namespace FlexLayout::Internal
+{
+	struct StyleValueParser;
+}
+
 namespace FlexLayout::Style
 {
 	namespace detail
@@ -16,8 +21,6 @@ namespace FlexLayout::Style
 		{
 			using type = std::variant<VariantTypes..., Types...>;
 		};
-
-		struct StyleValueParser;
 	}
 
 	class StyleValue
@@ -207,7 +210,7 @@ namespace FlexLayout::Style
 			, m_intValue(value)
 			, m_enumTypeId(enumid) { }
 
-		friend struct detail::StyleValueParser;
+		friend struct Internal::StyleValueParser;
 	};
 
 	using ValueInputVariant = detail::concat_variant_types<
@@ -232,8 +235,9 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
 	template <typename FormatContext>
 	auto format(const FlexLayout::Style::StyleValue& value, FormatContext& ctx)
 	{
-		using namespace FlexLayout::Style;
-		
+		using StyleValue = FlexLayout::Style::StyleValue;
+		using namespace FlexLayout::Style::detail;
+
 		switch (value.type())
 		{
 		case StyleValue::Type::None:
@@ -243,7 +247,7 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
 		case StyleValue::Type::Integer:
 			return format_to(ctx.out(), U"{}", value.getIntValueUnchecked());
 		case StyleValue::Type::Enum:
-			return format_to(ctx.out(), U"{}", FlexLayout::Style::detail::GetValueName(value.enumTypeId(), value.getIntValueUnchecked()));
+			return format_to(ctx.out(), U"{}", GetValueName(value.enumTypeId(), value.getIntValueUnchecked()));
 		case StyleValue::Type::Ratio:
 			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked());
 		case StyleValue::Type::Percentage:

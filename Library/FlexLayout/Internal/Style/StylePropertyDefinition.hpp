@@ -4,23 +4,23 @@
 #include <Siv3D/StringView.hpp>
 #include <Siv3D/HeterogeneousLookupHelper.hpp>
 #include <Siv3D/HashTable.hpp>
-#include "../Style/StyleValueMatchRule.hpp"
+#include "StyleValueMatchRule.hpp"
 
 using namespace s3d;
 
 namespace FlexLayout::Internal
 {
-	class FlexBoxImpl;
+	class FlexBoxNode;
 
-	using StyleInstallCallback = std::function<bool(FlexBoxImpl&, std::span<const Style::StyleValue>)>;
-	using StyleResetCallback = std::function<void(FlexBoxImpl&)>;
+	using StyleInstallCallback = std::function<bool(FlexBoxNode&, std::span<const Style::StyleValue>)>;
+	using StyleResetCallback = std::function<void(FlexBoxNode&)>;
 
 	struct StylePropertyDefinitionDetails
 	{
 		/// @brief 受け付ける入力値のパターン
-		const std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> patterns;
+		const std::vector<std::vector<StyleValueMultiMatchRule>> patterns;
 
-		/// @brief 入力値をFlexBoxImplに反映させるコールバック
+		/// @brief 入力値をFlexBoxNodeに反映させるコールバック
 		const StyleInstallCallback installCallback;
 
 		/// @brief プロパティを初期設定に戻すコールバック
@@ -50,9 +50,12 @@ namespace FlexLayout::Internal
 
 		inline const auto& patterns() const { return m_details->patterns; }
 
-		inline bool installCallback(FlexBoxImpl& impl, std::span<const Style::StyleValue> values) const { return m_details->installCallback(impl, values); }
+		inline bool installCallback(FlexBoxNode& impl, std::span<const Style::StyleValue> values) const
+		{
+			return m_details->installCallback(impl, values);
+		}
 
-		inline void resetCallback(FlexBoxImpl& impl) const { return m_details->resetCallback(impl); }
+		inline void resetCallback(FlexBoxNode& impl) const { return m_details->resetCallback(impl); }
 
 		inline const auto& maybeAffectTo() const { return m_details->maybeAffectTo; }
 

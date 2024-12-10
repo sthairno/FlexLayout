@@ -1,5 +1,6 @@
 ﻿#include "Config.hpp"
 #include <Siv3D/FontAsset.hpp>
+#include <Siv3D/SimpleGUI.hpp>
 
 namespace FlexLayout::Internal
 {

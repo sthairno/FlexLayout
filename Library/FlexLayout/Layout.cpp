@@ -1,9 +1,11 @@
 ﻿#include "Layout.hpp"
 #include <Siv3D/FileSystem.hpp>
-#include "Internal/FlexBoxImpl.hpp"
+#include "Internal/FlexBoxNode.hpp"
 #include "Internal/XMLLoader.hpp"
 #include "Internal/TreeContext.hpp"
-#include "Internal/BoxAccessor.hpp"
+#include "Internal/Accessor.hpp"
+
+#include "Internal/NodeComponent/LayoutComponent.hpp"
 
 namespace FlexLayout
 {
@@ -21,7 +23,7 @@ namespace FlexLayout
 
 		s3d::Stopwatch reloadTimer{ };
 
-		std::shared_ptr<Internal::FlexBoxImpl> root;
+		std::shared_ptr<Internal::FlexBoxNode> root;
 
 		s3d::Optional<float> width = none;
 
@@ -137,13 +139,16 @@ namespace FlexLayout
 			if (root)
 			{
 				// Yogaノードへスタイルを適用
-				Internal::FlexBoxImpl::ApplyStyles(*root);
+				root->context()
+					.getContext<Internal::Context::StyleContext>()
+					.applyStyles(*root);
 
 				// Yogaのレイアウト計算
-				Internal::FlexBoxImpl::CalculateLayout(*root, width, height);
+				Internal::CalculateLayout(*root, width, height);
 
 				// ローカル座標からグローバル座標の計算
-				root->setLayoutOffsetRecursive(offset);
+				root->getComponent<Internal::Component::LayoutComponent>()
+					.setLayoutOffsetRecursive(offset);
 			}
 		}
 	};
@@ -208,7 +213,7 @@ namespace FlexLayout
 
 	void Layout::setDocument(Box root)
 	{
-		m_impl->root = Internal::BoxAccessor::GetImpl(root);
+		m_impl->root = Internal::Accessor::GetNode(root);
 	}
 
 	Layout::~Layout()
