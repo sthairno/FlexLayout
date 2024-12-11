@@ -17,11 +17,16 @@ namespace FlexLayout::Internal
 	}
 	class TreeContext;
 
+	struct FlexBoxNodeOptions
+	{
+		bool textNode = false;
+	};
+
 	class FlexBoxNode : public std::enable_shared_from_this<FlexBoxNode>
 	{
 	public:
 
-		FlexBoxNode(bool textNode = false);
+		FlexBoxNode(FlexBoxNodeOptions options);
 
 	public:
 

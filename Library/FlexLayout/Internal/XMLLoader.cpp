@@ -177,7 +177,9 @@ namespace FlexLayout::Internal
 	{
 		if (tagName == U"label")
 		{
-			auto node = std::make_shared<FlexBoxNode>(true);
+			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
+				.textNode = true
+			});
 			node->getComponent<Component::XmlAttributeComponent>()
 				.setTagName(tagName);
 			node->getComponent<Component::TextComponent>()
@@ -187,7 +189,9 @@ namespace FlexLayout::Internal
 
 		if (tagName == U"box")
 		{
-			auto node = std::make_shared<FlexBoxNode>(false);
+			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
+				.textNode = false
+			});
 			node->getComponent<Component::XmlAttributeComponent>()
 				.setTagName(tagName);
 			return node;

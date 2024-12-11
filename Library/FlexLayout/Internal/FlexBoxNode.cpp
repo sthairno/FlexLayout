@@ -70,13 +70,13 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	FlexBoxNode::FlexBoxNode(bool textNode)
+	FlexBoxNode::FlexBoxNode(FlexBoxNodeOptions options)
 		: m_yogaNode{ GetConfig().createNode() }
 		, m_components{
 			std::make_unique<Component::LayoutComponent>(*this),
 			std::make_unique<Component::StyleComponent>(*this),
 			std::make_unique<Component::XmlAttributeComponent>(*this),
-			textNode
+			options.textNode
 				? std::make_unique<Component::TextComponent>(*this)
 				: std::unique_ptr<Component::TextComponent>{}
 		}
@@ -260,7 +260,9 @@ namespace FlexLayout::Internal
 
 	std::shared_ptr<FlexBoxNode> FlexBoxNode::clone() const
 	{
-		auto instance = std::make_shared<FlexBoxNode>(isTextNode());
+		auto instance = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
+			.textNode = isTextNode()
+		});
 
 		instance->getComponent<Component::LayoutComponent>()
 			.copy(getComponent<Component::LayoutComponent>());
