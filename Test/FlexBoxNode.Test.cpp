@@ -2,21 +2,24 @@
 #include <Siv3D.hpp>
 #include <tinyxml2.h>
 #include "FlexLayout/Layout.hpp"
-#include "FlexLayout/Internal/FlexBoxImpl.hpp"
-#include "FlexLayout/Internal/LabelImpl.hpp"
+#include "FlexLayout/Internal/FlexBoxNode.hpp"
 #include "FlexLayout/Internal/XMLLoader.hpp"
 #include "FlexLayout/Error.hpp"
+
+#include "FlexLayout/Internal/NodeComponent/XmlAttributeComponent.hpp"
+#include "FlexLayout/Internal/NodeComponent/StyleComponent.hpp"
+#include "FlexLayout/Internal/NodeComponent/TextComponent.hpp"
 
 namespace FlexLayout::Internal
 {
 	TEST(FlexBoxTreeTest, SetChildren)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2
 		};
 		ASSERT_NO_THROW(root->setChildren(children));
@@ -30,12 +33,12 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, SetChildren_CircularReference)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2, root
 		};
 		ASSERT_THROW(root->setChildren(children), InvalidTreeOperationError);
@@ -48,15 +51,15 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, SetChildren_CircularReference2)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
-		auto child3 = std::make_shared<FlexBoxImpl>(U"child3");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
+		auto child3 = std::make_shared<FlexBoxNode>();
 
 		child2->appendChild(child3);
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2, child3
 		};
 		ASSERT_THROW(root->setChildren(children), InvalidTreeOperationError);
@@ -70,12 +73,12 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, SetChildren_DuplicatedChild)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2, child1
 		};
 		ASSERT_THROW(root->setChildren(children), InvalidTreeOperationError);
@@ -88,12 +91,12 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, RemoveChildren)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2
 		};
 		root->setChildren(children);
@@ -109,15 +112,15 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, RemoveChildren_WithGrandChildren)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
-		auto child3 = std::make_shared<FlexBoxImpl>(U"child3");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
+		auto child3 = std::make_shared<FlexBoxNode>();
 
 		child2->appendChild(child3);
 
-		Array<std::shared_ptr<FlexBoxImpl>> children{
+		Array<std::shared_ptr<FlexBoxNode>> children{
 			child1, child2
 		};
 		root->setChildren(children);
@@ -135,10 +138,10 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, InsertChild)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
 		root->appendChild(child1);
 		root->insertChild(child2, 0);
@@ -156,10 +159,10 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, InsertChild_CircularReference)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
 		root->appendChild(child1);
 		child1->appendChild(child2);
@@ -171,10 +174,10 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, RemoveChild)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
 
 		root->appendChild(child1);
 		root->appendChild(child2);
@@ -191,11 +194,11 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, RemoveChild_WithGrandChildren)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
-		auto child3 = std::make_shared<FlexBoxImpl>(U"child3");
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
+		auto child3 = std::make_shared<FlexBoxNode>();
 
 		child2->appendChild(child3);
 
@@ -217,25 +220,25 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, RemoveChild_ChildNotFound)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
+		auto child1 = std::make_shared<FlexBoxNode>();
 
 		ASSERT_THROW(root->removeChild(child1), NotFoundError);
 	}
 
 	TEST(FlexBoxTreeTest, GetDepth)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
 		ASSERT_EQ(root->getDepth(), 0);
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
+		auto child1 = std::make_shared<FlexBoxNode>();
 		root->appendChild(child1);
 
 		ASSERT_EQ(child1->getDepth(), 1);
 
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child2 = std::make_shared<FlexBoxNode>();
 		child1->appendChild(child2);
 
 		ASSERT_EQ(child2->getDepth(), 2);
@@ -243,16 +246,16 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, GetRoot)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
 
 		ASSERT_EQ(&root->getRoot(), root.get());
 
-		auto child1 = std::make_shared<FlexBoxImpl>(U"child1");
+		auto child1 = std::make_shared<FlexBoxNode>();
 		root->appendChild(child1);
 
 		ASSERT_EQ(&child1->getRoot(), root.get());
 
-		auto child2 = std::make_shared<FlexBoxImpl>(U"child2");
+		auto child2 = std::make_shared<FlexBoxNode>();
 		child1->appendChild(child2);
 
 		ASSERT_EQ(&child2->getRoot(), root.get());
@@ -260,7 +263,7 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxTreeTest, Clone)
 	{
-		std::shared_ptr<FlexBoxImpl> root;
+		std::shared_ptr<FlexBoxNode> root;
 
 		tinyxml2::XMLDocument document{};
 		document.Parse(R"(
@@ -274,18 +277,30 @@ namespace FlexLayout::Internal
 		XMLLoader{}.load(root, document);
 
 		auto clone = root->deepClone();
+		auto& rootAttr = root->getComponent<Component::XmlAttributeComponent>();
+		auto& cloneAttr = clone->getComponent<Component::XmlAttributeComponent>();
+		auto& rootStyle = root->getComponent<Component::StyleComponent>();
+		auto& cloneStyle = clone->getComponent<Component::StyleComponent>();
 
-		ASSERT_EQ(clone->id(), root->id());
-		ASSERT_EQ(clone->classes(), root->classes());
+		ASSERT_EQ(cloneAttr.id(), rootAttr.id());
+		ASSERT_EQ(cloneAttr.classes(), rootAttr.classes());
 		ASSERT_EQ(clone->getProperty(U"hoge"), root->getProperty(U"hoge"));
-		ASSERT_EQ(clone->fontId(), root->fontId());
-		ASSERT_EQ(clone->font(), root->font());
-		ASSERT_EQ(clone->getInlineCssText(), root->getInlineCssText());
+		ASSERT_EQ(cloneStyle.fontId(), rootStyle.fontId());
+		ASSERT_EQ(cloneStyle.font(), rootStyle.font());
+		ASSERT_EQ(cloneStyle.getInlineCssText(), rootStyle.getInlineCssText());
 
 		ASSERT_EQ(clone->children().size(), root->children().size());
-		ASSERT_EQ(clone->children()[0]->id(), root->children()[0]->id());
-		ASSERT_EQ(clone->children()[0]->type(), NodeType::Label);
-		ASSERT_EQ(reinterpret_cast<LabelImpl*>(clone->children()[0].get())->text(), U"foobar");
+		ASSERT_EQ(
+			clone->children()[0]
+			->getComponent<Component::XmlAttributeComponent>()
+			.id(),
+			root->children()[0]
+			->getComponent<Component::XmlAttributeComponent>()
+			.id()
+		);
+
+		ASSERT_TRUE(clone->children()[0]->isTextNode());
+		ASSERT_EQ(clone->children()[0]->getComponent<Component::TextComponent>().text(), U"foobar");
 
 		ASSERT_NE(&clone->context(), &root->context());
 	}

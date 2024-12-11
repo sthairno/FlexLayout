@@ -1,13 +1,16 @@
 ﻿#include <gtest/gtest.h>
 #include <Siv3D.hpp>
-#include "FlexLayout/Internal/FlexBoxImpl.hpp"
+#include "FlexLayout/Internal/FlexBoxNode.hpp"
 #include "FlexLayout/Internal/XMLLoader.hpp"
+#include "FlexLayout/Internal/TreeContext.hpp"
+
+#include "FlexLayout/Internal/NodeComponent/LayoutComponent.hpp"
 
 namespace FlexLayout::Internal
 {
 	TEST(FlexBoxLayoutTest, PropergateOffset)
 	{
-		std::shared_ptr<FlexBoxImpl> root;
+		std::shared_ptr<FlexBoxNode> root;
 
 		tinyxml2::XMLDocument document;
 		document.Parse(R"(
@@ -20,19 +23,25 @@ namespace FlexLayout::Internal
 
 		XMLLoader{}.load(root, document);
 
-		FlexBoxImpl::ApplyStyles(*root);
-		FlexBoxImpl::CalculateLayout(*root, s3d::none, s3d::none);
+		root->context()
+			.getContext<Context::StyleContext>()
+			.applyStyles(*root);
+
+		CalculateLayout(*root, s3d::none, s3d::none);
 
 		auto child = root->children()[0];
 
-		root->setPropergateOffset(true);
-		root->setLayoutOffsetRecursive(s3d::Vec2{ 0, 0 }, true);
+		auto& layout = root->getComponent<Component::LayoutComponent>();
+		auto& childLayout = child->getComponent<Component::LayoutComponent>();
 
-		ASSERT_EQ(child->layoutOffset(), (s3d::Vec2{ 10, 10 }));
+		layout.setPropergateOffset(true);
+		layout.setLayoutOffsetRecursive(s3d::Vec2{ 0, 0 }, true);
 
-		root->setPropergateOffset(false);
-		root->setLayoutOffsetRecursive(s3d::Vec2{ 0, 0 }, true);
+		ASSERT_EQ(childLayout.layoutOffset(), (s3d::Vec2{ 10, 10 }));
 
-		ASSERT_EQ(child->layoutOffset(), (s3d::Vec2{ 0, 0 }));
+		layout.setPropergateOffset(false);
+		layout.setLayoutOffsetRecursive(s3d::Vec2{ 0, 0 }, true);
+
+		ASSERT_EQ(childLayout.layoutOffset(), (s3d::Vec2{ 0, 0 }));
 	}
 }

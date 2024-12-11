@@ -1,20 +1,24 @@
 ﻿#include <gtest/gtest.h>
 #include <Siv3D.hpp>
-#include <FlexLayout/Internal/FlexBoxImpl.hpp>
+#include <FlexLayout/Internal/FlexBoxNode.hpp>
 #include <FlexLayout/Internal/Config.hpp>
+#include <FlexLayout/Internal/TreeContext.hpp>
+
+#include <FlexLayout/Internal/NodeComponent/StyleComponent.hpp>
 
 namespace FlexLayout::Internal
 {
 	TEST(FlexBoxStyleTest, SetInlineCssText)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
+		auto& style = root->getComponent<Component::StyleComponent>();
 
-		root->setInlineCssText(U"top: 10px; left: 20px;");
+		style.setInlineCssText(U"top: 10px; left: 20px;");
 
-		root->setInlineCssText(U"top: 10px;");
+		style.setInlineCssText(U"top: 10px;");
 
-		auto top = root->getStyle(StylePropertyGroup::Inline, U"top");
-		auto left = root->getStyle(StylePropertyGroup::Inline, U"left");
+		auto top = style.getStyle(StylePropertyGroup::Inline, U"top");
+		auto left = style.getStyle(StylePropertyGroup::Inline, U"left");
 
 		ASSERT_EQ(top.size(), 1);
 		ASSERT_EQ(top[0].getFloatValue(), 10);
@@ -24,98 +28,107 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxStyleTest, GetInlineCssText)
 	{
-		auto root = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto root = std::make_shared<FlexBoxNode>();
+		auto& style = root->getComponent<Component::StyleComponent>();
 
-		root->setInlineCssText(U"top: 10px;");
+		style.setInlineCssText(U"top: 10px;");
 
-		ASSERT_STREQ(Unicode::ToUTF8(root->getInlineCssText()).c_str(), "top: 10px;");
+		ASSERT_STREQ(Unicode::ToUTF8(style.getInlineCssText()).c_str(), "top: 10px;");
 	}
 
 	TEST(FlexBoxStyleTest, GetAndSetInlineCssText)
 	{
-		auto a = std::make_shared<FlexBoxImpl>(U"dummy");
-		auto b = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto a = std::make_shared<FlexBoxNode>();
+		auto b = std::make_shared<FlexBoxNode>();
+		auto& aStyle = a->getComponent<Component::StyleComponent>();
+		auto& bStyle = b->getComponent<Component::StyleComponent>();
 
-		a->setInlineCssText(U"top: 10px; margin: 10px");
-		b->setInlineCssText(a->getInlineCssText());
+		aStyle.setInlineCssText(U"top: 10px; margin: 10px");
+		bStyle.setInlineCssText(aStyle.getInlineCssText());
 
-		ASSERT_EQ(a->getInlineCssText(), b->getInlineCssText());
-		ASSERT_EQ(a->getStyle(StylePropertyGroup::Inline, U"top"), b->getStyle(StylePropertyGroup::Inline, U"top"));
-		ASSERT_EQ(a->getStyle(StylePropertyGroup::Inline, U"margin"), b->getStyle(StylePropertyGroup::Inline, U"margin"));
+		ASSERT_EQ(aStyle.getInlineCssText(), bStyle.getInlineCssText());
+		ASSERT_EQ(aStyle.getStyle(StylePropertyGroup::Inline, U"top"), bStyle.getStyle(StylePropertyGroup::Inline, U"top"));
+		ASSERT_EQ(aStyle.getStyle(StylePropertyGroup::Inline, U"margin"), bStyle.getStyle(StylePropertyGroup::Inline, U"margin"));
 	}
 
 	TEST(FlexBoxStyleTest, AddedPropertyWillBeAppliedToYGNode)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 10, YGUnitPoint }));
 	}
 
 	TEST(FlexBoxStyleTest, ModifiedPropertyWillBeAppliedToYGNode)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(20, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(20, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 20, YGUnitPoint }));
 	}
 
 	TEST(FlexBoxStyleTest, WillPropertiesContinueToBeAppliedInNextApply)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 10, YGUnitPoint }));
 	}
 
 	TEST(FlexBoxStyleTest, WillBeDeletedFromYGNodeIfPropertyDeleted)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
-		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.removeStyle(StylePropertyGroup::Inline, U"margin-top");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 	}
 
 	TEST(FlexBoxStyleTest, WillPropertiesContinueToBeDeletedInNextApply)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 
-		dummy->setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
-		dummy->removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.removeStyle(StylePropertyGroup::Inline, U"margin-top");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 	}
 
 	TEST(FlexBoxStyleTest, PriorityGivenToPropertiesSetInParentGroup)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->setInlineCssText(U"margin-top: 20px;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
+		style.setInlineCssText(U"margin-top: 20px;");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -125,10 +138,11 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxStyleTest, PriorityGivenToLaterSetPropertyInSameGroup)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setInlineCssText(U"margin-top: 20px; margin: 30px");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -138,13 +152,14 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxStyleTest, AnotherPropertyWillApplyedWhenHigherPrioritizedPropertyDelete)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setInlineCssText(U"margin-top: 20px; margin: 30px");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setInlineCssText(U"margin-top: 20px; margin: 30px");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
-		dummy->removeStyle(StylePropertyGroup::Inline, U"margin");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.removeStyle(StylePropertyGroup::Inline, U"margin");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -154,10 +169,11 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxStyleTest, FontSettingsWillBeReflectedInResultsAfterApplication)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setInlineCssText(U"font-size: 10px; margin-top: 2em;");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -167,13 +183,14 @@ namespace FlexLayout::Internal
 
 	TEST(FlexBoxStyleTest, FontDeletionWillBeReflectedInResultsAfterApplication)
 	{
-		auto dummy = std::make_shared<FlexBoxImpl>(U"dummy");
+		auto dummy = std::make_shared<FlexBoxNode>();
+		auto& style = dummy->getComponent<Component::StyleComponent>();
 
-		dummy->setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.setInlineCssText(U"font-size: 10px; margin-top: 2em;");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
-		dummy->removeStyle(StylePropertyGroup::Inline, U"font-size");
-		FlexLayout::Internal::FlexBoxImpl::ApplyStyles(*dummy);
+		style.removeStyle(StylePropertyGroup::Inline, U"font-size");
+		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
