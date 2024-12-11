@@ -117,11 +117,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Debugger.Test.cpp" />
-    <ClCompile Include="FlexBoxImpl.Test.cpp" />
-    <ClCompile Include="FlexBoxLayoutImpl.Test.cpp" />
-    <ClCompile Include="FlexBoxStyleImpl.Test.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="FlexBoxLayout.Test.cpp" />
+    <ClCompile Include="FlexBoxNode.Test.cpp" />
+    <ClCompile Include="FlexBoxStyle.Test.cpp" />
     <ClCompile Include="Layout.Test.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="StyleProperty.Test.cpp" />
     <ClCompile Include="StylePropertyDefinition.Test.cpp" />
   </ItemGroup>

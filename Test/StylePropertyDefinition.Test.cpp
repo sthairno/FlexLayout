@@ -1,7 +1,7 @@
 ﻿#include <gtest/gtest.h>
 #include <Siv3D.hpp>
-#include "FlexLayout/Internal/StylePropertyDefinition.hpp"
-#include "FlexLayout/Internal/StyleProperty.hpp"
+#include "FlexLayout/Internal/Style/StylePropertyDefinition.hpp"
+#include "FlexLayout/Internal/Style/StyleProperty.hpp"
 
 namespace FlexLayout::Internal
 {
