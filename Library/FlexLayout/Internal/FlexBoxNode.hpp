@@ -26,7 +26,7 @@ namespace FlexLayout::Internal
 	{
 	public:
 
-		FlexBoxNode(FlexBoxNodeOptions options);
+		FlexBoxNode(FlexBoxNodeOptions options = {});
 
 	public:
 
