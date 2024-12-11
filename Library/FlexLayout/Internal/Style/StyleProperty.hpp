@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "StylePropertyDefinition.hpp"
 
+using namespace s3d;
+
 namespace FlexLayout::Internal
 {
 	class StyleProperty
@@ -27,9 +29,9 @@ namespace FlexLayout::Internal
 
 		inline const StylePropertyDefinitionRef& definition() const { return m_definition; }
 
-		inline bool execInstall(FlexBoxImpl& impl) const { return m_definition.installCallback(impl, m_value); }
+		inline bool execInstall(FlexBoxNode& impl) const { return m_definition.installCallback(impl, m_value); }
 
-		inline void execReset(FlexBoxImpl& impl) const { m_definition.resetCallback(impl); }
+		inline void execReset(FlexBoxNode& impl) const { m_definition.resetCallback(impl); }
 
 		inline bool removed() const { return m_value.empty(); }
 

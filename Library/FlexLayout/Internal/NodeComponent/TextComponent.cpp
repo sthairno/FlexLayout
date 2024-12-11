@@ -1,12 +1,15 @@
-﻿#include "LabelImpl.hpp"
-#include <Siv3D/ScopedCustomShader2D.hpp>
+﻿#include "TextComponent.hpp"
+#include <yoga/Yoga.h>
+#include "../FlexBoxNode.hpp"
 #include <Siv3D/Indexed.hpp>
-#include <Siv3D/Step.hpp>
 #include <Siv3D/Char.hpp>
+#include <Siv3D/Step.hpp>
+#include <Siv3D/ScopedCustomShader2D.hpp>
+#include <Siv3D/Graphics2D.hpp>
 
-namespace FlexLayout::Internal
+namespace FlexLayout::Internal::Component
 {
-	struct LabelImpl::Impl
+	struct TextComponent::Impl
 	{
 		static YGSize MeasureLabelCallback(
 			YGNodeConstRef node,
@@ -15,12 +18,12 @@ namespace FlexLayout::Internal
 			float height,
 			YGMeasureMode heightMode)
 		{
-			auto& impl = *reinterpret_cast<LabelImpl*>(YGNodeGetContext(node));
+			auto& impl = *reinterpret_cast<TextComponent*>(YGNodeGetContext(node));
 
 			impl.updateConstraints(widthMode != YGMeasureModeUndefined ? width : Math::Inf);
 			auto size = impl.computeBoundingBox();
 
-			YGSize result {
+			YGSize result{
 				static_cast<float>(size.x),
 				static_cast<float>(size.y)
 			};
@@ -54,7 +57,7 @@ namespace FlexLayout::Internal
 
 		static float BaselineLabelCallback(YGNodeConstRef node, float width, float)
 		{
-			auto& impl = *reinterpret_cast<LabelImpl*>(YGNodeGetContext(node));
+			auto& impl = *reinterpret_cast<TextComponent*>(YGNodeGetContext(node));
 
 			if (not impl.m_layoutIsValid)
 			{
@@ -72,44 +75,42 @@ namespace FlexLayout::Internal
 		}
 	};
 	
-	LabelImpl::LabelImpl(const StringView tagName)
-		: FlexBoxImpl{ tagName }
+	TextComponent::TextComponent(FlexBoxNode& node)
+		: m_node{ node }
 	{
-		Impl::SetupYGNode(yogaNode());
+		Impl::SetupYGNode(m_node.yogaNode());
 	}
 
-	std::shared_ptr<FlexBoxImpl> LabelImpl::clone() const
+	void TextComponent::copy(const TextComponent& source)
 	{
-		auto instance = std::make_shared<LabelImpl>(tagName());
-
-		instance->setPropergateOffset(propergateOffset());
-		instance->copyProperties(*this, false, true);
-		instance->copyStyles(*this);
-		instance->setText(m_text);
-
-		return instance;
+		setText(source.text());
 	}
 
-	void LabelImpl::setText(const StringView text)
+	const StringView TextComponent::text() const
+	{
+		return m_text;
+	}
+
+	void TextComponent::setText(const StringView text)
 	{
 		if (m_text != text)
 		{
 			m_text = text;
 			m_layoutIsValid = false;
-			YGNodeMarkDirty(yogaNode());
+			YGNodeMarkDirty(m_node.yogaNode());
 		}
 	}
 
-	void LabelImpl::draw(const TextStyle& textStyle, const ColorF& color)
+	void TextComponent::draw(const TextStyle& textStyle, const ColorF& color)
 	{
-		auto rect = contentAreaRect();
+		auto rect = layoutComponent().contentAreaRect();
 
 		if (not rect.has_value())
 		{
 			return;
 		}
 
-		auto& style = computedTextStyle();
+		auto& style = styleComponent().computedTextStyle();
 		auto scale = style.fontRenderingScale();
 
 		// MeasureFuncを呼び出す必要がない場合(width: 100%など)、updateConstraintsが呼び出されないためここで計算
@@ -120,7 +121,7 @@ namespace FlexLayout::Internal
 		}
 
 		// 描画位置を計算
-		bool ltr = YGNodeLayoutGetDirection(yogaNode()) != YGDirectionRTL;
+		bool ltr = YGNodeLayoutGetDirection(m_node.yogaNode()) != YGDirectionRTL;
 		double xAlign = 0.0;
 		switch (style.textAlign)
 		{
@@ -180,11 +181,11 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	void LabelImpl::updateConstraints(double width)
+	void TextComponent::updateConstraints(double width)
 	{
 		m_layoutIsValid = true;
 
-		auto& style = computedTextStyle();
+		auto& style = styleComponent().computedTextStyle();
 		auto scale = style.fontRenderingScale();
 
 		m_glyphs.clear();
@@ -222,9 +223,9 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	double LabelImpl::computeBaseline(size_t lineIdx) const
+	double TextComponent::computeBaseline(size_t lineIdx) const
 	{
-		auto& style = computedTextStyle();
+		auto& style = styleComponent().computedTextStyle();
 
 		lineIdx = std::min(lineIdx, lineCount() - 1);
 
@@ -234,12 +235,32 @@ namespace FlexLayout::Internal
 			+ (lineHeight - style.font.height() * style.fontRenderingScale()) * 0.5;
 	}
 
-	SizeF LabelImpl::computeBoundingBox() const
+	SizeF TextComponent::computeBoundingBox() const
 	{
-		auto& style = computedTextStyle();
+		auto& style = styleComponent().computedTextStyle();
 		return {
 			m_lineWidths.empty() ? 0.0 : *std::max_element(m_lineWidths.begin(), m_lineWidths.end()),
 			style.lineHeightPx() * lineCount()
 		};
+	}
+
+	StyleComponent& TextComponent::styleComponent()
+	{
+		return m_node.getComponent<StyleComponent>();
+	}
+
+	const StyleComponent& TextComponent::styleComponent() const
+	{
+		return m_node.getComponent<StyleComponent>();
+	}
+
+	LayoutComponent& TextComponent::layoutComponent()
+	{
+		return m_node.getComponent<LayoutComponent>();
+	}
+
+	const LayoutComponent& TextComponent::layoutComponent() const
+	{
+		return m_node.getComponent<LayoutComponent>();
 	}
 }

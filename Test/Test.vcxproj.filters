@@ -57,25 +57,25 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Layout.Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexBoxImpl.Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlexBoxLayoutImpl.Test.cpp">
+    <ClCompile Include="StylePropertyDefinition.Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StyleProperty.Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Layout.Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexBoxStyle.Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FlexBoxNode.Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Debugger.Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlexBoxStyleImpl.Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StylePropertyDefinition.Test.cpp">
+    <ClCompile Include="FlexBoxLayout.Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,15 +1,19 @@
 ﻿#include <yoga/YGNodeStyle.h>
 #include "StylePropertyDefinition.hpp"
-#include "TreeContext.hpp"
-#include "FlexBoxImpl.hpp"
-#include "Config.hpp"
+#include "../TreeContext.hpp"
+#include "../FlexBoxNode.hpp"
+#include "ComputedTextStyle.hpp"
+#include "../Config.hpp"
+
+#include "../NodeComponent/StyleComponent.hpp"
 
 namespace FlexLayout::Internal
 {
+	using StyleValue = Style::StyleValue;
 	using ValueType = Style::StyleValue::Type;
 
 	/// @brief <length>の値を計算する
-	static float CalculateCSSLength(Style::StyleValue value, const ComputedTextStyle& style)
+	static float CalculateCSSLength(StyleValue value, const ComputedTextStyle& style)
 	{
 		assert(value.type() == ValueType::Length);
 
@@ -32,12 +36,12 @@ namespace FlexLayout::Internal
 	template<class Type>
 	constexpr static Type PatternEnum() { return Type{}; }
 
-	constexpr static std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> PatternSingle(Style::detail::StyleValueMultiMatchRule argPattern)
+	constexpr static std::vector<std::vector<StyleValueMultiMatchRule>> PatternSingle(StyleValueMultiMatchRule argPattern)
 	{
 		return { { argPattern } };
 	}
 
-	constexpr static std::vector<std::vector<Style::detail::StyleValueMultiMatchRule>> PatternEdge(Style::detail::StyleValueMultiMatchRule argPattern)
+	constexpr static std::vector<std::vector<StyleValueMultiMatchRule>> PatternEdge(StyleValueMultiMatchRule argPattern)
 	{
 		return {
 			{ argPattern },
@@ -186,7 +190,7 @@ namespace FlexLayout::Internal
 	template<class Enum, class _YogaEnum>
 	static StyleInstallCallback InstallCallback_YogaEnum(void(*setter)(YGNodeRef, _YogaEnum))
 	{
-		return [setter](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+		return [setter](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 			{
 				if (auto src = input[0].getEnumValue<Enum>())
 				{
@@ -203,7 +207,7 @@ namespace FlexLayout::Internal
 		void(*percentSetter)(YGNodeRef, YGEdge, float) = nullptr,
 		void(*autoSetter)(YGNodeRef, YGEdge) = nullptr)
 	{
-		return [=](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+		return [=](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 			{
 				Style::StyleValue t, r, b, l;
 
@@ -231,10 +235,10 @@ namespace FlexLayout::Internal
 					return false;
 				}
 
-				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeTop, t, impl.computedTextStyle(), setter, percentSetter, autoSetter);
-				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeRight, r, impl.computedTextStyle(), setter, percentSetter, autoSetter);
-				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeBottom, b, impl.computedTextStyle(), setter, percentSetter, autoSetter);
-				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeLeft, l, impl.computedTextStyle(), setter, percentSetter, autoSetter);
+				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeTop, t, impl.getComponent<Component::StyleComponent>().computedTextStyle(), setter, percentSetter, autoSetter);
+				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeRight, r, impl.getComponent<Component::StyleComponent>().computedTextStyle(), setter, percentSetter, autoSetter);
+				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeBottom, b, impl.getComponent<Component::StyleComponent>().computedTextStyle(), setter, percentSetter, autoSetter);
+				YogaSetStyleValue<YGEdge>(impl.yogaNode(), YGEdgeLeft, l, impl.getComponent<Component::StyleComponent>().computedTextStyle(), setter, percentSetter, autoSetter);
 
 				return false;
 			};
@@ -246,7 +250,7 @@ namespace FlexLayout::Internal
 		void(*percentSetter)(YGNodeRef, float) = nullptr,
 		void(*autoSetter)(YGNodeRef) = nullptr)
 	{
-		return [=](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+		return [=](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 			{
 				if (input.size() != 1)
 				{
@@ -256,7 +260,7 @@ namespace FlexLayout::Internal
 				return YogaSetStyleValue(
 					impl.yogaNode(),
 					input[0],
-					impl.computedTextStyle(),
+					impl.getComponent<Component::StyleComponent>().computedTextStyle(),
 					setter,
 					percentSetter,
 					autoSetter
@@ -271,7 +275,7 @@ namespace FlexLayout::Internal
 		void(*percentSetter)(YGNodeRef, Param, float) = nullptr,
 		void(*autoSetter)(YGNodeRef, Param) = nullptr)
 	{
-		return [=](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+		return [=](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 			{
 				if (input.size() != 1)
 				{
@@ -282,7 +286,7 @@ namespace FlexLayout::Internal
 					impl.yogaNode(),
 					param,
 					input[0],
-					impl.computedTextStyle(),
+					impl.getComponent<Component::StyleComponent>().computedTextStyle(),
 					setter,
 					percentSetter,
 					autoSetter
@@ -298,7 +302,7 @@ namespace FlexLayout::Internal
 		ValueT(*getter)(YGNodeConstRef),
 		void(*setter)(YGNodeRef, ValueT))
 	{
-		return [getter, setter](FlexBoxImpl& impl) -> void
+		return [getter, setter](FlexBoxNode& impl) -> void
 			{
 				ValueT value = getter(GetConfig().dummyNode());
 				setter(impl.yogaNode(), value);
@@ -308,7 +312,7 @@ namespace FlexLayout::Internal
 	/// @brief YGUndefinedをサポートしているSetter関数を呼び出すResetCallbackを生成する
 	static StyleResetCallback ResetCallback_YogaOptional(void(*setter)(YGNodeRef, float))
 	{
-		return [setter](FlexBoxImpl& impl) -> void
+		return [setter](FlexBoxNode& impl) -> void
 			{
 				setter(impl.yogaNode(), YGUndefined);
 			};
@@ -317,7 +321,7 @@ namespace FlexLayout::Internal
 	template<class Param>
 	static StyleResetCallback ResetCallback_YogaOptional(Param param, void(*setter)(YGNodeRef, Param, float))
 	{
-		return [setter, param](FlexBoxImpl& impl) -> void
+		return [setter, param](FlexBoxNode& impl) -> void
 			{
 				setter(impl.yogaNode(), param, YGUndefined);
 			};
@@ -325,7 +329,7 @@ namespace FlexLayout::Internal
 
 	static StyleResetCallback ResetCallback_YogaEdge(void(*setter)(YGNodeRef, YGEdge, float))
 	{
-		return [setter](FlexBoxImpl& impl) -> void
+		return [setter](FlexBoxNode& impl) -> void
 			{
 				setter(impl.yogaNode(), YGEdgeTop, YGUndefined);
 				setter(impl.yogaNode(), YGEdgeRight, YGUndefined);
@@ -336,9 +340,9 @@ namespace FlexLayout::Internal
 
 	// --- プロパティの宣言 ---
 
-	const static Style::detail::StyleValueMultiMatchRule FlexGrowPattern{ ValueType::Number };
-	const static Style::detail::StyleValueMultiMatchRule FlexShrinkPattern{ ValueType::Number };
-	const static Style::detail::StyleValueMultiMatchRule FlexBasisPattern{ ValueType::Length, ValueType::Percentage, ValueType::Auto };
+	const static StyleValueMultiMatchRule FlexGrowPattern{ ValueType::Number };
+	const static StyleValueMultiMatchRule FlexShrinkPattern{ ValueType::Number };
+	const static StyleValueMultiMatchRule FlexBasisPattern{ ValueType::Length, ValueType::Percentage, ValueType::Auto };
 
 	const StylePropertyDefinitionContainer StylePropertyDefinitionList = {
 		{
@@ -370,7 +374,7 @@ namespace FlexLayout::Internal
 			U"aspect-ratio",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ Style::StyleValue::Type::Ratio }),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					YGNodeStyleSetAspectRatio(impl.yogaNode(), input[0].getFloatValueUnchecked());
 					return true;
@@ -395,7 +399,7 @@ namespace FlexLayout::Internal
 					{ FlexGrowPattern, FlexShrinkPattern | FlexBasisPattern },
 					{ FlexGrowPattern, FlexShrinkPattern, FlexBasisPattern }
 				},
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					float grow, shrink;
 					Style::StyleValue basis;
@@ -461,7 +465,7 @@ namespace FlexLayout::Internal
 					YogaSetStyleValue(
 						impl.yogaNode(),
 						basis,
-						impl.computedTextStyle(),
+						impl.getComponent<Component::StyleComponent>().computedTextStyle(),
 						YGNodeStyleSetFlexBasis,
 						YGNodeStyleSetFlexBasisPercent,
 						YGNodeStyleSetFlexBasisAuto
@@ -469,7 +473,7 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
+				.resetCallback = [](FlexBoxNode& impl) -> void
 				{
 					YGNodeStyleSetFlexGrow(impl.yogaNode(), YGUndefined);
 					YGNodeStyleSetFlexShrink(impl.yogaNode(), YGUndefined);
@@ -490,7 +494,7 @@ namespace FlexLayout::Internal
 			U"flex-grow",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle(FlexGrowPattern),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					YGNodeStyleSetFlexGrow(impl.yogaNode(), input[0].getFloatValueUnchecked());
 					return true;
@@ -502,7 +506,7 @@ namespace FlexLayout::Internal
 			U"flex-shrink",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle(FlexShrinkPattern),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					YGNodeStyleSetFlexShrink(impl.yogaNode(), input[0].getFloatValueUnchecked());
 					return true;
@@ -525,7 +529,7 @@ namespace FlexLayout::Internal
 					{ { PatternEnum<FlexDirection>(), PatternEnum<FlexWrap>() } },
 					{ { PatternEnum<FlexDirection>() }, { PatternEnum<FlexWrap>() } }
 				},
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					switch (input.size())
 					{
@@ -555,7 +559,7 @@ namespace FlexLayout::Internal
 
 					return false;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
+				.resetCallback = [](FlexBoxNode& impl) -> void
 				{
 					auto dummyNode = GetConfig().dummyNode();
 					YGNodeStyleSetFlexDirection(impl.yogaNode(), YGNodeStyleGetFlexDirection(dummyNode));
@@ -579,7 +583,7 @@ namespace FlexLayout::Internal
 					{ { ValueType::Length, ValueType::Percentage } },
 					{ { ValueType::Length, ValueType::Percentage }, { ValueType::Length, ValueType::Percentage } }
 				},
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
 					Style::StyleValue row, column;
 
@@ -601,7 +605,7 @@ namespace FlexLayout::Internal
 						impl.yogaNode(),
 						YGGutterRow,
 						row,
-						impl.computedTextStyle(),
+						impl.getComponent<Component::StyleComponent>().computedTextStyle(),
 						YGNodeStyleSetGap,
 						YGNodeStyleSetGapPercent
 					);
@@ -609,14 +613,14 @@ namespace FlexLayout::Internal
 						impl.yogaNode(),
 						YGGutterColumn,
 						column,
-						impl.computedTextStyle(),
+						impl.getComponent<Component::StyleComponent>().computedTextStyle(),
 						YGNodeStyleSetGap,
 						YGNodeStyleSetGapPercent
 					);
 
 					return false;
 				},
-				.resetCallback = [](FlexBoxImpl& impl) -> void
+				.resetCallback = [](FlexBoxNode& impl) -> void
 				{
 					YGNodeStyleSetGap(impl.yogaNode(), YGGutterRow, YGUndefined);
 					YGNodeStyleSetGap(impl.yogaNode(), YGGutterColumn, YGUndefined);
@@ -871,15 +875,15 @@ namespace FlexLayout::Internal
 			U"font-size",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Length, ValueType::Percentage }),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
-					auto& textStyle = impl.computedTextStyle();
+					auto& textStyle = impl.getComponent<Component::StyleComponent>().computedTextStyle();
 
 					// 親要素からサイズを継承、もしemなどが使用された場合は親要素からの相対値として計算
 
 					if (auto parent = impl.parent())
 					{
-						textStyle.fontSizePx = parent->computedTextStyle().fontSizePx;
+						textStyle.fontSizePx = parent->getComponent<Component::StyleComponent>().computedTextStyle().fontSizePx;
 					}
 					else
 					{
@@ -901,33 +905,33 @@ namespace FlexLayout::Internal
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl&) -> void {}
+				.resetCallback = [](FlexBoxNode&) -> void {}
 			}
 		},
 		{
 			U"line-height",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ ValueType::Number }),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
-					impl.computedTextStyle().lineHeightMul = input[0].getFloatValueUnchecked();
+					impl.getComponent<Component::StyleComponent>().computedTextStyle().lineHeightMul = input[0].getFloatValueUnchecked();
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl&) -> void {}
+				.resetCallback = [](FlexBoxNode&) -> void {}
 			}
 		},
 		{
 			U"text-align",
 			StylePropertyDefinitionDetails{
 				.patterns = PatternSingle({ PatternEnum<TextAlign>() }),
-				.installCallback = [](FlexBoxImpl& impl, std::span<const Style::StyleValue> input) -> bool
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
 				{
-					impl.computedTextStyle().textAlign = input[0].getEnumValueUnchecked<TextAlign>();
+					impl.getComponent<Component::StyleComponent>().computedTextStyle().textAlign = input[0].getEnumValueUnchecked<TextAlign>();
 
 					return true;
 				},
-				.resetCallback = [](FlexBoxImpl&) -> void { }
+				.resetCallback = [](FlexBoxNode&) -> void { }
 			}
 		}
 	};

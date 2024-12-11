@@ -1,18 +1,11 @@
 ﻿#include "TreeContext.hpp"
-#include "FlexBoxImpl.hpp"
+#include "FlexBoxNode.hpp"
 
 namespace FlexLayout::Internal
 {
-	void TreeContext::queueStyleApplication(std::shared_ptr<FlexBoxImpl> node)
+	void TreeContext::onNewNodeJoin(const std::shared_ptr<FlexBoxNode>& node)
 	{
-		m_styleApplicationWaitinglist.push_back(node);
-	}
-
-	void TreeContext::onNewNodeJoined(std::shared_ptr<FlexBoxImpl> node)
-	{
-		if (node->isStyleApplicationScheduled())
-		{
-			queueStyleApplication(node);
-		}
+		getContext<Context::StyleContext>()
+			.queueStyleApplication(node);
 	}
 }

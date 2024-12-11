@@ -1,40 +1,43 @@
 ﻿#pragma once
 #include <type_traits>
 #include <vector>
-#include "StyleValue.hpp"
+#include "../../Style/StyleValue.hpp"
+#include "../../Style/StyleEnums.hpp"
 
-namespace FlexLayout::Style::detail
+using namespace s3d;
+
+namespace FlexLayout::Internal
 {
 	struct StyleValueMatchRule
 	{
 		template <class Enum, std::enable_if_t<std::is_scoped_enum_v<Enum>>* = nullptr>
 		constexpr StyleValueMatchRule(Enum)
-			: type(StyleValue::Type::Enum)
-			, enumTypeId(style_enum_id_from_type<Enum>::value)
+			: type(Style::StyleValue::Type::Enum)
+			, enumTypeId(Style::detail::style_enum_id_from_type<Enum>::value)
 		{ }
 
-		constexpr StyleValueMatchRule(EnumTypeId id)
-			: type(StyleValue::Type::Enum)
+		constexpr StyleValueMatchRule(Style::EnumTypeId id)
+			: type(Style::StyleValue::Type::Enum)
 			, enumTypeId(id)
 		{
-			assert(id >= 0 && id < std::variant_size_v<style_enum_variant>);
+			assert(id >= 0 && id < std::variant_size_v<Style::detail::style_enum_variant>);
 		}
 
-		constexpr StyleValueMatchRule(StyleValue::Type t)
+		constexpr StyleValueMatchRule(Style::StyleValue::Type t)
 			: type(t)
 			, enumTypeId(-1)
 		{
-			assert(t != StyleValue::Type::Enum && t != StyleValue::Type::Unspecified);
+			assert(t != Style::StyleValue::Type::Enum && t != Style::StyleValue::Type::Unspecified);
 		}
 
-		const StyleValue::Type type;
+		const Style::StyleValue::Type type;
 
-		const EnumTypeId enumTypeId;
+		const Style::EnumTypeId enumTypeId;
 
-		inline bool match(const StyleValue& value) const noexcept
+		inline bool match(const Style::StyleValue& value) const noexcept
 		{
 			return value.type() == type &&
-				(type != StyleValue::Type::Enum || value.enumTypeId() == enumTypeId);
+				(type != Style::StyleValue::Type::Enum || value.enumTypeId() == enumTypeId);
 		}
 	};
 
@@ -49,11 +52,11 @@ namespace FlexLayout::Style::detail
 			: rules({ StyleValueMatchRule{ e } })
 		{ }
 
-		constexpr StyleValueMultiMatchRule(EnumTypeId id)
+		constexpr StyleValueMultiMatchRule(Style::EnumTypeId id)
 			: rules({ StyleValueMatchRule{ id } })
 		{ }
 
-		constexpr StyleValueMultiMatchRule(StyleValue::Type t)
+		constexpr StyleValueMultiMatchRule(Style::StyleValue::Type t)
 			: rules({ StyleValueMatchRule{ t } })
 		{ }
 
@@ -95,7 +98,7 @@ namespace FlexLayout::Style::detail
 			return *this | StyleValueMatchRule{ e };
 		}
 
-		inline bool match(const StyleValue& value) const noexcept
+		inline bool match(const Style::StyleValue& value) const noexcept
 		{
 			return std::any_of(
 				rules.begin(),

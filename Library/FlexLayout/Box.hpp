@@ -7,8 +7,8 @@ namespace FlexLayout
 {
 	namespace Internal
 	{
-		class FlexBoxImpl;
-		struct BoxAccessor;
+		class FlexBoxNode;
+		struct Accessor;
 	}
 	class Label;
 
@@ -18,13 +18,7 @@ namespace FlexLayout
 	{
 	public:
 
-		Box(std::shared_ptr<Internal::FlexBoxImpl> impl);
-
-		/// @brief 空のBoxを作成する
-		/// @remark appendChild()などでツリーに追加することでレイアウトに反映されます
-		/// @return 作成したノード
-		[[nodiscard]]
-		static Box Create();
+		Box(const std::shared_ptr<Internal::FlexBoxNode>& node);
 
 	public:
 
@@ -241,11 +235,6 @@ namespace FlexLayout
 		/// @return 存在する場合はtrue
 		bool hasAttribute(s3d::StringView name) const;
 
-		/// @brief 1つ以上の属性が存在するかを判定する
-		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttributes
-		/// @return 存在する場合はtrue
-		bool hasAttributes() const;
-
 		// Query
 
 		s3d::Array<Box> getElementsByClassName(s3d::StringView className) const;
@@ -261,11 +250,11 @@ namespace FlexLayout
 		/// @param color 枠線の色
 		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
 
-	private:
+	protected:
 
-		friend Internal::BoxAccessor;
+		friend Internal::Accessor;
 
-		std::shared_ptr<Internal::FlexBoxImpl> m_impl;
+		std::shared_ptr<Internal::FlexBoxNode> m_node;
 
 	public:
 

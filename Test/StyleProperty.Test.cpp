@@ -1,5 +1,5 @@
 ﻿#include <gtest/gtest.h>
-#include "FlexLayout/Internal/StyleProperty.hpp"
+#include "FlexLayout/Internal/Style/StyleProperty.hpp"
 
 namespace FlexLayout::Internal
 {

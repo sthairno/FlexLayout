@@ -10,13 +10,6 @@ namespace FlexLayout
 
 		using Box::Box;
 
-		/// @brief 空のLabelを作成する
-		/// @remark appendChild()などでツリーに追加することでレイアウトに反映されます
-		/// @param text ラベルで表示する文字列
-		/// @return 作成したノード
-		[[nodiscard]]
-		static Label Create(const s3d::StringView text);
-
 	public:
 
 		/// @brief 描画する文字列を取得する
