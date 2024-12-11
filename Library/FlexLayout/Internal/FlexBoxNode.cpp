@@ -285,12 +285,15 @@ namespace FlexLayout::Internal
 	{
 		auto newInstance = clone();
 
-		Array<std::shared_ptr<FlexBoxNode>> children(Arg::reserve = m_children.size());
-		for (const auto& child : m_children)
+		if (m_children)
 		{
-			children.push_back(child->deepClone());
+			Array<std::shared_ptr<FlexBoxNode>> children(Arg::reserve = m_children.size());
+			for (const auto& child : m_children)
+			{
+				children.push_back(child->deepClone());
+			}
+			newInstance->setChildren(children);
 		}
-		newInstance->setChildren(children);
 
 		return newInstance;
 	}
