@@ -28,7 +28,7 @@ namespace FlexLayout::Internal
 		{
 			for (const auto& child : node->children())
 			{
-				if (child.get() == target &&
+				if (child.get() == target ||
 					LookupNodeFromChildren(child.get(), target))
 				{
 					return true;
