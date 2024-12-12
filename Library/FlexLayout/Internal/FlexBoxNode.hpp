@@ -114,6 +114,8 @@ namespace FlexLayout::Internal
 
 		void clearProperties();
 
+		const HashTable<String, String>& getAdditionalProperties() const { return m_additonalProperties; }
+
 	private:
 
 		FlexBoxNode* m_parent = nullptr;

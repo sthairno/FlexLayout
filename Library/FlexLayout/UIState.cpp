@@ -122,24 +122,4 @@ namespace FlexLayout
 			.getComponent<Internal::Component::StyleComponent>()
 			.setFont(Font{});
 	}
-
-	Optional<String> UIStateQuery::getAttribute(s3d::StringView name) const
-	{
-		return m_node.getProperty(name);
-	}
-
-	void UIStateQuery::setAttribute(s3d::StringView name, s3d::StringView value)
-	{
-		m_node.setProperty(name, value);
-	}
-
-	bool UIStateQuery::hasAttribute(s3d::StringView name) const
-	{
-		return m_node.getProperty(name).has_value();
-	}
-
-	bool UIStateQuery::removeAttribute(s3d::StringView name)
-	{
-		return m_node.removeProperty(name);
-	}
 }

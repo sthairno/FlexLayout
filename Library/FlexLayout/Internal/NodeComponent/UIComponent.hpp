@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../../UIState.hpp"
-#include <memory>
+
+using namespace s3d;
 
 namespace FlexLayout::Internal
 {
@@ -24,6 +25,10 @@ namespace FlexLayout::Internal::Component
 		void setState(std::unique_ptr<UIState>&& state);
 
 		void removeState();
+
+		void setAdditionalProperty(const StringView key, const StringView value);
+
+		void unsetAdditionalProperty(const StringView key);
 
 	private:
 

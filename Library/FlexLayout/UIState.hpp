@@ -99,32 +99,6 @@ namespace FlexLayout
 		/// @brief フォントの設定を解除する
 		void unsetFont();
 
-		// Attributes
-
-		/// @brief 属性の値を取得する
-		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
-		/// @param name 属性名
-		/// @return 設定値、登録されていない場合はnone
-		s3d::Optional<s3d::String> getAttribute(s3d::StringView name) const;
-
-		/// @brief 属性の値を設定する
-		/// @remark https://developer.mozilla.org/ja/docs/Web/API/Element/setAttribute
-		/// @param name 属性名
-		/// @param value 設定値
-		void setAttribute(s3d::StringView name, s3d::StringView value);
-
-		/// @brief 属性を削除する
-		/// @remark https://developer.mozilla.org/ja/docs/Web/API/Element/removeAttribute
-		/// @param name 属性名
-		/// @return 削除に成功した場合はtrue
-		bool removeAttribute(s3d::StringView name);
-
-		/// @brief 属性が存在するかを判定する
-		/// @remark https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute
-		/// @param name 属性名
-		/// @return 存在する場合はtrue
-		bool hasAttribute(s3d::StringView name) const;
-
 	private:
 
 		Internal::FlexBoxNode& m_node;
@@ -145,6 +119,10 @@ namespace FlexLayout
 		virtual void draw(const Box&) { };
 
 		virtual void update(const Box&) { };
+
+		virtual void setProperty(const s3d::StringView, const s3d::StringView) { };
+
+		virtual void unsetProperty(const s3d::StringView) { };
 
 		virtual std::unique_ptr<UIState> clone() = 0;
 

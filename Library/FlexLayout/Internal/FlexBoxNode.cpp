@@ -378,6 +378,11 @@ namespace FlexLayout::Internal
 		else
 		{
 			m_additonalProperties[key] = value;
+			if (isUINode())
+			{
+				getComponent<Component::UIComponent>()
+					.setAdditionalProperty(key, value);
+			}
 		}
 	}
 
@@ -400,7 +405,14 @@ namespace FlexLayout::Internal
 			getComponent<Component::StyleComponent>().setFont({ }, U"");
 		}
 
-		return m_additonalProperties.erase(key);
+		bool success = m_additonalProperties.erase(key);
+		if (isUINode())
+		{
+			getComponent<Component::UIComponent>()
+				.unsetAdditionalProperty(key);
+		}
+
+		return success;
 	}
 
 	void FlexBoxNode::clearProperties()
