@@ -280,7 +280,11 @@ namespace FlexLayout::Internal
 			instance->getComponent<Component::TextComponent>()
 				.copy(getComponent<Component::TextComponent>());
 		}
-		// TODO: UIComponentのコピー
+		if (isUINode())
+		{
+			instance->getComponent<Component::UIComponent>()
+				.copy(getComponent<Component::UIComponent>());
+		}
 
 		instance->m_additonalProperties = m_additonalProperties;
 
