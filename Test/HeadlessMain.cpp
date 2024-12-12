@@ -1,4 +1,6 @@
-﻿#define NO_S3D_USING
+﻿#ifndef FLEXLAYOUT_GRAPHICAL_TEST
+
+#define NO_S3D_USING
 
 #include <gtest/gtest.h>
 #include <Siv3D.hpp>
@@ -35,7 +37,7 @@ void Main()
 	auto argc = System::GetArgc();
 	::testing::InitGoogleTest(&argc, System::GetArgv());
 	::testing::AddGlobalTestEnvironment(new Siv3DTestEnvironment);
-	
+
 	RUN_ALL_TESTS();
 
 	// https://stackoverflow.com/a/1452701
@@ -48,3 +50,5 @@ void Main()
 		system("read");
 	}
 }
+
+#endif
