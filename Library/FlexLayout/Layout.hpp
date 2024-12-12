@@ -6,6 +6,7 @@
 #include "Box.hpp"
 #include "Label.hpp"
 #include "Util/StyleValueHelper.hpp"
+#include "UIState.hpp"
 
 namespace tinyxml2
 {
@@ -170,6 +171,16 @@ namespace FlexLayout
 		/// @brief レイアウトを再計算する
 		void calculateLayout();
 
+		template <class State>
+		void registerCustomComponent(const s3d::String& tagName, UIStateFactory<State> factory)
+		{
+			registerCustomComponentImpl(
+				tagName,
+				[]() -> std::unique_ptr<UIState>
+				{ return factory(); }
+			);
+		}
+
 		/// @brief ルート要素を取得する
 		s3d::Optional<Box> document();
 
@@ -186,6 +197,8 @@ namespace FlexLayout
 		struct Impl;
 
 		std::unique_ptr<Impl> m_impl;
+
+		void registerCustomComponentImpl(const s3d::String& tagName, std::unique_ptr<UIState>(*factory)());
 
 	public:
 

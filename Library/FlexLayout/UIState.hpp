@@ -108,10 +108,6 @@ namespace FlexLayout
 	{
 	public:
 
-		UIState() { }
-
-	public:
-
 		virtual void attach(UIStateQuery) { };
 
 		virtual void detach(UIStateQuery) { };
@@ -130,4 +126,7 @@ namespace FlexLayout
 
 		virtual ~UIState() { };
 	};
+
+	template <class State, std::enable_if_t<std::is_base_of_v<State, UIState>>* = nullptr>
+	using UIStateFactory = std::unique_ptr<State>(*)();
 }

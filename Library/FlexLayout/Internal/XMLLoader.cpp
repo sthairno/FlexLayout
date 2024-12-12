@@ -1,10 +1,12 @@
 ﻿#include <Siv3D/Unicode.hpp>
+#include <Siv3D/Char.hpp>
 #include "XMLLoader.hpp"
 #include "TreeContext.hpp"
 #include "../Util/StyleValueHelper.hpp"
 
 #include "NodeComponent/XmlAttributeComponent.hpp"
 #include "NodeComponent/TextComponent.hpp"
+#include "NodeComponent/UIComponent.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -113,6 +115,18 @@ namespace FlexLayout::Internal
 		return result;
 	}
 
+	void XMLLoader::registerStateFactory(const String& tagName, std::unique_ptr<UIState>(*factory)())
+	{
+		assert(tagName);
+		assert(tagName.all([](String::value_type c) { return IsAlnum(c) || c == U'.'; }));
+		assert(factory);
+
+		String name = tagName;
+		name.lowercase();
+
+		m_stateFactories[name] = factory;
+	}
+
 	std::shared_ptr<FlexBoxNode> XMLLoader::loadNode(const tinyxml2::XMLElement& element, bool isRoot)
 	{
 		std::shared_ptr<FlexBoxNode> node;
@@ -178,7 +192,8 @@ namespace FlexLayout::Internal
 		if (tagName == U"label")
 		{
 			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
-				.textNode = true
+				.textNode = true,
+				.uiNode = false
 			});
 			node->getComponent<Component::XmlAttributeComponent>()
 				.setTagName(tagName);
@@ -190,10 +205,27 @@ namespace FlexLayout::Internal
 		if (tagName == U"box")
 		{
 			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
-				.textNode = false
+				.textNode = false,
+				.uiNode = false
 			});
 			node->getComponent<Component::XmlAttributeComponent>()
 				.setTagName(tagName);
+			return node;
+		}
+
+		// UI Node
+		if (auto factory = m_stateFactories.find(tagName);
+			factory != m_stateFactories.end())
+		{
+			auto generator = factory->second;
+			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
+				.textNode = false,
+				.uiNode = true
+			});
+			node->getComponent<Component::XmlAttributeComponent>()
+				.setTagName(tagName);
+			node->getComponent<Component::UIComponent>()
+				.setState(generator());
 			return node;
 		}
 
