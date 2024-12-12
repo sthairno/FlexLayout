@@ -1,6 +1,7 @@
 ﻿#include "UIContext.hpp"
 
 #include "../FlexBoxNode.hpp"
+#include "../../Box.hpp"
 #include "../NodeComponent/UIComponent.hpp"
 #include "../NodeComponent/TextComponent.hpp"
 
@@ -20,7 +21,7 @@ namespace FlexLayout::Internal::Context
 			auto& component = node.getComponent<Component::UIComponent>();
 			if (component.state())
 			{
-				component.state()->update();
+				component.state()->update(Box{ node.shared_from_this() });
 			}
 		}
 	}
@@ -38,7 +39,7 @@ namespace FlexLayout::Internal::Context
 			auto& component = node.getComponent<Component::UIComponent>();
 			if (component.state())
 			{
-				component.state()->draw();
+				component.state()->draw(Box{ node.shared_from_this() });
 			}
 		}
 
