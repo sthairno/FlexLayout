@@ -23,18 +23,18 @@ namespace FlexLayout::Internal::Component
 	{
 		if (m_state)
 		{
-			m_state->detach();
+			m_state->detach(UIStateQuery{ m_node });
 		}
 
 		m_state = std::move(state);
-		m_state->attach();
+		m_state->attach(UIStateQuery{ m_node });
 	}
 
 	void UIComponent::removeState()
 	{
 		if (m_state)
 		{
-			m_state->detach();
+			m_state->detach(UIStateQuery{ m_node });
 			m_state.reset();
 		}
 	}

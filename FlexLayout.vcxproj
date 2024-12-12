@@ -191,6 +191,7 @@
     <ClCompile Include="Library\FlexLayout\Internal\Style\StyleValueParser.cpp" />
     <ClCompile Include="Library\FlexLayout\Thickness.cpp" />
     <ClCompile Include="Library\FlexLayout\UIBox.cpp" />
+    <ClCompile Include="Library\FlexLayout\UIState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
