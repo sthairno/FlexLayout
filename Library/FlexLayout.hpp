@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "FlexLayout/Box.hpp"
+#include "FlexLayout/UIBox.hpp"
 #include "FlexLayout/Label.hpp"
 #include "FlexLayout/Layout.hpp"
 #include "FlexLayout/Util/StyleValueHelper.hpp"

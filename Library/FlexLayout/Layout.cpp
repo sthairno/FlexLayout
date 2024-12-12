@@ -151,6 +151,26 @@ namespace FlexLayout
 					.setLayoutOffsetRecursive(offset);
 			}
 		}
+
+		void updateUI()
+		{
+			if (root)
+			{
+				root->context()
+					.getContext<Internal::Context::UIContext>()
+					.update(*root);
+			}
+		}
+
+		void drawUI() const
+		{
+			if (root)
+			{
+				root->context()
+					.getContext<Internal::Context::UIContext>()
+					.draw(*root);
+			}
+		}
 	};
 
 	Layout::Layout(OnLoadCallback onLoad)
@@ -214,6 +234,16 @@ namespace FlexLayout
 	void Layout::setDocument(Box root)
 	{
 		m_impl->root = Internal::Accessor::GetNode(root);
+	}
+
+	void Layout::update()
+	{
+		m_impl->updateUI();
+	}
+
+	void Layout::draw() const
+	{
+		m_impl->drawUI();
 	}
 
 	Layout::~Layout()

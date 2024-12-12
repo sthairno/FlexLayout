@@ -7,6 +7,7 @@
 #include "NodeComponent/StyleComponent.hpp"
 #include "NodeComponent/XmlAttributeComponent.hpp"
 #include "NodeComponent/TextComponent.hpp"
+#include "NodeComponent/UIComponent.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -78,7 +79,10 @@ namespace FlexLayout::Internal
 			std::make_unique<Component::XmlAttributeComponent>(*this),
 			options.textNode
 				? std::make_unique<Component::TextComponent>(*this)
-				: std::unique_ptr<Component::TextComponent>{}
+				: std::unique_ptr<Component::TextComponent>{},
+			options.uiNode
+				? std::make_unique<Component::UIComponent>(*this)
+				: std::unique_ptr<Component::UIComponent>{}
 		}
 	{
 		YGNodeSetContext(m_yogaNode, this);
@@ -261,7 +265,8 @@ namespace FlexLayout::Internal
 	std::shared_ptr<FlexBoxNode> FlexBoxNode::clone() const
 	{
 		auto instance = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
-			.textNode = isTextNode()
+			.textNode = isTextNode(),
+			.uiNode   = isUINode()
 		});
 
 		instance->getComponent<Component::LayoutComponent>()
@@ -275,6 +280,7 @@ namespace FlexLayout::Internal
 			instance->getComponent<Component::TextComponent>()
 				.copy(getComponent<Component::TextComponent>());
 		}
+		// TODO: UIComponentのコピー
 
 		instance->m_additonalProperties = m_additonalProperties;
 
@@ -301,6 +307,11 @@ namespace FlexLayout::Internal
 	bool FlexBoxNode::isTextNode() const
 	{
 		return !!std::get<std::unique_ptr<Component::TextComponent>>(m_components);
+	}
+
+	bool FlexBoxNode::isUINode() const
+	{
+		return !!std::get<std::unique_ptr<Component::UIComponent>>(m_components);
 	}
 
 	bool FlexBoxNode::BelongsToSameTree(const FlexBoxNode& a, const FlexBoxNode& b)

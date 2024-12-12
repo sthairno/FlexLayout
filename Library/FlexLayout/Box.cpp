@@ -5,6 +5,7 @@
 #include "Internal/NodeComponent/LayoutComponent.hpp"
 #include "Internal/NodeComponent/StyleComponent.hpp"
 #include "Internal/NodeComponent/XmlAttributeComponent.hpp"
+#include "Internal/NodeComponent/UIComponent.hpp"
 
 namespace FlexLayout
 {
@@ -348,6 +349,13 @@ namespace FlexLayout
 		{
 			component.border().drawPadding(*rect, color);
 		}
+	}
+
+	UIState* Box::tryGetUIState() const
+	{
+		return m_node->isUINode()
+			? m_node->getComponent<Internal::Component::UIComponent>().state()
+			: nullptr;
 	}
 
 	Box::~Box() { }

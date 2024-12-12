@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../Box.hpp"
-#include "../Label.hpp"
 #include "FlexBoxNode.hpp"
+#include "../UIState.hpp"
 
 namespace FlexLayout::Internal
 {

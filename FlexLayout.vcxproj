@@ -139,6 +139,7 @@
     <ClInclude Include="Library\FlexLayout\Error.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\Accessor.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\NodeComponent\TextComponent.hpp" />
+    <ClInclude Include="Library\FlexLayout\Internal\NodeComponent\UIComponent.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\NodeComponent\XmlAttributeComponent.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\NodeComponent\LayoutComponent.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\TreeContext\StyleContext.hpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Library\FlexLayout\Internal\Style\StylePropertyDefinition.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\Style\StyleProperty.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\TreeContext.hpp" />
+    <ClInclude Include="Library\FlexLayout\Internal\TreeContext\UIContext.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\XMLLoader.hpp" />
     <ClInclude Include="Library\FlexLayout\Label.hpp" />
     <ClInclude Include="Library\FlexLayout\Layout.hpp" />
@@ -159,6 +161,8 @@
     <ClInclude Include="Library\FlexLayout\Internal\Style\StyleValueMatchRule.hpp" />
     <ClInclude Include="Library\FlexLayout\Internal\Style\StyleValueParser.hpp" />
     <ClInclude Include="Library\FlexLayout\Thickness.hpp" />
+    <ClInclude Include="Library\FlexLayout\UIBox.hpp" />
+    <ClInclude Include="Library\FlexLayout\UIState.hpp" />
     <ClInclude Include="Library\FlexLayout\Util\StyleValueHelper.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,12 +173,14 @@
     <ClCompile Include="Library\FlexLayout\Internal\NodeComponent\TextComponent.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\Config.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\NodeComponent\LayoutComponent.cpp" />
+    <ClCompile Include="Library\FlexLayout\Internal\NodeComponent\UIComponent.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\NodeComponent\XmlAttributeComponent.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\NodeComponent\StyleComponent.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\Style\StyleProperty.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\Style\StylePropertyDefinition.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\TreeContext.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\TreeContext\StyleContext.cpp" />
+    <ClCompile Include="Library\FlexLayout\Internal\TreeContext\UIContext.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\XMLLoader.cpp" />
     <ClCompile Include="Library\FlexLayout\Label.cpp" />
     <ClCompile Include="Library\FlexLayout\Layout.cpp" />
@@ -184,6 +190,7 @@
     <ClCompile Include="Library\FlexLayout\Style\StyleValue.cpp" />
     <ClCompile Include="Library\FlexLayout\Internal\Style\StyleValueParser.cpp" />
     <ClCompile Include="Library\FlexLayout\Thickness.cpp" />
+    <ClCompile Include="Library\FlexLayout\UIBox.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

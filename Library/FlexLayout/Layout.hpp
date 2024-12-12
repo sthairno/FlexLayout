@@ -177,6 +177,10 @@ namespace FlexLayout
 		/// @remark XMLの読込の際に上書きされる可能性があります
 		void setDocument(Box root);
 
+		void update();
+
+		void draw() const;
+
 	private:
 
 		struct Impl;
