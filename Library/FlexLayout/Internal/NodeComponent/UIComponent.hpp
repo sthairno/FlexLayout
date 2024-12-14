@@ -24,16 +24,20 @@ namespace FlexLayout::Internal::Component
 
 		void setState(std::unique_ptr<UIState>&& state);
 
-		void removeState();
-
 		void setAdditionalProperty(const StringView key, const StringView value);
 
 		void unsetAdditionalProperty(const StringView key);
+
+		const String& textContent() const { return m_text; }
+
+		void setTextContent(const StringView text);
 
 	private:
 
 		FlexBoxNode& m_node;
 
 		std::unique_ptr<UIState> m_state;
+
+		String m_text;
 	};
 }

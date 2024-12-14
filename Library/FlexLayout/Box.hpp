@@ -213,6 +213,12 @@ namespace FlexLayout
 			replaceChildren({ newChildren... });
 		}
 
+		// Text
+
+		s3d::String textContent() const;
+
+		void setTextContent(s3d::StringView text);
+
 		// Attributes
 
 		/// @brief 属性の値を取得する

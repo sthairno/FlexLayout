@@ -108,17 +108,17 @@ namespace FlexLayout
 	{
 	public:
 
-		virtual void attach(UIStateQuery) { };
+		virtual void attach(UIStateQuery query) { }
 
-		virtual void detach(UIStateQuery) { };
+		virtual void draw(UIStateQuery query, const Box&) { }
 
-		virtual void draw(const Box&) { };
+		virtual void update(UIStateQuery query, const Box&) { }
 
-		virtual void update(const Box&) { };
+		virtual void setProperty(UIStateQuery query, const s3d::StringView key, const s3d::StringView value) { }
 
-		virtual void setProperty(const s3d::StringView, const s3d::StringView) { };
+		virtual void unsetProperty(UIStateQuery query, const s3d::StringView key) { }
 
-		virtual void unsetProperty(const s3d::StringView) { };
+		virtual void setTextContent(UIStateQuery query, const s3d::StringView text) { }
 
 		virtual std::unique_ptr<UIState> clone() = 0;
 
