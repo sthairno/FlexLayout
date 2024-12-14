@@ -1,6 +1,7 @@
 ﻿#include "UIComponent.hpp"
 #include "../../UIState.hpp"
 #include "../FlexBoxNode.hpp"
+#include "../../Box.hpp"
 
 namespace FlexLayout::Internal::Component
 {
@@ -14,6 +15,22 @@ namespace FlexLayout::Internal::Component
 		{
 			setState(source.m_state->clone());
 			setTextContent(source.m_text);
+		}
+	}
+
+	void UIComponent::draw()
+	{
+		if (m_state)
+		{
+			m_state->draw(UIStateQuery{ m_node }, Box{ m_node.shared_from_this() });
+		}
+	}
+
+	void UIComponent::update()
+	{
+		if (m_state)
+		{
+			m_state->update(UIStateQuery{ m_node }, Box{ m_node.shared_from_this() });
 		}
 	}
 

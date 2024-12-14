@@ -22,6 +22,10 @@ namespace FlexLayout::Internal::Component
 
 		const UIState* state() const { return m_state.get(); }
 
+		void draw();
+
+		void update();
+
 		void setState(std::unique_ptr<UIState>&& state);
 
 		void setAdditionalProperty(const StringView key, const StringView value);

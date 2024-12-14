@@ -18,11 +18,8 @@ namespace FlexLayout::Internal::Context
 
 		if (node.isUINode())
 		{
-			auto& component = node.getComponent<Component::UIComponent>();
-			if (component.state())
-			{
-				component.state()->update(Box{ node.shared_from_this() });
-			}
+			node.getComponent<Component::UIComponent>()
+				.update();
 		}
 	}
 
@@ -36,11 +33,8 @@ namespace FlexLayout::Internal::Context
 
 		if (node.isUINode())
 		{
-			auto& component = node.getComponent<Component::UIComponent>();
-			if (component.state())
-			{
-				component.state()->draw(Box{ node.shared_from_this() });
-			}
+			node.getComponent<Component::UIComponent>()
+				.draw();
 		}
 
 		for (const auto& child : node.children())
