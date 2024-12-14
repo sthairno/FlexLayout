@@ -72,24 +72,6 @@ namespace FlexLayout
 		/// @return 成功した場合はtrue、失敗した場合はfalse
 		bool load(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No);
 
-		/// @brief XMLファイルをファイルパスから読み込む
-		/// @param path XMLファイルのパス
-		/// @param enableHotReload ホットリロードを有効にするか
-		/// @return 成功した場合はtrue、失敗した場合はfalse
-		inline bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
-		{
-			return load(s3d::FilePath{ path }, enableHotReload);
-		}
-
-		/// @brief XMLファイルをファイルパスから読み込む
-		/// @param path XMLファイルのパス
-		/// @param enableHotReload ホットリロードを有効にするか
-		/// @return 成功した場合はtrue、失敗した場合はfalse
-		inline bool load(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
-		{
-			return load(path, enableHotReload);
-		}
-
 		/// @brief XMLを読み込む
 		/// @return 成功した場合はtrue、失敗した場合はfalse
 		bool load(s3d::Arg::code_<s3d::String> code);
@@ -178,6 +160,16 @@ namespace FlexLayout
 				tagName,
 				[]() -> std::unique_ptr<UIState>
 				{ return factory(); }
+			);
+		}
+
+		template <class State>
+		void registerCustomComponent(const s3d::String& tagName)
+		{
+			registerCustomComponentImpl(
+				tagName,
+				[]() -> std::unique_ptr<UIState>
+				{ return std::make_unique<State>(); }
 			);
 		}
 
