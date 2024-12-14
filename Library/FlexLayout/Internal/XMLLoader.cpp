@@ -1,4 +1,4 @@
-﻿#include <Siv3D/Unicode.hpp>
+#include <Siv3D/Unicode.hpp>
 #include <Siv3D/Char.hpp>
 #include "XMLLoader.hpp"
 #include "TreeContext.hpp"
@@ -146,14 +146,12 @@ namespace FlexLayout::Internal
 		{
 			node = cachedNode;
 		}
-		else if (auto createdNode = createNodeFromTagName(tagName))
-		{
-			node = createdNode;
-		}
 		else
 		{
-			return nullptr;
+			auto createdNode = createNodeFromTagName(tagName);
+			node = createdNode;
 		}
+		assert(node);
 
 		// 属性の読み込み
 		detail::LoadAttributes(*node, element);
@@ -202,17 +200,6 @@ namespace FlexLayout::Internal
 			return node;
 		}
 
-		if (tagName == U"box")
-		{
-			auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
-				.textNode = false,
-				.uiNode = false
-			});
-			node->getComponent<Component::XmlAttributeComponent>()
-				.setTagName(tagName);
-			return node;
-		}
-
 		// UI Node
 		if (auto factory = m_stateFactories.find(tagName);
 			factory != m_stateFactories.end())
@@ -228,6 +215,14 @@ namespace FlexLayout::Internal
 				.setState(generator());
 			return node;
 		}
+
+		auto node = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
+			.textNode = false,
+			.uiNode = false
+		});
+		node->getComponent<Component::XmlAttributeComponent>()
+			.setTagName(tagName);
+		return node;
 
 		return nullptr;
 	}
