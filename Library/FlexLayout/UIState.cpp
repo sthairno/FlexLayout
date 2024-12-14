@@ -2,6 +2,7 @@
 #include "Internal/FlexBoxNode.hpp"
 #include "Internal/Style/StyleProperty.hpp"
 #include "Internal/NodeComponent/StyleComponent.hpp"
+#include "Internal/NodeComponent/UIComponent.hpp"
 
 using namespace s3d;
 
@@ -122,4 +123,19 @@ namespace FlexLayout
 			.getComponent<Internal::Component::StyleComponent>()
 			.setFont(Font{});
 	}
+
+	const String& UIStateQuery::textContent() const
+	{
+		return m_node
+			.getComponent<Internal::Component::UIComponent>()
+			.textContent();
+	}
+
+	void UIStateQuery::setTextContent(s3d::StringView text)
+	{
+		m_node
+			.getComponent<Internal::Component::UIComponent>()
+			.setTextContent(text);
+	}
+
 }

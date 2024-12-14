@@ -2,6 +2,7 @@
 #include <memory>
 #include <Siv3D/Array.hpp>
 #include <Siv3D/Font.hpp>
+#include <Siv3D/String.hpp>
 #include "Style/StyleValue.hpp"
 
 namespace FlexLayout::Internal
@@ -98,6 +99,12 @@ namespace FlexLayout
 
 		/// @brief フォントの設定を解除する
 		void unsetFont();
+
+		// Text
+
+		const s3d::String& textContent() const;
+
+		void setTextContent(s3d::StringView text);
 
 	private:
 

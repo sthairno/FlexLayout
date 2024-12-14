@@ -1,4 +1,4 @@
-#include <Siv3D/Unicode.hpp>
+﻿#include <Siv3D/Unicode.hpp>
 #include <Siv3D/Char.hpp>
 #include "XMLLoader.hpp"
 #include "TreeContext.hpp"
@@ -164,6 +164,12 @@ namespace FlexLayout::Internal
 		}
 		else
 		{
+			if (node->isUINode())
+			{
+				node->getComponent<Component::UIComponent>()
+					.setTextContent(detail::LoadInnerText(element));
+			}
+
 			auto newChildren = loadChildren(element);
 			node->setChildren(newChildren);
 		}
