@@ -18,10 +18,11 @@ namespace FlexLayout::Internal::Component
 			float height,
 			YGMeasureMode heightMode)
 		{
-			auto& impl = *reinterpret_cast<TextComponent*>(YGNodeGetContext(node));
+			auto& impl = *reinterpret_cast<FlexBoxNode*>(YGNodeGetContext(node));
+			auto& component = impl.getComponent<TextComponent>();
 
-			impl.updateConstraints(widthMode != YGMeasureModeUndefined ? width : Math::Inf);
-			auto size = impl.computeBoundingBox();
+			component.updateConstraints(widthMode != YGMeasureModeUndefined ? width : Math::Inf);
+			auto size = component.computeBoundingBox();
 
 			YGSize result{
 				static_cast<float>(size.x),
@@ -57,14 +58,15 @@ namespace FlexLayout::Internal::Component
 
 		static float BaselineLabelCallback(YGNodeConstRef node, float width, float)
 		{
-			auto& impl = *reinterpret_cast<TextComponent*>(YGNodeGetContext(node));
+			auto& impl = *reinterpret_cast<FlexBoxNode*>(YGNodeGetContext(node));
+			auto& component = impl.getComponent<TextComponent>();
 
-			if (not impl.m_layoutIsValid)
+			if (not component.m_layoutIsValid)
 			{
-				impl.updateConstraints(width);
+				component.updateConstraints(width);
 			}
 
-			return static_cast<float>(impl.computeBaseline());
+			return static_cast<float>(component.computeBaseline());
 		}
 
 		static void SetupYGNode(YGNodeRef node)
