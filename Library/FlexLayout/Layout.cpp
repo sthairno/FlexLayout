@@ -238,12 +238,12 @@ namespace FlexLayout
 		m_impl->root = Internal::Accessor::GetNode(root);
 	}
 
-	void Layout::update()
+	void Layout::updateUI()
 	{
 		m_impl->updateUI();
 	}
 
-	void Layout::draw() const
+	void Layout::drawUI() const
 	{
 		m_impl->drawUI();
 	}

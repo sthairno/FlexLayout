@@ -180,9 +180,11 @@ namespace FlexLayout
 		/// @remark XMLの読込の際に上書きされる可能性があります
 		void setDocument(Box root);
 
-		void update();
+		/// @brief UIの更新を行う
+		void updateUI();
 
-		void draw() const;
+		/// @brief UIを描画する
+		void drawUI() const;
 
 	private:
 
