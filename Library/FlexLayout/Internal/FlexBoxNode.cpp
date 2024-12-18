@@ -109,10 +109,17 @@ namespace FlexLayout::Internal
 		Array<YGNodeRef> ygnodes(Arg::reserve = children.size());
 		for (const auto& child : children)
 		{
-			// すでにどこかに所属していた場合は削除する
 			if (child->m_parent)
 			{
-				child->m_parent->removeChild(child);
+				// すでにツリーに所属していた場合は削除する
+				if (child->m_parent == this)
+				{
+					m_children.remove(child);
+				}
+				else
+				{
+					child->m_parent->removeChild(child);
+				}
 			}
 
 			// 子要素の更新
@@ -124,6 +131,15 @@ namespace FlexLayout::Internal
 
 		// YGNodeの更新
 		YGNodeSetChildren(m_yogaNode, ygnodes.data(), ygnodes.size());
+
+		// 取り残されたノードの切り離し
+		for (const auto& child : m_children)
+		{
+			child->m_parent = nullptr;
+			child->setContext(nullptr);
+			child->getComponent<Component::LayoutComponent>()
+				.clearLayoutOffsetRecursive();
+		}
 
 		// m_childrenの更新
 		m_children = children;
