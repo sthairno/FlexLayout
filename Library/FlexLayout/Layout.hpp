@@ -6,6 +6,7 @@
 #include "Box.hpp"
 #include "Label.hpp"
 #include "Util/StyleValueHelper.hpp"
+#include "UIState.hpp"
 
 namespace tinyxml2
 {
@@ -70,24 +71,6 @@ namespace FlexLayout
 		/// @param enableHotReload ホットリロードを有効にするか
 		/// @return 成功した場合はtrue、失敗した場合はfalse
 		bool load(s3d::FilePathView path, EnableHotReload enableHotReload = EnableHotReload::No);
-
-		/// @brief XMLファイルをファイルパスから読み込む
-		/// @param path XMLファイルのパス
-		/// @param enableHotReload ホットリロードを有効にするか
-		/// @return 成功した場合はtrue、失敗した場合はfalse
-		inline bool load(const char32_t* path, EnableHotReload enableHotReload = EnableHotReload::No)
-		{
-			return load(s3d::FilePath{ path }, enableHotReload);
-		}
-
-		/// @brief XMLファイルをファイルパスから読み込む
-		/// @param path XMLファイルのパス
-		/// @param enableHotReload ホットリロードを有効にするか
-		/// @return 成功した場合はtrue、失敗した場合はfalse
-		inline bool load(const s3d::FilePath& path, EnableHotReload enableHotReload = EnableHotReload::No)
-		{
-			return load(path, enableHotReload);
-		}
 
 		/// @brief XMLを読み込む
 		/// @return 成功した場合はtrue、失敗した場合はfalse
@@ -170,6 +153,26 @@ namespace FlexLayout
 		/// @brief レイアウトを再計算する
 		void calculateLayout();
 
+		template <class State>
+		void registerCustomComponent(const s3d::String& tagName, UIStateFactory<State> factory)
+		{
+			registerCustomComponentImpl(
+				tagName,
+				[]() -> std::unique_ptr<UIState>
+				{ return factory(); }
+			);
+		}
+
+		template <class State>
+		void registerCustomComponent(const s3d::String& tagName)
+		{
+			registerCustomComponentImpl(
+				tagName,
+				[]() -> std::unique_ptr<UIState>
+				{ return std::make_unique<State>(); }
+			);
+		}
+
 		/// @brief ルート要素を取得する
 		s3d::Optional<Box> document();
 
@@ -177,11 +180,19 @@ namespace FlexLayout
 		/// @remark XMLの読込の際に上書きされる可能性があります
 		void setDocument(Box root);
 
+		/// @brief UIの更新を行う
+		void updateUI();
+
+		/// @brief UIを描画する
+		void drawUI() const;
+
 	private:
 
 		struct Impl;
 
 		std::unique_ptr<Impl> m_impl;
+
+		void registerCustomComponentImpl(const s3d::String& tagName, std::unique_ptr<UIState>(*factory)());
 
 	public:
 

@@ -7,6 +7,7 @@
 #include "NodeComponent/StyleComponent.hpp"
 #include "NodeComponent/XmlAttributeComponent.hpp"
 #include "NodeComponent/TextComponent.hpp"
+#include "NodeComponent/UIComponent.hpp"
 
 namespace FlexLayout::Internal
 {
@@ -78,7 +79,10 @@ namespace FlexLayout::Internal
 			std::make_unique<Component::XmlAttributeComponent>(*this),
 			options.textNode
 				? std::make_unique<Component::TextComponent>(*this)
-				: std::unique_ptr<Component::TextComponent>{}
+				: std::unique_ptr<Component::TextComponent>{},
+			options.uiNode
+				? std::make_unique<Component::UIComponent>(*this)
+				: std::unique_ptr<Component::UIComponent>{}
 		}
 	{
 		YGNodeSetContext(m_yogaNode, this);
@@ -105,10 +109,17 @@ namespace FlexLayout::Internal
 		Array<YGNodeRef> ygnodes(Arg::reserve = children.size());
 		for (const auto& child : children)
 		{
-			// すでにどこかに所属していた場合は削除する
 			if (child->m_parent)
 			{
-				child->m_parent->removeChild(child);
+				// すでにツリーに所属していた場合は削除する
+				if (child->m_parent == this)
+				{
+					m_children.remove(child);
+				}
+				else
+				{
+					child->m_parent->removeChild(child);
+				}
 			}
 
 			// 子要素の更新
@@ -120,6 +131,15 @@ namespace FlexLayout::Internal
 
 		// YGNodeの更新
 		YGNodeSetChildren(m_yogaNode, ygnodes.data(), ygnodes.size());
+
+		// 取り残されたノードの切り離し
+		for (const auto& child : m_children)
+		{
+			child->m_parent = nullptr;
+			child->setContext(nullptr);
+			child->getComponent<Component::LayoutComponent>()
+				.clearLayoutOffsetRecursive();
+		}
 
 		// m_childrenの更新
 		m_children = children;
@@ -261,7 +281,8 @@ namespace FlexLayout::Internal
 	std::shared_ptr<FlexBoxNode> FlexBoxNode::clone() const
 	{
 		auto instance = std::make_shared<FlexBoxNode>(FlexBoxNodeOptions{
-			.textNode = isTextNode()
+			.textNode = isTextNode(),
+			.uiNode   = isUINode()
 		});
 
 		instance->getComponent<Component::LayoutComponent>()
@@ -274,6 +295,11 @@ namespace FlexLayout::Internal
 		{
 			instance->getComponent<Component::TextComponent>()
 				.copy(getComponent<Component::TextComponent>());
+		}
+		if (isUINode())
+		{
+			instance->getComponent<Component::UIComponent>()
+				.copy(getComponent<Component::UIComponent>());
 		}
 
 		instance->m_additonalProperties = m_additonalProperties;
@@ -301,6 +327,11 @@ namespace FlexLayout::Internal
 	bool FlexBoxNode::isTextNode() const
 	{
 		return !!std::get<std::unique_ptr<Component::TextComponent>>(m_components);
+	}
+
+	bool FlexBoxNode::isUINode() const
+	{
+		return !!std::get<std::unique_ptr<Component::UIComponent>>(m_components);
 	}
 
 	bool FlexBoxNode::BelongsToSameTree(const FlexBoxNode& a, const FlexBoxNode& b)
@@ -367,6 +398,11 @@ namespace FlexLayout::Internal
 		else
 		{
 			m_additonalProperties[key] = value;
+			if (isUINode())
+			{
+				getComponent<Component::UIComponent>()
+					.setAdditionalProperty(key, value);
+			}
 		}
 	}
 
@@ -389,7 +425,14 @@ namespace FlexLayout::Internal
 			getComponent<Component::StyleComponent>().setFont({ }, U"");
 		}
 
-		return m_additonalProperties.erase(key);
+		bool success = m_additonalProperties.erase(key);
+		if (isUINode())
+		{
+			getComponent<Component::UIComponent>()
+				.unsetAdditionalProperty(key);
+		}
+
+		return success;
 	}
 
 	void FlexBoxNode::clearProperties()

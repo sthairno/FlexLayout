@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <tinyxml2.h>
 #include "FlexBoxNode.hpp"
+#include "../UIState.hpp"
 
 using namespace s3d;
 
@@ -11,6 +12,8 @@ namespace FlexLayout::Internal
 	public:
 
 		bool load(std::shared_ptr<FlexBoxNode>& rootRef, const tinyxml2::XMLDocument& document);
+
+		void registerStateFactory(const String& tagName, std::unique_ptr<UIState>(*factory)());
 
 	private:
 
@@ -24,6 +27,8 @@ namespace FlexLayout::Internal
 		std::shared_ptr<FlexBoxNode> m_rootCache;
 
 		HashTable<String, std::shared_ptr<FlexBoxNode>> m_id2NodeDic;
+
+		HashTable<String, std::unique_ptr<UIState>(*)()> m_stateFactories;
 
 		std::shared_ptr<FlexBoxNode> loadNode(const tinyxml2::XMLElement& element, bool isRoot);
 

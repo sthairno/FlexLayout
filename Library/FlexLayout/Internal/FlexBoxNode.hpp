@@ -14,12 +14,14 @@ namespace FlexLayout::Internal
 		class StyleComponent;
 		class XmlAttributeComponent;
 		class TextComponent;
+		class UIComponent;
 	}
 	class TreeContext;
 
 	struct FlexBoxNodeOptions
 	{
 		bool textNode = false;
+		bool uiNode = false;
 	};
 
 	class FlexBoxNode : public std::enable_shared_from_this<FlexBoxNode>
@@ -98,6 +100,8 @@ namespace FlexLayout::Internal
 
 		bool isTextNode() const;
 
+		bool isUINode() const;
+
 		static bool BelongsToSameTree(const FlexBoxNode& a, const FlexBoxNode& b);
 
 		// --- プロパティ関連 ---
@@ -109,6 +113,8 @@ namespace FlexLayout::Internal
 		bool removeProperty(const StringView key);
 
 		void clearProperties();
+
+		const HashTable<String, String>& getAdditionalProperties() const { return m_additonalProperties; }
 
 	private:
 
@@ -122,7 +128,8 @@ namespace FlexLayout::Internal
 			std::unique_ptr<Component::LayoutComponent>,
 			std::unique_ptr<Component::StyleComponent>,
 			std::unique_ptr<Component::XmlAttributeComponent>,
-			std::unique_ptr<Component::TextComponent>
+			std::unique_ptr<Component::TextComponent>,
+			std::unique_ptr<Component::UIComponent>
 		> m_components;
 
 		std::shared_ptr<TreeContext> m_context;

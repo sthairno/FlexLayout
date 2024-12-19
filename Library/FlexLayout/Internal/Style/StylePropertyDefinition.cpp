@@ -933,6 +933,46 @@ namespace FlexLayout::Internal
 				},
 				.resetCallback = [](FlexBoxNode&) -> void { }
 			}
+		},
+		{
+			U"place-content",
+			StylePropertyDefinitionDetails{
+				.patterns = {
+					{ { PatternEnum<AlignContent>() } },
+					{ { PatternEnum<AlignContent>() }, { PatternEnum<JustifyContent>() } }
+				},
+				.installCallback = [](FlexBoxNode& impl, std::span<const Style::StyleValue> input) -> bool
+				{
+					switch (input.size())
+					{
+					case 1:
+						YGNodeStyleSetAlignContent(
+							impl.yogaNode(),
+							EnumToYogaEnum(input[0].getEnumValueUnchecked<AlignContent>())
+						);
+						return true;
+					case 2:
+						YGNodeStyleSetAlignContent(
+							impl.yogaNode(),
+							EnumToYogaEnum(input[0].getEnumValueUnchecked<AlignContent>())
+						);
+						YGNodeStyleSetJustifyContent(
+							impl.yogaNode(),
+							EnumToYogaEnum(input[1].getEnumValueUnchecked<JustifyContent>())
+						);
+						return true;
+					}
+
+					return false;
+				},
+				.resetCallback = [](FlexBoxNode& impl) -> void
+				{
+					auto dummyNode = GetConfig().dummyNode();
+					YGNodeStyleSetAlignContent(impl.yogaNode(), YGNodeStyleGetAlignContent(dummyNode));
+					YGNodeStyleSetJustifyContent(impl.yogaNode(), YGNodeStyleGetJustifyContent(dummyNode));
+				},
+				.maybeAffectTo = { U"align-content", U"justify-content" }
+			}
 		}
 	};
 }

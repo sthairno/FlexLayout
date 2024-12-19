@@ -29,6 +29,38 @@ namespace FlexLayout::Internal
 
 		ASSERT_EQ(&root->context(), &child1->context());
 		ASSERT_EQ(&root->context(), &child2->context());
+		ASSERT_EQ(child1->parent(), root.get());
+		ASSERT_EQ(child2->parent(), root.get());
+	}
+
+	TEST(FlexBoxTreeTest, SetChildren_Overwrite)
+	{
+		auto root = std::make_shared<FlexBoxNode>();
+
+		auto child1 = std::make_shared<FlexBoxNode>();
+		auto child2 = std::make_shared<FlexBoxNode>();
+		auto child3 = std::make_shared<FlexBoxNode>();
+
+		Array<std::shared_ptr<FlexBoxNode>> children1{
+			child1, child2
+		};
+		root->setChildren(children1);
+
+		Array<std::shared_ptr<FlexBoxNode>> children2{
+			child2, child3
+		};
+		root->setChildren(children2);
+
+		ASSERT_EQ(root->children().size(), 2);
+		ASSERT_EQ(root->children()[0], child2);
+		ASSERT_EQ(root->children()[1], child3);
+
+		ASSERT_NE(&root->context(), &child1->context());
+		ASSERT_EQ(&root->context(), &child2->context());
+		ASSERT_EQ(&root->context(), &child3->context());
+		ASSERT_EQ(child1->parent(), nullptr);
+		ASSERT_EQ(child2->parent(), root.get());
+		ASSERT_EQ(child3->parent(), root.get());
 	}
 
 	TEST(FlexBoxTreeTest, SetChildren_CircularReference)

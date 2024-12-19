@@ -5,6 +5,8 @@
 #include "Internal/NodeComponent/LayoutComponent.hpp"
 #include "Internal/NodeComponent/StyleComponent.hpp"
 #include "Internal/NodeComponent/XmlAttributeComponent.hpp"
+#include "Internal/NodeComponent/TextComponent.hpp"
+#include "Internal/NodeComponent/UIComponent.hpp"
 
 namespace FlexLayout
 {
@@ -288,6 +290,41 @@ namespace FlexLayout
 		m_node->setChildren(newChildren.map([](const auto& child) { return child.m_node; }));
 	}
 
+	s3d::String Box::textContent() const
+	{
+		if (m_node->isTextNode())
+		{
+			auto view = m_node
+				->getComponent<Internal::Component::TextComponent>()
+				.text();
+			return String{ view };
+		}
+		else if (m_node->isUINode())
+		{
+			return m_node
+				->getComponent<Internal::Component::UIComponent>()
+				.textContent();
+		}
+
+		return U"";
+	}
+
+	void Box::setTextContent(s3d::StringView text)
+	{
+		if (m_node->isTextNode())
+		{
+			m_node
+				->getComponent<Internal::Component::TextComponent>()
+				.setText(text);
+		}
+		else if (m_node->isUINode())
+		{
+			m_node
+				->getComponent<Internal::Component::UIComponent>()
+				.setTextContent(text);
+		}
+	}
+
 	Optional<String> Box::getAttribute(s3d::StringView name) const
 	{
 		return m_node->getProperty(name);
@@ -348,6 +385,13 @@ namespace FlexLayout
 		{
 			component.border().drawPadding(*rect, color);
 		}
+	}
+
+	UIState* Box::tryGetUIState() const
+	{
+		return m_node->isUINode()
+			? m_node->getComponent<Internal::Component::UIComponent>().state()
+			: nullptr;
 	}
 
 	Box::~Box() { }

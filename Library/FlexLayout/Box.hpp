@@ -12,6 +12,10 @@ namespace FlexLayout
 	}
 	class Label;
 
+	class UIState;
+	template <class State>
+	class UIBox;
+
 	using StyleValue = Style::StyleValue;
 
 	class Box
@@ -209,6 +213,12 @@ namespace FlexLayout
 			replaceChildren({ newChildren... });
 		}
 
+		// Text
+
+		s3d::String textContent() const;
+
+		void setTextContent(s3d::StringView text);
+
 		// Attributes
 
 		/// @brief 属性の値を取得する
@@ -246,6 +256,9 @@ namespace FlexLayout
 		/// @brief Labelのインスタンスに変換する
 		s3d::Optional<Label> asLabel() const;
 
+		template <class State>
+		s3d::Optional<UIBox<State>> as() const;
+
 		/// @brief 枠線を描画する
 		/// @param color 枠線の色
 		void drawFrame(const s3d::ColorF& color = s3d::Palette::White) const;
@@ -256,8 +269,12 @@ namespace FlexLayout
 
 		std::shared_ptr<Internal::FlexBoxNode> m_node;
 
+	private:
+
+		UIState* tryGetUIState() const;
+
 	public:
 
-		virtual ~Box();
+		~Box();
 	};
 }

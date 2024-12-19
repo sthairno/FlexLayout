@@ -31,9 +31,11 @@ namespace FlexLayout
 
 		s3d::Vec2 offset = { 0, 0 };
 
+		Internal::XMLLoader loader{ };
+
 		bool loadDocument(const tinyxml2::XMLDocument& document)
 		{
-			if (Internal::XMLLoader{ }.load(root, document))
+			if (loader.load(root, document))
 			{
 				if (onLoad)
 				{
@@ -151,6 +153,26 @@ namespace FlexLayout
 					.setLayoutOffsetRecursive(offset);
 			}
 		}
+
+		void updateUI()
+		{
+			if (root)
+			{
+				root->context()
+					.getContext<Internal::Context::UIContext>()
+					.update(*root);
+			}
+		}
+
+		void drawUI() const
+		{
+			if (root)
+			{
+				root->context()
+					.getContext<Internal::Context::UIContext>()
+					.draw(*root);
+			}
+		}
 	};
 
 	Layout::Layout(OnLoadCallback onLoad)
@@ -214,6 +236,23 @@ namespace FlexLayout
 	void Layout::setDocument(Box root)
 	{
 		m_impl->root = Internal::Accessor::GetNode(root);
+	}
+
+	void Layout::updateUI()
+	{
+		m_impl->updateUI();
+	}
+
+	void Layout::drawUI() const
+	{
+		m_impl->drawUI();
+	}
+
+	void Layout::registerCustomComponentImpl(
+		const s3d::String& tagName,
+		std::unique_ptr<UIState>(*factory)())
+	{
+		m_impl->loader.registerStateFactory(tagName, factory);
 	}
 
 	Layout::~Layout()
