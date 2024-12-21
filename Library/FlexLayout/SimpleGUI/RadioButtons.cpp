@@ -38,7 +38,9 @@ namespace FlexLayout::SimpleGUI
 
 	void RadioButtons::setTextContent(UIStateQuery query, s3d::StringView text)
 	{
-		m_options = String{ text }.split_lines();
+		m_options = text.isEmpty()
+			? Array<String>{ U"" } : String{ text }.split_lines();
+
 		if (m_index >= m_options.size())
 		{
 			m_index = 0;
