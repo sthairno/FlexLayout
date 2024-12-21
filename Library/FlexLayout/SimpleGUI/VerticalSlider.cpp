@@ -50,6 +50,11 @@ namespace FlexLayout::SimpleGUI
 			m_max = ParseOpt<double>(value).value_or(1.0);
 			m_value = Max(Min(m_value, m_max), m_min);
 		}
+		else if (key == U"value")
+		{
+			m_value = ParseOpt<double>(value).value_or(0.0);
+			m_value = Max(Min(m_value, m_max), m_min);
+		}
 	}
 
 	void VerticalSlider::unsetProperty(UIStateQuery, s3d::StringView key)
@@ -63,6 +68,10 @@ namespace FlexLayout::SimpleGUI
 		{
 			m_max = 1.0;
 			m_value = Max(Min(m_value, m_max), m_min);
+		}
+		else if (key == U"value")
+		{
+			// Do nothing
 		}
 	}
 
