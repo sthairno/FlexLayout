@@ -13,6 +13,10 @@ namespace FlexLayout::SimpleGUI
 		).size;
 
 		query.setStyle(
+			U"min-width",
+			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
+		);
+		query.setStyle(
 			U"width",
 			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
 		);

@@ -8,6 +8,14 @@ namespace FlexLayout::SimpleGUI
 	{
 		auto size = s3d::SimpleGUI::ColorPickerRegion({ 0, 0 }).size;
 		query.setStyle(
+			U"min-width",
+			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
+		);
+		query.setStyle(
+			U"min-height",
+			StyleValue::Length(static_cast<float>(size.y), LengthUnit::Pixel)
+		);
+		query.setStyle(
 			U"width",
 			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
 		);

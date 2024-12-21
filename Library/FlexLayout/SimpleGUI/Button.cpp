@@ -13,6 +13,10 @@ namespace FlexLayout::SimpleGUI
 			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
 		);
 		query.setStyle(
+			U"min-height",
+			StyleValue::Length(static_cast<float>(size.y), LengthUnit::Pixel)
+		);
+		query.setStyle(
 			U"height",
 			StyleValue::Length(static_cast<float>(size.y), LengthUnit::Pixel)
 		);
@@ -40,6 +44,10 @@ namespace FlexLayout::SimpleGUI
 		query.setStyle(
 			U"min-width",
 			StyleValue::Length(static_cast<float>(size.x), LengthUnit::Pixel)
+		);
+		query.setStyle(
+			U"min-height",
+			StyleValue::Length(static_cast<float>(size.y), LengthUnit::Pixel)
 		);
 		query.setStyle(
 			U"height",
