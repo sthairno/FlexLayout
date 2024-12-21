@@ -180,7 +180,9 @@ namespace FlexLayout
 			.intf = this,
 			.onLoad = onLoad
 		})
-	{ }
+	{
+		m_impl->loader.registerSimpleGUIFactories();
+	}
 
 	bool Layout::load(s3d::FilePathView path, EnableHotReload enableHotReload)
 	{
