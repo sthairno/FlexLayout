@@ -121,11 +121,11 @@ namespace FlexLayout
 
 		virtual void update(UIStateQuery query, const Box&) { }
 
-		virtual void setProperty(UIStateQuery query, const s3d::StringView key, const s3d::StringView value) { }
+		virtual void setProperty(UIStateQuery query, s3d::StringView key, s3d::StringView value) { }
 
-		virtual void unsetProperty(UIStateQuery query, const s3d::StringView key) { }
+		virtual void unsetProperty(UIStateQuery query, s3d::StringView key) { }
 
-		virtual void setTextContent(UIStateQuery query, const s3d::StringView text) { }
+		virtual void setTextContent(UIStateQuery query, s3d::StringView text) { }
 
 		virtual std::unique_ptr<UIState> clone() = 0;
 
