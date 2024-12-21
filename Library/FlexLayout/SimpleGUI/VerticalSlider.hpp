@@ -60,7 +60,7 @@ namespace FlexLayout::SimpleGUI
 
 		double m_min = 0.0;
 
-		double m_max = 0.0;
+		double m_max = 1.0;
 
 		bool m_enabled = true;
 
