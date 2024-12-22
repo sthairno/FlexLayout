@@ -10,7 +10,7 @@ void Main()
 	Scene::SetBackground(Palette::White);
 
 	// レイアウト本体
-	FlexLayout::Layout layout{ U"Layout.html", FlexLayout::EnableHotReload::Yes };
+	FlexLayout::Layout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
 
 	// ボックスの描画関数
 	std::function<void(const FlexLayout::Box&)> drawBox;
@@ -39,9 +39,7 @@ void Main()
 	while (System::Update())
 	{
 		// レイアウトの更新
-		layout.handleHotReload();
-		layout.setConstraints(Scene::Rect());
-		layout.calculateLayout();
+		layout.updateAll(Scene::Rect());
 
 		if (auto document = layout.document())
 		{
