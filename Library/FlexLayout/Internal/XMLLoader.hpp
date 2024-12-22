@@ -15,6 +15,8 @@ namespace FlexLayout::Internal
 
 		void registerStateFactory(const String& tagName, std::unique_ptr<UIState>(*factory)());
 
+		void registerSimpleGUIFactories();
+
 	private:
 
 		struct _CacheFilters

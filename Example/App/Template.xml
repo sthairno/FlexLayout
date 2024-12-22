@@ -1,0 +1,6 @@
+
+<Layout>
+    <Box style="border-width: 1px; width: 30px; height: 30px;">
+        <Label id="label"></Label>
+    </Box>
+</Layout>

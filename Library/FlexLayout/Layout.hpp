@@ -101,7 +101,7 @@ namespace FlexLayout
 		bool reload();
 
 		/// @brief ファイルのフルパスを取得する
-		const s3d::FilePathView fileFullPath() const;
+		const s3d::FilePath& fileFullPath() const;
 
 		/// @brief ホットリロードが有効か
 		bool isHotReloadEnabled() const;
@@ -121,7 +121,7 @@ namespace FlexLayout
 		);
 
 		/// @brief レイアウト制約を設定
-		inline void setConstraints(s3d::SizeF size)
+		void setConstraints(s3d::SizeF size)
 		{
 			setConstraints(
 				s3d::Vec2::Zero(),
@@ -131,7 +131,7 @@ namespace FlexLayout
 		}
 
 		/// @brief レイアウト制約を設定
-		inline void setConstraints(s3d::RectF rect)
+		void setConstraints(s3d::RectF rect)
 		{
 			setConstraints(
 				rect.pos,
@@ -141,7 +141,7 @@ namespace FlexLayout
 		}
 
 		/// @brief レイアウト制約を設定
-		inline void setConstraints(s3d::Vec2 offset, s3d::SizeF size)
+		void setConstraints(s3d::Vec2 offset, s3d::SizeF size)
 		{
 			setConstraints(
 				offset,
@@ -182,6 +182,16 @@ namespace FlexLayout
 
 		/// @brief UIの更新を行う
 		void updateUI();
+
+		/// @brief 更新処理をまとめて行う
+		template<class... ConstraintArgs>
+		void updateAll(ConstraintArgs... args)
+		{
+			handleHotReload();
+			setConstraints(args...);
+			calculateLayout();
+			updateUI();
+		}
 
 		/// @brief UIを描画する
 		void drawUI() const;

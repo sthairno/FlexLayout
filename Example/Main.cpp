@@ -10,7 +10,8 @@ void Main()
 	Scene::SetBackground(Palette::White);
 
 	// レイアウト本体
-	FlexLayout::Layout layout{ U"Layout.html", FlexLayout::EnableHotReload::Yes };
+	FlexLayout::Layout layout{ U"Layout.xml", FlexLayout::EnableHotReload::Yes };
+	FlexLayout::Layout templateLayout{ U"Template.xml", FlexLayout::EnableHotReload::Yes };
 
 	// ボックスの描画関数
 	std::function<void(const FlexLayout::Box&)> drawBox;
@@ -32,61 +33,38 @@ void Main()
 		}
 	};
 
-	double sliderValue = 0.5;
-
 	int cloneId = 0;
+
+	auto document = layout.document();
+	auto button = *document->getElementById(U"button")->as<FlexLayout::SimpleGUI::Button>();
+	auto slider = *document->getElementById(U"slider")->as<FlexLayout::SimpleGUI::Slider>();
+	auto cloneTarget = *document->getElementById(U"clone-target");
+	auto cloneButton = *document->getElementById(U"clone-button")->as<FlexLayout::SimpleGUI::Button>();
+	auto resetButton = *document->getElementById(U"reset-button")->as<FlexLayout::SimpleGUI::Button>();
 
 	while (System::Update())
 	{
-		// レイアウトの更新
-		layout.handleHotReload();
-		layout.setConstraints(Scene::Rect());
-		layout.calculateLayout();
+		layout.updateAll(Scene::Rect());
+		layout.drawUI();
 
 		if (auto document = layout.document())
 		{
 			drawBox(*document);
 
-			auto button = document->getElementById(U"button");
-			auto slider = document->getElementById(U"slider");
-
-			// Box[id="button"] と Box[id="slider"] に対応するボタンとスライダーを配置
-
-			if (button)
+			if (cloneButton->clicked())
 			{
-				FlexLayout::SimpleGUI::Button(*button, U"Button");
-			}
-
-			if (slider)
-			{
-				FlexLayout::SimpleGUI::Slider(*slider, sliderValue);
-			}
-
-			auto cloneTarget = document->getElementById(U"clone-target");
-			auto cloneButton = document->getElementById(U"clone-button");
-			auto resetButton = document->getElementById(U"reset-button");
-
-			if (cloneButton &&
-				FlexLayout::SimpleGUI::Button(*cloneButton, U"Clone", cloneTarget.has_value()))
-			{
-				auto cloneTemplate = *document->getElementById(U"clone-template");
-				auto clone = cloneTemplate.cloneNode(true);
-
-				// 非表示のボックスを表示させる
-				clone.unsetStyle(U"display");
-				clone.removeAttribute(U"id");
+				auto clone = templateLayout.document()->cloneNode(true);
 
 				// IDのラベルを更新
-				clone.getElementById(U"clone-label")->asLabel()->setText(Format(cloneId++));
+				clone.getElementById(U"label")->setTextContent(Format(cloneId++));
 
-				cloneTarget->appendChild(clone);
+				cloneTarget.appendChild(clone);
 			}
 
-			if (resetButton &&
-				FlexLayout::SimpleGUI::Button(*resetButton, U"Reset", cloneTarget.has_value() && cloneTarget->hasChildNodes()))
+			if (resetButton->clicked())
 			{
 				cloneId = 0;
-				cloneTarget->removeChildren();
+				cloneTarget.removeChildren();
 			}
 
 			FlexLayout::Debugger::DrawHoveredBoxLayout(*document);

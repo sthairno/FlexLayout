@@ -1,24 +1,5 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<!-- ブラウザで表示する際の調整 -->
-		<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@100;300;400;500;700;800;900" rel="stylesheet"/>
-		<style>
-			body {
-				margin: 0;
-			}
-			box,label {
-				display: flex;
-				border-color: grey;
-				border-style: solid;
-				border-width: 0px;
-				font-family: 'M PLUS 1p';
-				font-weight: 400;
-				font-style: normal;
-			}
-		</style>
-	</head>
-	<body style="flex-direction: column; font-size: 14px;">
+<Layout>
+	<Box style="flex-direction: column; font-size: 14px;">
 		<Box style="font-size: 1.5em; padding: 0.5em 1em; border-bottom-width: 2px;">
 			<Label>FlexLayout Showcase</Label>
 		</Box>
@@ -39,25 +20,22 @@
 				</Box>
 			</Box>
 			<Box style="border-width: 1px; padding: 6px; flex-direction: column;">
-				<Label>&lt;Box id="button"&gt;&lt;/Box&gt;</Label>
-				<Label>&lt;Box id="slider"&gt;&lt;/Box&gt;</Label>
-				<Box id="button"></Box>
-				<Box id="slider"></Box>
+				<Label>&lt;SimpleGUI.Button id="button" /&gt;</Label>
+				<Label>&lt;SimpleGUI.Slider id="slider" /&gt;</Label>
+				<SimpleGUI.Button id="button">Button</SimpleGUI.Button>
+				<SimpleGUI.Slider id="slider"/>
 			</Box>
 			<Box style="border-width: 1px; padding: 6px; flex-direction: column;">
 				<Label style="line-height: 1.5;">
 					document->getElementById(U"clone-template")->cloneNode(true)
 				</Label>
-				<Box id="clone-template" style="display: none; border-width: 1px; width: 30px; height: 30px;">
-					<Label id="clone-label"></Label>
-				</Box>
 				<Box style="padding: 5px 14px; gap: 10px">
-					<Box id="clone-button"/>
-					<Box id="reset-button"/>
+					<SimpleGUI.Button id="clone-button">Clone</SimpleGUI.Button>
+					<SimpleGUI.Button id="reset-button">Reset</SimpleGUI.Button>
 				</Box>
 				<Box id="clone-target" style="flex-wrap: wrap; border-width: 1px; padding: 10px; margin: 5px;">
 				</Box>
 			</Box>
 		</Box>
-	</body>
-</html>
+	</Box>
+</Layout>
