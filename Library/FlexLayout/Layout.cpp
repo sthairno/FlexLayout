@@ -204,6 +204,11 @@ namespace FlexLayout
 		return m_impl->reloadFile();
 	}
 
+	const s3d::FilePath& Layout::fileFullPath() const
+	{
+		return m_impl->fileFullPath;
+	}
+
 	bool Layout::isHotReloadEnabled() const
 	{
 		return m_impl->dirWatcher && m_impl->dirWatcher->isOpen();

@@ -101,7 +101,7 @@ namespace FlexLayout
 		bool reload();
 
 		/// @brief ファイルのフルパスを取得する
-		const s3d::FilePathView fileFullPath() const;
+		const s3d::FilePath& fileFullPath() const;
 
 		/// @brief ホットリロードが有効か
 		bool isHotReloadEnabled() const;
