@@ -1,4 +1,5 @@
 ﻿#include "CheckBox.hpp"
+#include <Siv3D/Parse.hpp>
 
 using namespace s3d;
 
@@ -34,6 +35,25 @@ namespace FlexLayout::SimpleGUI
 				rect->w,
 				m_enabled
 			);
+		}
+	}
+
+	void CheckBox::setProperty(UIStateQuery, s3d::StringView key, s3d::StringView value)
+	{
+		if (key == U"checked")
+		{
+			if (auto checked = ParseOpt<bool>(value))
+			{
+				m_checked = *checked;
+			}
+		}
+	}
+
+	void CheckBox::unsetProperty(UIStateQuery, s3d::StringView key)
+	{
+		if (key == U"checked")
+		{
+			// Do nothing
 		}
 	}
 

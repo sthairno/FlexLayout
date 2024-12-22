@@ -12,6 +12,10 @@ namespace FlexLayout::SimpleGUI
 
 		void draw(UIStateQuery query, const Box& box) override;
 
+		void setProperty(UIStateQuery query, s3d::StringView key, s3d::StringView value) override;
+
+		void unsetProperty(UIStateQuery query, s3d::StringView key) override;
+
 		void setTextContent(UIStateQuery query, s3d::StringView text) override;
 
 		std::unique_ptr<UIState> clone() override;
