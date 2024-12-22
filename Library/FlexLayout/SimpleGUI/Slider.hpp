@@ -56,7 +56,7 @@ namespace FlexLayout::SimpleGUI
 
 	private:
 
-		double m_value;
+		double m_value = 0.0;
 
 		double m_min = 0.0;
 
