@@ -9,8 +9,6 @@ on:
       - '**.hpp'
       - '**.vcxproj'
       - '!Test/**'
-  pull_request:
-    types: [synchronize, opened]
 
 env:
   ARTIFACT_NAME: FlexLayout-Windows
