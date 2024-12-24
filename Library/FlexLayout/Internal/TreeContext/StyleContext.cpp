@@ -6,8 +6,6 @@ namespace FlexLayout::Internal::Context
 {
 	void StyleContext::applyStyles(FlexBoxNode& root)
 	{
-		auto& context = root.context();
-
 		if (m_styleApplicationWaitinglist.empty())
 		{
 			return;

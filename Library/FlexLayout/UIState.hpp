@@ -115,6 +115,8 @@ namespace FlexLayout
 	{
 	public:
 
+		SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4100)
+
 		virtual void attach(UIStateQuery query) { }
 
 		virtual void draw(UIStateQuery query, const Box&) { }
@@ -126,6 +128,8 @@ namespace FlexLayout
 		virtual void unsetProperty(UIStateQuery query, s3d::StringView key) { }
 
 		virtual void setTextContent(UIStateQuery query, s3d::StringView text) { }
+
+		SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 		virtual std::unique_ptr<UIState> clone() = 0;
 

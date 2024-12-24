@@ -24,19 +24,6 @@ namespace FlexLayout::Internal
 			return result;
 		}
 
-		static const tinyxml2::XMLElement* FirstChildElement(const tinyxml2::XMLElement* element, const std::string_view& name)
-		{
-			for (auto child = element->FirstChildElement(); child; child = child->NextSiblingElement())
-			{
-				if (ToLower(child->Name()) == name)
-				{
-					return child;
-				}
-			}
-
-			return nullptr;
-		}
-
 		static String LoadInnerText(const tinyxml2::XMLElement& element)
 		{
 			std::string innerText;
@@ -229,8 +216,6 @@ namespace FlexLayout::Internal
 		node->getComponent<Component::XmlAttributeComponent>()
 			.setTagName(tagName);
 		return node;
-
-		return nullptr;
 	}
 
 	void XMLLoader::cacheNodesById(std::shared_ptr<FlexBoxNode> node)

@@ -39,8 +39,8 @@ namespace FlexLayout
 			{
 				if (onLoad)
 				{
-					Box root{ root };
-					onLoad(*intf, root);
+					Box rootIntf{ root };
+					onLoad(*intf, rootIntf);
 				}
 				return true;
 			}
