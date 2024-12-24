@@ -78,6 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <BuildStlModules>false</BuildStlModules>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <ProjectReference />
     <Lib>
