@@ -11,7 +11,10 @@
 namespace FlexLayout
 {
 	Box::Box(const std::shared_ptr<Internal::FlexBoxNode>& node)
-		: m_node(node) { }
+		: m_node(node)
+	{
+		assert(node);
+	}
 
 	Optional<Vec2> Box::offset() const
 	{

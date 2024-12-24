@@ -106,7 +106,7 @@ namespace FlexLayout::Internal
 				rootRef.reset();
 			}
 
-			result = true;
+			result = !!rootRef;
 		}
 
 		m_rootCache.reset();
