@@ -155,9 +155,9 @@ namespace FlexLayout::Internal::Component
 
 		// 引数が文字列1つの場合、配列として処理して参照を切り替える
 		Array<Style::ValueInputVariant> tmpInputs;
-		if (inputs.size() == 1 && std::holds_alternative<const StringView>(inputs[0]))
+		if (inputs.size() == 1 && std::holds_alternative<StringView>(inputs[0]))
 		{
-			const auto text = std::get<const StringView>(inputs[0]);
+			const auto text = std::get<StringView>(inputs[0]);
 
 			size_t beginIdx = 0;
 			size_t endIdx = 0;

@@ -6,13 +6,13 @@ using namespace s3d;
 
 namespace FlexLayout::Internal
 {
-	Style::StyleValue ParseValue(std::int32_t value, StyleValueMultiMatchRule rule = Style::StyleValue::Type::Number);
+	Style::StyleValue ParseValue(std::int32_t value, StyleValueMultiMatchRule rule);
 
-	Style::StyleValue ParseValue(float value, StyleValueMultiMatchRule rule = Style::StyleValue::Type::Number);
+	Style::StyleValue ParseValue(float value, StyleValueMultiMatchRule rule);
 
-	Style::StyleValue ParseValue(const s3d::StringView str, StyleValueMultiMatchRule rule = Style::StyleValue::Type::Number);
+	Style::StyleValue ParseValue(s3d::StringView str, StyleValueMultiMatchRule rule);
 
-	Style::StyleValue ParseValue(Style::ValueInputVariant value, StyleValueMultiMatchRule rule = Style::StyleValue::Type::Number);
+	Style::StyleValue ParseValue(Style::ValueInputVariant value, StyleValueMultiMatchRule rule);
 }
 //
 //namespace s3d

@@ -160,6 +160,7 @@
     <ClCompile Include="HeadlessMain.cpp" />
     <ClCompile Include="StyleProperty.Test.cpp" />
     <ClCompile Include="StylePropertyDefinition.Test.cpp" />
+    <ClCompile Include="StyleValueParser.Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="App\Resource.rc" />

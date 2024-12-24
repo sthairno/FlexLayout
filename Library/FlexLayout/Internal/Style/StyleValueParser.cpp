@@ -42,9 +42,9 @@ namespace FlexLayout::Internal
 			{
 				return width >= 0.0f
 					? Style::StyleValue{ Type::Ratio, width }
-					: Style::StyleValue{ };
+				: Style::StyleValue{ };
 			}
-			
+
 			char32 maybeSlash;
 			if (not(stream >> std::ws >> maybeSlash) || maybeSlash != U'/')
 			{
@@ -60,7 +60,7 @@ namespace FlexLayout::Internal
 
 			return width >= 0.0F && height >= 0.0F
 				? Style::StyleValue{ Type::Ratio, width / height }
-				: Style::StyleValue{ };
+			: Style::StyleValue{ };
 		}
 
 		static std::tuple<bool, float, String> ParseFloatSuffix(const String& str)
@@ -99,7 +99,7 @@ namespace FlexLayout::Internal
 			return { true, value, Unicode::FromUTF8(suffix) };
 		}
 
-		static bool ParseLengthUnit(const StringView suffix, LengthUnit& unit)
+		static bool ParseLengthUnit(StringView suffix, LengthUnit& unit)
 		{
 			if (suffix.isEmpty())
 			{
@@ -137,6 +137,80 @@ namespace FlexLayout::Internal
 				return true;
 			}
 			return false;
+		}
+
+		static Optional<Color> ParseColor(StringView str)
+		{
+			if (not str.starts_with(U"#"))
+			{
+				return none;
+			}
+			str.remove_prefix(1);
+
+			switch (str.length())
+			{
+			case 3:
+			{
+				auto r = ParseIntOpt<uint8>(str.substr(0, 1), Arg::radix = 16);
+				auto g = ParseIntOpt<uint8>(str.substr(1, 1), Arg::radix = 16);
+				auto b = ParseIntOpt<uint8>(str.substr(2, 1), Arg::radix = 16);
+
+				if (r && g && b)
+				{
+					return Color{
+						uint8(*r * 0x11),
+						uint8(*g * 0x11),
+						uint8(*b * 0x11)
+					};
+				}
+			}
+			break;
+			case 4:
+			{
+				auto r = ParseIntOpt<uint8>(str.substr(0, 1), Arg::radix = 16);
+				auto g = ParseIntOpt<uint8>(str.substr(1, 1), Arg::radix = 16);
+				auto b = ParseIntOpt<uint8>(str.substr(2, 1), Arg::radix = 16);
+				auto a = ParseIntOpt<uint8>(str.substr(3, 1), Arg::radix = 16);
+
+				if (r && g && b && a)
+				{
+					return Color{
+						uint8(*r * 0x11),
+						uint8(*g * 0x11),
+						uint8(*b * 0x11),
+						uint8(*a * 0x11)
+					};
+				}
+			}
+			break;
+			case 6:
+			{
+				auto r = ParseIntOpt<uint8>(str.substr(0, 2), Arg::radix = 16);
+				auto g = ParseIntOpt<uint8>(str.substr(2, 2), Arg::radix = 16);
+				auto b = ParseIntOpt<uint8>(str.substr(4, 2), Arg::radix = 16);
+
+				if (r && g && b)
+				{
+					return Color{ *r, *g, *b };
+				}
+			}
+			break;
+			case 8:
+			{
+				auto r = ParseIntOpt<uint8>(str.substr(0, 2), Arg::radix = 16);
+				auto g = ParseIntOpt<uint8>(str.substr(2, 2), Arg::radix = 16);
+				auto b = ParseIntOpt<uint8>(str.substr(4, 2), Arg::radix = 16);
+				auto a = ParseIntOpt<uint8>(str.substr(6, 2), Arg::radix = 16);
+				if (r && g && b && a)
+				{
+					return Color{ *r, *g, *b, *a };
+				}
+
+			}
+			break;
+			}
+
+			return none;
 		}
 
 		static Style::StyleValue Parse(const String& str, StyleValueMatchRule rule)
@@ -213,6 +287,14 @@ namespace FlexLayout::Internal
 				}
 				break;
 			}
+			case Type::Color:
+			{
+				if (auto value = ParseColor(str))
+				{
+					return Style::StyleValue::Color(*value);
+				}
+				break;
+			}
 			}
 
 			return { };
@@ -244,7 +326,7 @@ namespace FlexLayout::Internal
 
 			return { };
 		}
-		
+
 		static Style::StyleValue Parse(float value, StyleValueMatchRule rule)
 		{
 			switch (rule.type)
@@ -278,7 +360,7 @@ namespace FlexLayout::Internal
 			return { };
 		}
 	};
-	
+
 
 	Style::StyleValue ParseValue(std::int32_t src, StyleValueMultiMatchRule rules)
 	{
@@ -306,7 +388,7 @@ namespace FlexLayout::Internal
 		return { };
 	}
 
-	Style::StyleValue ParseValue(const StringView str, StyleValueMultiMatchRule rules)
+	Style::StyleValue ParseValue(StringView str, StyleValueMultiMatchRule rules)
 	{
 		String trimmedStr{ str };
 		trimmedStr.trim();
@@ -343,9 +425,22 @@ namespace FlexLayout::Internal
 			return ParseValue(value, rules);
 		}
 
-		Style::StyleValue operator()(const StringView value)
+		Style::StyleValue operator()(StringView value)
 		{
 			return ParseValue(value, rules);
+		}
+
+		Style::StyleValue operator()(const Color& value)
+		{
+			for (auto& rule : rules.rules)
+			{
+				if (rule.type == Style::StyleValue::Type::Color)
+				{
+					return Style::StyleValue::Color(value);
+				}
+			}
+
+			return { };
 		}
 
 		template<class Enum>

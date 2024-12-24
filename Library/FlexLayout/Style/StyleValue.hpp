@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <Siv3D/Optional.hpp>
 #include <Siv3D/FormatData.hpp>
+#include <Siv3D/ColorHSV.hpp>
 #include "../Enum/LengthUnit.hpp"
 #include "StyleEnums.hpp"
 
@@ -37,7 +38,8 @@ namespace FlexLayout::Style
 			Ratio,
 			Percentage,
 			Number,
-			Length
+			Length,
+			Color
 		};
 
 	public:
@@ -109,6 +111,17 @@ namespace FlexLayout::Style
 
 		float getFloatValueUnchecked() const noexcept { return m_floatValue; }
 
+		s3d::Optional<s3d::Color> getColorValue() const noexcept
+		{
+			if (m_valueType == Type::Color)
+			{
+				return m_colorValue;
+			}
+			return s3d::none;
+		}
+
+		s3d::Color getColorValueUnchecked() const noexcept { return m_colorValue; }
+
 		EnumTypeId enumTypeId() const noexcept { return m_enumTypeId; }
 
 		LengthUnit lengthUnit() const noexcept { return m_lengthUnit; }
@@ -127,7 +140,7 @@ namespace FlexLayout::Style
 			return StyleValue{ Type::Auto };
 		}
 
-		inline static StyleValue Integer(int32_t value) noexcept
+		inline static StyleValue Integer(std::int32_t value) noexcept
 		{
 			return StyleValue{ Type::Integer, value };
 		}
@@ -137,7 +150,7 @@ namespace FlexLayout::Style
 		{
 			return StyleValue{
 				Type::Enum,
-				static_cast<int32_t>(value),
+				static_cast<std::int32_t>(value),
 				detail::style_enum_id_from_type<EnumType>::value
 			};
 		}
@@ -173,6 +186,11 @@ namespace FlexLayout::Style
 			return StyleValue{ Type::Length, length, unit };
 		}
 
+		inline static StyleValue Color(s3d::Color value)
+		{
+			return StyleValue{ Type::Color, value };
+		}
+
 	private:
 
 		union
@@ -180,6 +198,8 @@ namespace FlexLayout::Style
 			float m_floatValue = 0;
 
 			std::int32_t m_intValue;
+
+			s3d::Color m_colorValue;
 		};
 
 		Type m_valueType = Type::Unspecified;
@@ -210,6 +230,11 @@ namespace FlexLayout::Style
 			, m_intValue(value)
 			, m_enumTypeId(enumid) { }
 
+		explicit StyleValue(Type type, s3d::Color value) noexcept
+			: m_valueType(type)
+			, m_colorValue(value) {
+		}
+
 		friend struct Internal::StyleValueParser;
 	};
 
@@ -218,7 +243,8 @@ namespace FlexLayout::Style
 		StyleValue,
 		std::int32_t,
 		float,
-		const s3d::StringView
+		s3d::StringView,
+		s3d::Color
 	>::type;
 }
 
@@ -256,6 +282,18 @@ struct SIV3D_HIDDEN fmt::formatter<FlexLayout::Style::StyleValue, s3d::char32>
 			return format_to(ctx.out(), U"{}", value.getFloatValueUnchecked());
 		case StyleValue::Type::Length:
 			return format_to(ctx.out(), U"{}{}", value.getFloatValueUnchecked(), value.lengthUnit());
+		case StyleValue::Type::Color:
+		{
+			const auto& color = value.getColorValueUnchecked();
+			if (color.a == 0xFF)
+			{
+				return format_to(ctx.out(), U"#{:0>2X}{:0>2X}{:0>2X}", color.r, color.g, color.b);
+			}
+			else
+			{
+				return format_to(ctx.out(), U"#{:0>2X}{:0>2X}{:0>2X}{:0>2X}", color.r, color.g, color.b, color.a);
+			}
+		}
 		}
 
 		return format_to(ctx.out(), U"");

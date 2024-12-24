@@ -19,6 +19,7 @@ namespace FlexLayout::Style
 		case Type::Percentage: return m_floatValue == other.m_floatValue;
 		case Type::Number: return m_floatValue == other.m_floatValue;
 		case Type::Length: return m_floatValue == other.m_floatValue && m_lengthUnit == other.m_lengthUnit;
+		case Type::Color: return m_colorValue == other.m_colorValue;
 		}
 
 		return false;
