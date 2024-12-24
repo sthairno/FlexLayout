@@ -83,7 +83,6 @@ namespace FlexLayout::Internal
 			}
 			stream.ignore(endptr - buff.data());
 
-			stream >> std::ws;
 			if (stream.eof())
 			{
 				// サフィックス無し
