@@ -13,8 +13,12 @@ void Main()
 	do
 	{
 		filePath = Dialog::OpenFile({ FileFilter::XML() });
+		if (not filePath)
+		{
+			return;
+		}
 	}
-	while (not filePath || not layout.load(*filePath, FlexLayout::EnableHotReload::Yes));
+	while (not layout.load(*filePath, FlexLayout::EnableHotReload::Yes));
 
 	constexpr RectF menuRect{ 0, 0, 200, 36 * 2 };
 	bool showMenu = false;
