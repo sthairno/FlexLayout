@@ -11,7 +11,7 @@ namespace FlexLayout::Internal::Context
 			return;
 		}
 
-		// 浅い順にソートしなおす
+		// 待機リストをルートから近い順にソートしなおす
 		using _QueueValue = std::pair<size_t, std::shared_ptr<FlexBoxNode>>;
 		using _QueueComp = decltype([](const _QueueValue& a, const _QueueValue& b) { return a.first > b.first; });
 		using _QueueType = std::priority_queue<_QueueValue, Array<_QueueValue>, _QueueComp>;
@@ -31,9 +31,10 @@ namespace FlexLayout::Internal::Context
 		{
 			auto& [depth, item] = queue.top();
 			auto& component = item->getComponent<Component::StyleComponent>();
-			if (component.isStyleApplicationScheduled())
+			if (component.propertyApplicationScheduled())
 			{
-				component.applyStylesImpl();
+				detail::PropertyApplicationState state;
+				component.applyProperties(state);
 			}
 			queue.pop();
 		}

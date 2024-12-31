@@ -1,7 +1,6 @@
 ﻿#include "StyleComponent.hpp"
 #include "../FlexBoxNode.hpp"
 #include <Siv3D/Indexed.hpp>
-#include <ThirdParty/parallel_hashmap/btree.h>
 #include "../Config.hpp"
 #include "../Style/StyleValueParser.hpp"
 #include "../TreeContext.hpp"
@@ -61,7 +60,7 @@ namespace FlexLayout::Internal::Component
 	{
 		String tmp;
 
-		for (const auto& entry : m_styles.group(StylePropertyGroup::Inline))
+		for (const auto& entry : m_properties.group(StylePropertyGroup::Inline))
 		{
 			if (not entry.removed())
 			{
@@ -74,7 +73,7 @@ namespace FlexLayout::Internal::Component
 
 	Array<Style::StyleValue> StyleComponent::getStyle(StylePropertyGroup group, const StringView styleName) const
 	{
-		if (auto entry = m_styles.find(group, styleName))
+		if (auto entry = m_properties.find(group, styleName))
 		{
 			return entry->value();
 		}
@@ -90,7 +89,7 @@ namespace FlexLayout::Internal::Component
 			return removeStyle(group, styleName);
 		}
 
-		auto entry = m_styles.get(group, styleName, true);
+		auto entry = m_properties.get(group, styleName, true);
 		if (not entry)
 		{
 			return false;
@@ -145,7 +144,7 @@ namespace FlexLayout::Internal::Component
 			return removeStyle(group, styleName);
 		}
 
-		auto entry = m_styles.get(group, styleName, true);
+		auto entry = m_properties.get(group, styleName, true);
 		if (not entry)
 		{
 			return false;
@@ -229,7 +228,7 @@ namespace FlexLayout::Internal::Component
 
 	bool StyleComponent::removeStyle(StylePropertyGroup group, const StringView styleName)
 	{
-		auto entry = m_styles.find(group, styleName);
+		auto entry = m_properties.find(group, styleName);
 
 		if (not entry || entry->removed())
 		{
@@ -261,11 +260,11 @@ namespace FlexLayout::Internal::Component
 
 		if (group)
 		{
-			removeAll(m_styles.group(*group));
+			removeAll(m_properties.group(*group));
 		}
 		else
 		{
-			for (auto& g : m_styles)
+			for (auto& g : m_properties)
 			{
 				removeAll(g);
 			}
@@ -280,7 +279,7 @@ namespace FlexLayout::Internal::Component
 	void StyleComponent::copyStyles(StylePropertyGroup group, const StyleComponent& source)
 	{
 		clearStyles(group);
-		for (const auto& prop : source.m_styles.group(group))
+		for (const auto& prop : source.m_properties.group(group))
 		{
 			if (prop.removed())
 			{
@@ -293,7 +292,7 @@ namespace FlexLayout::Internal::Component
 
 	void StyleComponent::copyStyles(const StyleComponent& source)
 	{
-		for (std::underlying_type_t<StylePropertyGroup> groupId = 0; groupId < source.m_styles.size(); groupId++)
+		for (std::underlying_type_t<StylePropertyGroup> groupId = 0; groupId < source.m_properties.size(); groupId++)
 		{
 			auto group = static_cast<StylePropertyGroup>(groupId);
 
@@ -303,7 +302,7 @@ namespace FlexLayout::Internal::Component
 
 	void StyleComponent::scheduleStyleApplication()
 	{
-		if (m_isStyleApplicationScheduled)
+		if (m_propertyApplicationScheduled)
 		{
 			return;
 		}
@@ -311,17 +310,17 @@ namespace FlexLayout::Internal::Component
 		// 待機リストに追加
 		m_node.context().getContext<Context::StyleContext>()
 			.queueStyleApplication(m_node.shared_from_this());
-		m_isStyleApplicationScheduled = true;
+		m_propertyApplicationScheduled = true;
 	}
 
 	void StyleComponent::setFont(const Font& font, const StringView fontId)
 	{
-		if (font == m_font.font)
+		if (font == m_fontProperty.font)
 		{
 			return;
 		}
 
-		m_font = _FontProperty{
+		m_fontProperty = _FontProperty{
 			.font = font,
 			.id = font ? String{ fontId } : U""
 		};
@@ -343,12 +342,12 @@ namespace FlexLayout::Internal::Component
 
 	void StyleComponent::copyFont(const StyleComponent& source)
 	{
-		setFont(source.m_font.font, source.m_font.id);
+		setFont(source.m_fontProperty.font, source.m_fontProperty.id);
 	}
 
-	void StyleComponent::applyStylesImpl()
+	void StyleComponent::applyProperties(detail::PropertyApplicationState& state)
 	{
-		m_isStyleApplicationScheduled = false;
+		m_propertyApplicationScheduled = false;
 
 		// font,font-size,line-height,text-alignを事前に計算
 		// (emなど、フォントに関連するサイズ計算に必要)
@@ -368,7 +367,7 @@ namespace FlexLayout::Internal::Component
 
 				if (not prop->removed())
 				{
-					prop->execInstall(node);
+					prop->installTo(node);
 				}
 			};
 
@@ -378,35 +377,25 @@ namespace FlexLayout::Internal::Component
 			? m_node.parent()->getComponent<StyleComponent>().computedTextStyle()
 			: GetConfig().defaultTextStyle();
 
-		if (m_font.font)
+		if (m_fontProperty.font)
 		{
-			m_computedTextStyle.font = m_font.font;
+			m_computedTextStyle.font = m_fontProperty.font;
 		}
 
-		auto lineHeightProp = m_styles.find(lineHeightHash);
+		auto lineHeightProp = m_properties.find(lineHeightHash);
 		installTextProperty(m_node, lineHeightProp);
 
-		auto fontSizeProp = m_styles.find(fontSizeHash);
+		auto fontSizeProp = m_properties.find(fontSizeHash);
 		installTextProperty(m_node, fontSizeProp);
 
-		auto textAlignProp = m_styles.find(textAlignHash);
+		auto textAlignProp = m_properties.find(textAlignHash);
 		installTextProperty(m_node, textAlignProp);
 
-		const bool isTextStyleChanged = prevStyle != m_computedTextStyle;
+		const bool isInheritedPropertyUpdated = prevStyle != m_computedTextStyle;
 
 		// その他のスタイル
 
-		struct _PropertyState
-		{
-			StylePropertyDefinitionRef definition;
-
-			StyleProperty* installedProperty = nullptr;
-			size_t installationPriority;
-		};
-
-		phmap::btree_map<size_t, _PropertyState> propertyStates;
-		size_t priority = 0;
-		for (auto& group : m_styles)
+		for (auto& group : m_properties)
 		{
 			for (auto& prop : group)
 			{
@@ -415,24 +404,24 @@ namespace FlexLayout::Internal::Component
 					continue;
 				}
 
-				auto& state = propertyStates.try_emplace(
+				auto& propState = state.propertyStates.try_emplace(
 					prop.keyHash(),
-					_PropertyState{ prop.definition() }
+					detail::InstalledPropertyState{ prop.definition() }
 				).first->second;
 
 				if (not prop.removed())
 				{
-					prop.execInstall(m_node);
+					prop.installTo(m_node);
 
-					state.installedProperty = &prop;
-					state.installationPriority = priority++;
+					propState.propertyRef = &prop;
+					propState.priority = state.priorityCounter++;
 				}
 				else if (prop.event() == StyleProperty::Event::Removed)
 				{
-					prop.execReset(m_node);
+					prop.definition().resetCallback(m_node);
 
 					// リセットで影響を受ける、インストール済みのプロパティを再インストール
-					auto& affectedKeys = state.definition.maybeAffectTo();
+					auto& affectedKeys = propState.definition.maybeAffectTo();
 					if (not affectedKeys.empty())
 					{
 						std::vector<std::pair<size_t, StyleProperty*>> affectedProperties;
@@ -441,13 +430,13 @@ namespace FlexLayout::Internal::Component
 						for (const auto& key : affectedKeys)
 						{
 							const auto hash = StyleProperty::Hash(key);
-							if (auto itr = propertyStates.find(hash);
-								itr != propertyStates.end() &&
-								itr->second.installedProperty)
+							if (auto itr = state.propertyStates.find(hash);
+								itr != state.propertyStates.end() &&
+								itr->second.propertyRef)
 							{
 								affectedProperties.push_back({
-									itr->second.installationPriority,
-									itr->second.installedProperty
+									itr->second.priority,
+									itr->second.propertyRef
 								});
 							}
 						}
@@ -462,7 +451,7 @@ namespace FlexLayout::Internal::Component
 
 						for (auto [_, p] : affectedProperties)
 						{
-							p->execInstall(m_node);
+							p->installTo(m_node);
 						}
 					}
 				}
@@ -471,12 +460,13 @@ namespace FlexLayout::Internal::Component
 			}
 		}
 
-		if (isTextStyleChanged)
+		if (isInheritedPropertyUpdated)
 		{
-			// 子要素にも再帰
 			for (const auto& child : m_node.children())
 			{
-				child->getComponent<StyleComponent>().applyStylesImpl();
+				detail::PropertyApplicationState childState;
+				child->getComponent<StyleComponent>()
+					.applyProperties(childState);
 			}
 		}
 	}

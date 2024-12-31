@@ -5,6 +5,7 @@
 
 namespace FlexLayout::Internal
 {
+	// プロパティ名のハッシュ値が一意である
 	TEST(StylePropertyDefinitionTest, HashIsUnique)
 	{
 		std::set<size_t> hashList;
@@ -16,7 +17,7 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	// スタイル定義のmaybeAffectToで指定されたプロパティが存在する
+	// 定義のmaybeAffectToで指定されたプロパティが存在する
 	TEST(StylePropertyDefinitionTest, MaybeAffectToExists)
 	{
 		for (const auto& def : StylePropertyDefinitionList)
@@ -28,8 +29,8 @@ namespace FlexLayout::Internal
 		}
 	}
 
-	// スタイル定義のmaybeAffectToで指定されたプロパティのmaybeAffectToが空であるか
-	// (スタイルが複雑な依存関係を持っていないか)
+	// 定義のmaybeAffectToで指定されたプロパティのmaybeAffectToが空であるか
+	// (プロパティが複雑な依存関係を持っていないか)
 	TEST(StylePropertyDefinitionTest, MaybeAffectToIsLeaf)
 	{
 		using namespace FlexLayout::Internal;
@@ -38,7 +39,7 @@ namespace FlexLayout::Internal
 		{
 			for (const auto& prop : def.second.maybeAffectTo)
 			{
-				assert(StylePropertyDefinitionList.at(prop).maybeAffectTo.empty());
+				ASSERT_TRUE(StylePropertyDefinitionList.at(prop).maybeAffectTo.empty());
 			}
 		}
 	}

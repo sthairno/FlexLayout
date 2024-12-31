@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <Siv3D/Font.hpp>
 #include <Siv3D/String.hpp>
+#include <ThirdParty/parallel_hashmap/btree.h>
 #include "../Style/StyleProperty.hpp"
 #include "../Style/ComputedTextStyle.hpp"
 
@@ -12,6 +13,26 @@ namespace FlexLayout::Internal
 	{
 		class StyleContext;
 	}
+	
+	namespace detail
+	{
+		struct InstalledPropertyState
+		{
+			StylePropertyDefinitionRef definition;
+
+			StyleProperty* propertyRef = nullptr;
+
+			size_t priority;
+		};
+
+		struct PropertyApplicationState
+		{
+			phmap::btree_map<size_t, InstalledPropertyState> propertyStates;
+
+			size_t priorityCounter = 0;
+		};
+	}
+
 	class FlexBoxNode;
 }
 
@@ -49,15 +70,14 @@ namespace FlexLayout::Internal::Component
 
 		void copyStyles(const StyleComponent& source);
 
-		bool isStyleApplicationScheduled() const { return m_isStyleApplicationScheduled; }
+		bool propertyApplicationScheduled() const { return m_propertyApplicationScheduled; }
 
-		/// @brief `applyStyleRecursive()`の呼び出しを予約する
-		/// @remark 親要素で予約されていた場合、予約をスキップします
+		/// @brief `applyProperties()`の呼び出しを予約する
 		void scheduleStyleApplication();
 
-		Font font() const { return m_font.font; }
+		Font font() const { return m_fontProperty.font; }
 
-		Optional<String> fontId() const { return m_font.id ? none : MakeOptional(m_font.id); }
+		Optional<String> fontId() const { return m_fontProperty.id ? none : MakeOptional(m_fontProperty.id); }
 
 		void setFont(const Font& font, const StringView fontId = U"");
 
@@ -71,6 +91,8 @@ namespace FlexLayout::Internal::Component
 
 		FlexBoxNode& m_node;
 
+		// プロパティ
+
 		struct _FontProperty
 		{
 			Font font{ };
@@ -78,14 +100,17 @@ namespace FlexLayout::Internal::Component
 			String id = U"";
 		};
 
-		StylePropertyTable m_styles;
+		StylePropertyTable m_properties;
 
-		_FontProperty m_font;
+		_FontProperty m_fontProperty;
+
+		// 計算済みスタイル
 
 		ComputedTextStyle m_computedTextStyle;
 
-		bool m_isStyleApplicationScheduled = false;
+		/// @brief プロパティをComputedTextStyleとYogaに反映
+		void applyProperties(detail::PropertyApplicationState& state);
 
-		void applyStylesImpl();
+		bool m_propertyApplicationScheduled = false;
 	};
 }

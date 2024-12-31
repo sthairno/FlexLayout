@@ -15,7 +15,7 @@ namespace FlexLayout::Internal
 	using StyleInstallCallback = std::function<bool(FlexBoxNode&, std::span<const Style::StyleValue>)>;
 	using StyleResetCallback = std::function<void(FlexBoxNode&)>;
 
-	struct StylePropertyDefinitionDetails
+	struct StylePropertyDefinition
 	{
 		/// @brief 受け付ける入力値のパターン
 		const std::vector<std::vector<StyleValueMultiMatchRule>> patterns;
@@ -28,9 +28,14 @@ namespace FlexLayout::Internal
 
 		/// @brief installCallback/resetCallback呼び出し時に影響を与える(可能性のある)プロパティ名
 		const std::vector<StringView> maybeAffectTo;
+
+		/// @brief 継承プロパティか
+		/// @defails trueの場合、子要素でもinstallCallback/resetCallbackが呼び出されます
+		/// @see https://developer.mozilla.org/en-US/docs/Web/CSS/Inheritance
+		const bool inherit = false;
 	};
 
-	using StylePropertyDefinitionContainer = HashTable<s3d::StringView, StylePropertyDefinitionDetails>;
+	using StylePropertyDefinitionContainer = HashTable<s3d::StringView, StylePropertyDefinition>;
 
 	class StylePropertyDefinitionRef
 	{
@@ -38,32 +43,36 @@ namespace FlexLayout::Internal
 
 		StylePropertyDefinitionRef(StylePropertyDefinitionContainer::const_iterator itr)
 			: m_name(itr->first)
-			, m_details(&itr->second)
-		{ }
+			, m_data(&itr->second)
+		{
+		}
 
 		StylePropertyDefinitionRef(StylePropertyDefinitionContainer::const_pointer ptr)
 			: m_name(ptr->first)
-			, m_details(&ptr->second)
-		{ }
-
-		inline const StringView name() const { return m_name; }
-
-		inline const auto& patterns() const { return m_details->patterns; }
-
-		inline bool installCallback(FlexBoxNode& impl, std::span<const Style::StyleValue> values) const
+			, m_data(&ptr->second)
 		{
-			return m_details->installCallback(impl, values);
 		}
 
-		inline void resetCallback(FlexBoxNode& impl) const { return m_details->resetCallback(impl); }
+		const StringView name() const { return m_name; }
 
-		inline const auto& maybeAffectTo() const { return m_details->maybeAffectTo; }
+		const auto& patterns() const { return m_data->patterns; }
+
+		bool installCallback(FlexBoxNode& impl, std::span<const Style::StyleValue> values) const
+		{
+			return m_data->installCallback(impl, values);
+		}
+
+		void resetCallback(FlexBoxNode& impl) const { return m_data->resetCallback(impl); }
+
+		const auto& maybeAffectTo() const { return m_data->maybeAffectTo; }
+
+		bool inherit() const { return m_data->inherit; }
 
 	private:
 
 		StringView m_name;
 
-		const StylePropertyDefinitionDetails* m_details;
+		const StylePropertyDefinition* m_data;
 	};
 
 	extern const StylePropertyDefinitionContainer StylePropertyDefinitionList;

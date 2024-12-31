@@ -25,19 +25,17 @@ namespace FlexLayout::Internal
 
 		StyleProperty& operator =(const StyleProperty&) = delete;
 
-		inline size_t keyHash() const { return m_keyHash; }
+		size_t keyHash() const { return m_keyHash; }
 
-		inline const StylePropertyDefinitionRef& definition() const { return m_definition; }
+		const StylePropertyDefinitionRef& definition() const { return m_definition; }
 
-		inline bool execInstall(FlexBoxNode& impl) const { return m_definition.installCallback(impl, m_value); }
+		bool installTo(FlexBoxNode& target) const { return m_definition.installCallback(target, m_value); }
 
-		inline void execReset(FlexBoxNode& impl) const { m_definition.resetCallback(impl); }
+		bool removed() const { return m_value.empty(); }
 
-		inline bool removed() const { return m_value.empty(); }
+		const Array<Style::StyleValue>& value() const { return m_value; }
 
-		inline const Array<Style::StyleValue>& value() const { return m_value; }
-
-		inline void setValue(Array<Style::StyleValue>&& newValue)
+		void setValue(Array<Style::StyleValue>&& newValue)
 		{
 			assert(newValue);
 
@@ -57,7 +55,7 @@ namespace FlexLayout::Internal
 			m_value = std::move(newValue);
 		}
 
-		inline void unsetValue()
+		void unsetValue()
 		{
 			if (m_value.empty())
 			{
@@ -74,11 +72,13 @@ namespace FlexLayout::Internal
 			m_value.clear();
 		}
 
-		inline Event event() const { return m_event; }
+		Event event() const { return m_event; }
 
-		inline void clearEvent() { m_event = Event::None; }
+		void clearEvent() { m_event = Event::None; }
 
-		inline static size_t Hash(StringView key) { return StylePropertyDefinitionList.hash(key); }
+		bool inherit() const { return m_definition.inherit(); }
+
+		static size_t Hash(StringView key) { return StylePropertyDefinitionList.hash(key); }
 
 	protected:
 
@@ -124,7 +124,7 @@ namespace FlexLayout::Internal
 
 		using container_type = std::array<group_container_type, 3>;
 
-		inline group_span_type group(StylePropertyGroup group)
+		group_span_type group(StylePropertyGroup group)
 		{
 			// 配列の内容の編集は許可するが、配列そのものの操作は許可したくない
 
@@ -132,7 +132,7 @@ namespace FlexLayout::Internal
 			return std::span{ ary.begin(), ary.end() };
 		}
 
-		inline const group_container_type& group(StylePropertyGroup group) const
+		const group_container_type& group(StylePropertyGroup group) const
 		{
 			return m_table[static_cast<uint8>(group)];
 		}
@@ -140,7 +140,7 @@ namespace FlexLayout::Internal
 		value_type* get(StylePropertyGroup group, StringView key, size_t hash, bool moveToBack = false);
 
 		template<class Key>
-		inline value_type* get(StylePropertyGroup group, const Key& key, bool moveToBack = false)
+		value_type* get(StylePropertyGroup group, const Key& key, bool moveToBack = false)
 		{
 			return get(group, key, StyleProperty::Hash(key), moveToBack);
 		}
@@ -148,7 +148,7 @@ namespace FlexLayout::Internal
 		const value_type* find(StylePropertyGroup group, size_t hash) const;
 
 		template<class Key>
-		inline const value_type* find(StylePropertyGroup group, const Key& key) const
+		const value_type* find(StylePropertyGroup group, const Key& key) const
 		{
 			return find(group, StyleProperty::Hash(key));
 		}
@@ -156,7 +156,7 @@ namespace FlexLayout::Internal
 		value_type* find(StylePropertyGroup group, size_t hash);
 
 		template<class Key>
-		inline value_type* find(StylePropertyGroup group, const Key& key)
+		value_type* find(StylePropertyGroup group, const Key& key)
 		{
 			return find(group, StyleProperty::Hash(key));
 		}
@@ -164,7 +164,7 @@ namespace FlexLayout::Internal
 		value_type* find(size_t hash);
 
 		template<class Key>
-		inline value_type* find(const Key& key)
+		value_type* find(const Key& key)
 		{
 			return find(StyleProperty::Hash(key));
 		}
@@ -172,7 +172,7 @@ namespace FlexLayout::Internal
 		const value_type* find(size_t hash) const;
 
 		template<class Key>
-		inline const value_type* find(const Key& key) const
+		const value_type* find(const Key& key) const
 		{
 			return find(StyleProperty::Hash(key));
 		}
