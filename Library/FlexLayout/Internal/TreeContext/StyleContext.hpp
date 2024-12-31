@@ -14,17 +14,6 @@ namespace FlexLayout::Internal::Context
 	{
 	public:
 
-		void applyStyles(FlexBoxNode& root);
-
-		const auto& styleApplicationWaitinglist() const
-		{
-			return m_styleApplicationWaitinglist;
-		}
-
-		void queueStyleApplication(const std::shared_ptr<FlexBoxNode>& node);
-
-	private:
-
-		Array<std::weak_ptr<FlexBoxNode>> m_styleApplicationWaitinglist;
+		void applyProperties(FlexBoxNode& root);
 	};
 }

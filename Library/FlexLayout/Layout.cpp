@@ -143,7 +143,7 @@ namespace FlexLayout
 				// Yogaノードへスタイルを適用
 				root->context()
 					.getContext<Internal::Context::StyleContext>()
-					.applyStyles(*root);
+					.applyProperties(*root);
 
 				// Yogaのレイアウト計算
 				Internal::CalculateLayout(*root, width, height);

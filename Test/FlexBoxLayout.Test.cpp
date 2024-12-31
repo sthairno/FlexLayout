@@ -25,7 +25,7 @@ namespace FlexLayout::Internal
 
 		root->context()
 			.getContext<Context::StyleContext>()
-			.applyStyles(*root);
+			.applyProperties(*root);
 
 		CalculateLayout(*root, s3d::none, s3d::none);
 

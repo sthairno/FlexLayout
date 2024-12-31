@@ -70,10 +70,8 @@ namespace FlexLayout::Internal::Component
 
 		void copyStyles(const StyleComponent& source);
 
-		bool propertyApplicationScheduled() const { return m_propertyApplicationScheduled; }
-
-		/// @brief `applyProperties()`の呼び出しを予約する
-		void scheduleStyleApplication();
+		/// @brief プロパティを変更したため再適用が必要か
+		bool needApplyProperties() const { return m_propertyModified; }
 
 		Font font() const { return m_fontProperty.font; }
 
@@ -108,9 +106,11 @@ namespace FlexLayout::Internal::Component
 
 		ComputedTextStyle m_computedTextStyle;
 
+		bool m_propertyModified = false;
+
+		void markPropertyModified();
+
 		/// @brief プロパティをComputedTextStyleとYogaに反映
 		void applyProperties(detail::PropertyApplicationState& state);
-
-		bool m_propertyApplicationScheduled = false;
 	};
 }

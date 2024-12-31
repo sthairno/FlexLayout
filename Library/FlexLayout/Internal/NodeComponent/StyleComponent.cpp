@@ -132,7 +132,7 @@ namespace FlexLayout::Internal::Component
 
 		// スタイルを更新
 		entry->setValue({ values.begin(), values.end() });
-		scheduleStyleApplication();
+		markPropertyModified();
 
 		return true;
 	}
@@ -221,7 +221,7 @@ namespace FlexLayout::Internal::Component
 
 		// スタイルを作成 or 更新
 		entry->setValue(std::move(parsedValues));
-		scheduleStyleApplication();
+		markPropertyModified();
 
 		return true;
 	}
@@ -237,7 +237,7 @@ namespace FlexLayout::Internal::Component
 
 		entry->unsetValue();
 
-		scheduleStyleApplication();
+		markPropertyModified();
 
 		return false;
 	}
@@ -272,7 +272,7 @@ namespace FlexLayout::Internal::Component
 
 		if (modified)
 		{
-			scheduleStyleApplication();
+			markPropertyModified();
 		}
 	}
 
@@ -300,17 +300,27 @@ namespace FlexLayout::Internal::Component
 		}
 	}
 
-	void StyleComponent::scheduleStyleApplication()
+	void StyleComponent::markPropertyModified()
 	{
-		if (m_propertyApplicationScheduled)
+		if (m_propertyModified)
 		{
 			return;
 		}
 
-		// 待機リストに追加
-		m_node.context().getContext<Context::StyleContext>()
-			.queueStyleApplication(m_node.shared_from_this());
-		m_propertyApplicationScheduled = true;
+		// 親をたどりながらmodifiedフラグを立てる
+		FlexBoxNode* node = &m_node;
+		while (node)
+		{
+			auto& component = node->getComponent<StyleComponent>();
+
+			if (component.m_propertyModified)
+			{
+				break;
+			}
+
+			component.m_propertyModified = true;
+			node = node->parent();
+		}
 	}
 
 	void StyleComponent::setFont(const Font& font, const StringView fontId)
@@ -325,7 +335,7 @@ namespace FlexLayout::Internal::Component
 			.id = font ? String{ fontId } : U""
 		};
 
-		scheduleStyleApplication();
+		markPropertyModified();
 	}
 
 	void StyleComponent::setFont(const StringView fontId)
@@ -347,8 +357,6 @@ namespace FlexLayout::Internal::Component
 
 	void StyleComponent::applyProperties(detail::PropertyApplicationState& state)
 	{
-		m_propertyApplicationScheduled = false;
-
 		// font,font-size,line-height,text-alignを事前に計算
 		// (emなど、フォントに関連するサイズ計算に必要)
 
@@ -391,7 +399,7 @@ namespace FlexLayout::Internal::Component
 		auto textAlignProp = m_properties.find(textAlignHash);
 		installTextProperty(m_node, textAlignProp);
 
-		const bool isInheritedPropertyUpdated = prevStyle != m_computedTextStyle;
+		const bool isInheritedPropertyUpdate = prevStyle != m_computedTextStyle;
 
 		// その他のスタイル
 
@@ -460,13 +468,15 @@ namespace FlexLayout::Internal::Component
 			}
 		}
 
-		if (isInheritedPropertyUpdated)
+		
+		for (const auto& child : m_node.children())
 		{
-			for (const auto& child : m_node.children())
+			auto& childComponent = child->getComponent<StyleComponent>();
+
+			if (isInheritedPropertyUpdate || childComponent.m_propertyModified)
 			{
 				detail::PropertyApplicationState childState;
-				child->getComponent<StyleComponent>()
-					.applyProperties(childState);
+				childComponent.applyProperties(childState);
 			}
 		}
 	}

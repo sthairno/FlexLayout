@@ -57,7 +57,7 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 10, YGUnitPoint }));
 	}
@@ -68,10 +68,10 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(20, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 20, YGUnitPoint }));
 	}
@@ -82,8 +82,8 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), (YGValue{ 10, YGUnitPoint }));
 	}
@@ -96,10 +96,10 @@ namespace FlexLayout::Internal
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		style.removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 	}
@@ -112,11 +112,11 @@ namespace FlexLayout::Internal
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 
 		style.setStyle(StylePropertyGroup::Inline, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		style.removeStyle(StylePropertyGroup::Inline, U"margin-top");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop), YGValueUndefined);
 	}
@@ -128,7 +128,7 @@ namespace FlexLayout::Internal
 
 		style.setStyle(StylePropertyGroup::StyleSheet, U"margin-top", std::array<Style::StyleValue, 1>{ Style::StyleValue::Length(10, LengthUnit::Pixel) });
 		style.setInlineCssText(U"margin-top: 20px;");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -142,7 +142,7 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setInlineCssText(U"margin-top: 20px; margin: 30px");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -156,10 +156,10 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setInlineCssText(U"margin-top: 20px; margin: 30px");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		style.removeStyle(StylePropertyGroup::Inline, U"margin");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -173,7 +173,7 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
@@ -187,10 +187,10 @@ namespace FlexLayout::Internal
 		auto& style = dummy->getComponent<Component::StyleComponent>();
 
 		style.setInlineCssText(U"font-size: 10px; margin-top: 2em;");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		style.removeStyle(StylePropertyGroup::Inline, U"font-size");
-		dummy->context().getContext<Context::StyleContext>().applyStyles(*dummy);
+		dummy->context().getContext<Context::StyleContext>().applyProperties(*dummy);
 
 		ASSERT_EQ(
 			YGNodeStyleGetMargin(dummy->yogaNode(), YGEdgeTop),
